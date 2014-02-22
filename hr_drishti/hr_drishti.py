@@ -19,13 +19,13 @@
 #
 ##############################################################################
 
-#from osv import fields, osv
-#from openerp import addons
+from osv import fields, osv
+from openerp import addons
 import logging
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp import tools
-#import pooler
+import pooler
 
 
 class hr_holidays(osv.osv):
@@ -34,86 +34,7 @@ class hr_holidays(osv.osv):
     _inherit = "hr.holidays"
     _columns = {
 	    'serial_no': fields.char('Serial No.', size=124),
-        'category': fields.many2one('hr.employee.category',"Employee Category", size=124),
 		}
-    
-    def holidays_first_validate(self, cr, uid, ids, context=None):
-        
-        self.check_holidays(cr, uid, ids, context=context)
-        obj_emp = self.pool.get('hr.employee')
-        ids2 = obj_emp.search(cr, uid, [('user_id', '=', uid)])
-        manager = ids2 and ids2[0] or False
-        self.holidays_first_validate_notificate(cr, uid, ids, context=context)
-        return self.write(cr, uid, ids, {'state':'validate1', 'manager_id': manager})
-    
-    def holidays_validate(self, cr, uid, ids, context=None):
-        
-        for d in self.browse(cr, uid, ids, context=None):
-            employee=d.employee_id.id
-            user_id=d.employee_id.user_id.id
-            
-            
-            if user_id==uid:
-                
-                raise osv.except_osv(('Error!!'),('You cannot approve your own leave'))
-        self.check_holidays(cr, uid, ids, context=context)
-        obj_emp = self.pool.get('hr.employee')
-        ids2 = obj_emp.search(cr, uid, [('user_id', '=', uid)])
-        manager = ids2 and ids2[0] or False
-        self.write(cr, uid, ids, {'state':'validate'})
-        data_holiday = self.browse(cr, uid, ids)
-        for record in data_holiday:
-            if record.double_validation:
-                self.write(cr, uid, [record.id], {'manager_id2': manager})
-            else:
-                self.write(cr, uid, [record.id], {'manager_id': manager})
-            if record.holiday_type == 'employee' and record.type == 'remove':
-                meeting_obj = self.pool.get('crm.meeting')
-                meeting_vals = {
-                    'name': record.name or _('Leave Request'),
-                    'categ_ids': record.holiday_status_id.categ_id and [(6,0,[record.holiday_status_id.categ_id.id])] or [],
-                    'duration': record.number_of_days_temp * 8,
-                    'description': record.notes,
-                    'user_id': record.user_id.id,
-                    'date': record.date_from,
-                    'end_date': record.date_to,
-                    'date_deadline': record.date_to,
-                    'state': 'open',            # to block that meeting date in the calendar
-                }
-                meeting_id = meeting_obj.create(cr, uid, meeting_vals)
-                self._create_resource_leave(cr, uid, [record], context=context)
-                self.write(cr, uid, ids, {'meeting_id': meeting_id})
-            elif record.holiday_type == 'category':
-                emp_ids = obj_emp.search(cr, uid, [('category_ids', 'child_of', [record.category_id.id])])
-                leave_ids = []
-                for emp in obj_emp.browse(cr, uid, emp_ids):
-                    vals = {
-                        'name': record.name,
-                        'type': record.type,
-                        'holiday_type': 'employee',
-                        'holiday_status_id': record.holiday_status_id.id,
-                        'date_from': record.date_from,
-                        'date_to': record.date_to,
-                        'notes': record.notes,
-                        'number_of_days_temp': record.number_of_days_temp,
-                        'parent_id': record.id,
-                        'employee_id': emp.id
-                    }
-                    leave_ids.append(self.create(cr, uid, vals, context=None))
-                wf_service = netsvc.LocalService("workflow")
-                for leave_id in leave_ids:
-                    wf_service.trg_validate(uid, 'hr.holidays', leave_id, 'confirm', cr)
-                    wf_service.trg_validate(uid, 'hr.holidays', leave_id, 'validate', cr)
-                    wf_service.trg_validate(uid, 'hr.holidays', leave_id, 'second_validate', cr)
-        return True
-    
-    def holidays_confirm(self, cr, uid, ids, context=None):
-        self.check_holidays(cr, uid, ids, context=context)
-        for record in self.browse(cr, uid, ids, context=context):
-            if record.employee_id or record.employee_id.parent_id or record.employee_id.parent_id.user_id:
-                self.message_subscribe_users(cr, uid, [record.id], user_ids=[record.employee_id.user_id.id or record.employee_id.parent_id.user_id.id], context=context)
-        return self.write(cr, uid, ids, {'state': 'confirm'})
-
     
 hr_holidays()
 
@@ -123,14 +44,14 @@ class hr_employee(osv.osv):
     _inherit = "hr.employee"
     _columns = {
        'category': fields.many2one('hr.employee.category',"Employee Category", size=124),       
-      
+      # 'identification_id': fields.integer('Identification No', size=124),
        'emergency_contact': fields.char('Emergency Contact No', size=124),
        'doj':fields.date('Date of Joining', size=124),
        'emoluments':fields.integer('Emoluments Rs.', size=124),
        'app_letter':fields.char('Appointment Letter No. & Date', size=124),
        'esic_no':fields.char('ESIC No.', size=124),
        'pf_no':fields.char('PF No. GOA/12411/', size=124),
-       'aadhar_no':fields.char('Aadhar Card No.', size=124),
+       'aadhar_no':fields.integer('Aadhar Card No.', size=124),
        'employment_exchange_no':fields.char('Employment Exchange No.', size=124),
        'blood_group':fields.char('Blood Group', size=124),
        'father_name':fields.char("Father's Name", size=124),
@@ -144,7 +65,7 @@ class hr_employee(osv.osv):
        'professional_qualification_line':fields.one2many('qualification.details2','qualification_id2'," ", size=124),
        'other_qualification_line':fields.one2many('qualification.details3','qualification_id3'," ", size=124),
        'email_id':fields.char("Email ID", size=124),
-       'distance':fields.char("Distance from Residence to Work Place (in Kms.)", size=124),
+       'distance':fields.integer("Distance from Residence to Work Place (in Kms.)", size=124),
        'permanent_address':fields.text("Permanent Address", size=124),
        'telephone_no1':fields.char("Telephone No.", size=124),
        'mobile_no1':fields.char("Mobile No."),
@@ -178,14 +99,14 @@ class hr_employee(osv.osv):
        'taluka':fields.many2one('taluka.name',"Taluka", size=124),
        'state_name':fields.many2one('state.name',"State", size=124),
        'post_office':fields.char("Post Office", size=124),
-       'pincode':fields.char("Pincode", size=124),
+       'pincode':fields.integer("Pincode", size=124),
        'landmark':fields.char("Landmark", size=124),
        'other':fields.char("Other", size=124),  
        'address_home_id': fields.many2one('res.partner', 'Home Address'),
        'gender': fields.selection([('male', 'Male'),('female', 'Female')], 'Gender'),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', help="Employee bank salary account"),
        'country_id': fields.many2one('res.country', 'Nationality'),
-      
+       'identification_id1': fields.char('SLSG No.', size=32),
        'place_of_birth': fields.char('Place of Birth', size=32),
        'bank_bic': fields.char('Bank Identifier Code', size=32),
        'passport_id':fields.char('Passport No', size=64),
@@ -197,14 +118,16 @@ class hr_employee(osv.osv):
        'address_home_id': fields.many2one('res.partner', 'Home Address', invisible="True"),
        'bank_line': fields.one2many('res.partner.bank', 'bank_no', 'Bank Details'),
        'state': fields.related('bank_line', 'state', type='selection', size=240, string='Bank Account Type'),
-       
+       #'acc_number': fields.related('bank_line', 'acc_number', type='char', size=240, string='Account Number'),
        'bank_field':fields.many2one('res.bank', 'Bank'),
-      
+      # 'bank': fields.related('bank_line', 'bank', type='many2one', relation='res.bank', size=240, string='Bank'),
+#        'company_id': fields.related('bank_line','company_id', relation='res.company', string='Company',
+#             ondelete='cascade', help="Only if this bank account belong to your company"),
        'footer': fields.related('bank_line','footer', type="boolean", string='Display on Reports', help="Display this bank account on the footer of printed documents like invoices and sales orders."),
        'partner_id': fields.related('bank_line','partner_id',type="many2one",relation='res.partner', string='Account Owner', required=True,
             ondelete='cascade', select=True),
        'bank_account_name': fields.related('bank_line','name',type="char",string='Bank Account', size=64),
-      
+       #'bank_bic': fields.related('bank_line','bank_bic',type="char",string='Bank Identifier Code', size=16),
        'bank_name': fields.related('bank_line','bank_name',type="char",string='Bank Name', size=32),
        'owner_name': fields.related('bank_line','bank_name',type="char",string='Account Owner Name', size=128),
        'street': fields.related('bank_line','bank_name',type="char",string='Street', size=128),
@@ -217,7 +140,6 @@ class hr_employee(osv.osv):
        'sequence': fields.related('bank_line','sequence',type="integer",string='Sequence'),
        'attachment_line':fields.one2many('ir.attachment','attachment_id','Attachments', size=124),
       'attendance':fields.boolean('Attendance'),
-    
          
         }
     
@@ -405,7 +327,7 @@ class beach_lifeguard(osv.osv):
         'sl_no':fields.integer('Sl No.', size=124),
         'slsg_no':fields.integer('SLSG No', size=124),
         'name': fields.char('Name', size=124),
-        'swim': fields.char('400 mtr. Swim', size=124),
+        'swim': fields.char('40 mtr. Swim', size=124),
         'rsr': fields.char('RSR', size=124),
         'uw': fields.char('25 mtr. U/W', size=124),
         'bt':fields.char('BT', size=124),

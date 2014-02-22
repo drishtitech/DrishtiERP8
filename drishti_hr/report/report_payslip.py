@@ -29,7 +29,7 @@ from openerp.tools import amount_to_text_en
 #from openerp.tools.amount_to_text_in import amount_to_text
 import time
 from datetime import datetime
-#from drishti_hr.amount_to_text_in import amount_to_text
+from drishti_hr.amount_to_text_in import amount_to_text
 class payslip_report(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context):

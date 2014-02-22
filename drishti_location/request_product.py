@@ -16,7 +16,6 @@ class stock_picking(osv.osv):
     _inherit = "stock.picking"
     _columns = {
                  'request_id' : fields.many2one('request.product', 'Request Product'),
-                 'workshop_id': fields.many2one('stock.location', 'Product Location'),
                 }
 
 #     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
@@ -82,19 +81,19 @@ class request_product(osv.osv):
       
       def check_picking(self,cr,uid,ids, name, arg, context=None):
         res = {}
-         
+        
         for request in self.browse(cr, uid, ids, context=context):
-          flag =True
-          
-          for picking in request.picking_ids:
-              
-              if picking.state != 'done':
-                 flag = False
-          if flag and request.state == 'progress':
-              self.write(cr, uid, request.id, {'state' : 'done'})
-              for line in request.request_line:
-                  self.pool.get('request.product.line').write(cr, uid, line.id, {'state' : 'done'})
-              res[request.id] = True
+            print "request",request
+            flag =True
+            for picking in request.picking_ids:
+                print "picking", picking.state
+                if picking.state != 'done':
+                   flag = False
+            if flag and request.state == 'progress':
+                self.write(cr, uid, request.id, {'state' : 'done'})
+                for line in request.request_line:
+                    self.pool.get('request.product.line').write(cr, uid, line.id, {'state' : 'done'})
+                res[request.id] = True
         return res
       
       _columns = {
@@ -113,7 +112,7 @@ class request_product(osv.osv):
                         ('done', 'Done'),
                         ],'State'),
                  'request_line': fields.one2many('request.product.line', 'request_id', 'Request Lines',),   
-                 'picking_ids': fields.one2many('stock.picking', 'request_id', 'Related Picking', help="This is a list of move that has been generated for this request."),
+                 'picking_ids': fields.one2many('stock.picking', 'request_id', 'Related Picking', readonly=True, help="This is a list of move that has been generated for this request."),
                  'picking': fields.function(check_picking, string='Picking', type='boolean'),
                  'employee_id': fields.many2one('hr.employee','Employee'),   
                  'requistion_id': fields.many2one('purchase.requisition','Purchase Requisition'),  
@@ -324,12 +323,10 @@ class request_product(osv.osv):
         """
         move_obj = self.pool.get('stock.move')
         picking_obj = self.pool.get('stock.picking')
-           
+    
         for line in order_lines:
-            
-            if line.state == 'progress':
-               print "Progress"    
-                #continue
+            if line.state == 'done':
+                continue
 
             date_planned = order.date_order
 
@@ -348,27 +345,16 @@ class request_product(osv.osv):
         return True
 
       def action_ship_create(self, cr, uid, ids, context=None):
-        for d in self.browse(cr, uid, ids, context=None):
-            request_user=d.user_id.id
-            #user_id=d.employee_id.user_id.id
-            
-            
-            if request_user==uid:
-                
-                raise osv.except_osv(('Error!!'),('You cannot approve your own request'))  
-        user_obj = self.pool.get('res.users').browse(cr,uid,uid)
-          
+        user_obj = self.pool.get('res.users').browse(cr,uid,uid)  
         for request in self.browse(cr, uid, ids, context=context):
-          
+          print   request.location_id.name , user_obj.location_id.name
           
           if request.location_id.id <> user_obj.location_id.id:
          # if 1 ==1:    
             for line in request.request_line:
-                
+                print "test"
                 self.pool.get('request.product.line').write(cr, uid, line.id, {'state': 'progress'})
-                
             self._create_pickings_and_procurements(cr, uid, request, request.request_line, None, context=context)
-            
             self.write(cr, uid, [request.id], {'state': 'progress' }) 
           else:
               raise osv.except_osv(_('Warning!'), _('you are not authorized to approve this request'))     

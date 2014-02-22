@@ -19,7 +19,6 @@
             <field name="arch" type="xml">
             <field name="name" position="replace">
             <field name="serial_no"/>
-            <field name="category"/>
            <field name="name"/>
            
            
@@ -34,7 +33,7 @@
 	    <field name="inherit_id" ref="hr.view_employee_tree"/>
             <field name="arch" type="xml">
             <field name="name" position="after">
-            <field name="identification_id" string="SLSG No."/>
+            <field name="identification_id1"/>
             <field name="category_ids"/>
            <field name="name"/>
            
@@ -57,20 +56,22 @@
            
            <xpath expr="/form/sheet/notebook" position="before">
            <div class="oe_title">
-           				    <group>
+           				
+                            <label for="name" class="oe_edit_only"/>
                             
-                            
-                            
-                            <field name="name" string="Name"/>
-                            
+                            <h2>
+                                <field name="name"/>
+                            </h2>
+                            <label for="identification_id1"/>
+                            <h2>
                                 
-                            <field name="identification_id" string="SLSG No.-"/>
-                            
-                            
+                                <field name="identification_id1"/>
+                            </h2>
+                           
+                            <label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
                             <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/>
-                            
+                            <label for="category" class="oe_edit_only"/>
                             <field name="category" widget="selection"/>
-                            </group>
                         </div>
            </xpath>
                       
@@ -184,7 +185,7 @@
 				<page string="Job Details">
 				<group>
 				<group>
-				
+				<!--field name="identification_id" string="SLSG No."/-->
 				<field name="job_id" string="Designation"/>
 				</group>
 				<group>
@@ -227,16 +228,17 @@
    	           		 <group col="4">
                         
                         <field name="acc_number" placeholder="Account Number"/>
-                       
+                       <!-- <field name="company_id" groups="base.group_multi_company" on_change="onchange_company_id(company_id)"
+                            invisible="context.get('company_hide', True)" widget="selection"/> -->
                         <field name="footer" invisible="context.get('footer_hide', True)"/>
                     </group>
                     <group>
                         
                         <group name="bank" string="Information About the Bank">
-                            
+                            <!--field name="bank" on_change="onchange_bank_id(bank)"/-->
 			                <field name="bank_field"/>
 			                <field name="branch_name"/>
-                            
+                            <!--field name="bank_name" attrs="{'required': [('company_id','&lt;&gt;',False)]}"/-->
                             <field name="bank_bic" placeholder="e.g. GEBABEBB" />
                         </group>
                             
@@ -385,7 +387,7 @@
 			<field name="board"/>
 			<field name="marks"/>
 			<field name="year"/>
-			        
+			<!--field name="masters"/-->        
                 </tree>
             </field>
         </record>
@@ -418,7 +420,7 @@
 			<field name="board"/>
 			<field name="marks"/>
 			<field name="year"/>
-			        
+			<!--field name="masters"/-->        
                 </tree>
             </field>
         </record>
@@ -451,7 +453,7 @@
 			<field name="board"/>
 			<field name="marks"/>
 			<field name="year"/>
-			        
+			<!--field name="masters"/-->        
                 </tree>
             </field>
         </record>
@@ -483,7 +485,7 @@
 			<field name="date_of_birth"/>
 			<field name="age"/>
 			<field name="occupation"/>
-			        
+			<!--field name="masters"/-->        
                 </tree>
             </field>
         </record>
@@ -517,7 +519,7 @@
 			<field name="read"/>
 			<field name="write"/>
 			<field name="speak"/>
-			        
+			<!--field name="masters"/-->        
                 </tree>
             </field>
         </record>

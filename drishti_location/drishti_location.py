@@ -1,5 +1,4 @@
 import openerp
-from functools import partial
 from openerp import SUPERUSER_ID
 from openerp import pooler, tools
 from openerp.osv import fields,osv
@@ -16,104 +15,12 @@ class res_users(osv.osv):
                    'loc_id': fields.many2one('stock.location', 'Location', help="Select Location base on user permission"),
                   'location_id': fields.many2one('stock.location', 'User Location', help="Select Location base on user permission"),
                   'src_loc_id': fields.many2one('stock.location', 'Source Location'),
-                  'location_ids':fields.many2many('stock.location','stock_location_users_rel','user_id','lid','Allowed Locations'),
-                  'category': fields.many2one('hr.employee.category',"Employee Category", size=124),
-                  'warehouse_id': fields.many2one('stock.warehouse', 'Destination Warehouse'),                   
+                  'location_ids':fields.many2many('stock.location','stock_location_users_rel','user_id','lid','Allowed Locations'),                   
                  }
-      
-      def create(self, cr, uid, vals, context=None):
- 
-        user_id = super(res_users, self).create(cr, uid, vals, context=context)
- 
-        user = self.browse(cr, uid, user_id, context=context)
- 
-        if user.partner_id.company_id: 
- 
-            user.partner_id.write({'company_id': user.company_id.id})
- 
-        return user_id
-    
-      def write(self, cr, uid, ids, values, context=None):
-        if not hasattr(ids, '__iter__'):
-            ids = [ids]
-            uid=1
-#         if ids == [uid]:
-#             for key in values.keys():
-#                 if not (key in self.SELF_WRITEABLE_FIELDS or key.startswith('context_')):
-#                     break
-#             else:
-#                 if 'company_id' in values:
-#                     if not (values['company_id'] in self.read(cr, SUPERUSER_ID, uid, ['company_ids'], context=context)['company_ids']):
-#                         del values['company_id']
-#                 uid = 1 # safe fields only, so we write as super-user to bypass access rights
 
-        res = super(res_users, self).write(cr, uid, ids, values, context=context)
-        
-        if 'company_id' in values:
- 
-            for user in self.browse(cr, uid, ids, context=context):
- 
-                # if partner is global we keep it that way
- 
-                if user.partner_id.company_id and user.partner_id.company_id.id != values['company_id']: 
- 
-                    user.partner_id.write({'company_id': user.company_id.id})
-
-        # clear caches linked to the users
-        self.pool.get('ir.model.access').call_cache_clearing_methods(cr)
-        clear = partial(self.pool.get('ir.rule').clear_cache, cr)
-        map(clear, ids)
-        db = cr.dbname
-        if db in self._uid_cache:
-            for id in ids:
-                if id in self._uid_cache[db]:
-                    del self._uid_cache[db][id]
-        self.context_get.clear_cache(self)
-        return res
-    
-    
-    
-      
 ##==============================================================================
 # Overrite existing search method in stock.location base on user assign location
 ##==============================================================================
-
-class res_partner(osv.osv):
-      _inherit = 'res.partner'
-      
-      def write(self, cr, uid, ids, vals, context=None):
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-        #res.partner must only allow to set the company_id of a partner if it
- 
-        #is the same as the company of all users that inherit from this partner
- 
-        #(this is to allow the code from res_users to write to the partner!) or
- 
-        #if setting the company_id to False (this is compatible with any user company)
- 
-        if vals.get('company_id'):
- 
-            for partner in self.browse(cr, uid, ids, context=context):
- 
-                if partner.user_ids:
- 
-                    user_companies = set([user.company_id.id for user in partner.user_ids])
- 
-                    if len(user_companies) > 1 or vals['company_id'] not in user_companies:
- 
-                        raise osv.except_osv(_("Warning"),_("You can not change the company as the partner/user has multiple user linked with different companies."))
-
-
-        result = super(res_partner,self).write(cr, uid, ids, vals, context=context)
-
-        for partner in self.browse(cr, uid, ids, context=context):
-            self._fields_sync(cr, uid, partner, vals, context)
-        return result
-      
-res_partner()
-      
-
 
 class stock_location(osv.osv):
     _inherit = 'stock.location'

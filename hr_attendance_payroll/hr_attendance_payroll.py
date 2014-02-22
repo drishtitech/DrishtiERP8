@@ -10,26 +10,6 @@ from datetime import datetime
 from datetime import timedelta
 from dateutil import relativedelta
 import calendar
-import openerp.addons.decimal_precision as dp
-
-class hr_payslip_line(osv.osv):
-    _name = "hr.payslip.line"
-    _description = "Payslip Line"
-    _inherit = "hr.payslip.line"
-    
-    def _calculate_total(self, cr, uid, ids, name, args, context):
-        if not ids: return {}
-        res = {}
-        for line in self.browse(cr, uid, ids, context=context):
-           # res[line.id] = float(line.quantity) * line.amount * line.rate / 100
-           x = float(line.quantity) * round(line.amount) * line.rate / 100
-           res[line.id] = round(x)
-        return res
-    
-    _columns = {
-                'total': fields.function(_calculate_total, method=True, type='float', string='Total', digits_compute=dp.get_precision('Payroll'),store=True ),
-                }
-
 
 class leaves_calendar(osv.osv):
     _name = "leaves.calendar"
@@ -37,11 +17,16 @@ class leaves_calendar(osv.osv):
     _columns = {
         'holiday_id':fields.many2one('holidays.calendar','Holidays Number', size=124),        
         'name': fields.char('Holiday Name', size=124, required=True),
+        #'employee_id':fields.many2one('hr.employee','Employee', size=124),
+        #'leave': fields.char('Holiday Name', size=124, required=True),
         'date_from': fields.date('Date', size=124),
+        #'day': fields.selection([('monday', 'Monday'),('tuesday', 'Tuesday'),('wednesday', 'Wednesday'),('thursday', 'Thursday'),('friday', 'Friday'),('saturday', 'Saturday'),('sunday', 'Sunday')],'Type'),
         'day': fields.selection([('0','Monday'),('1','Tuesday'),('2','Wednesday'),('3','Thursday'),('4','Friday'),('5','Saturday'),('6','Sunday')], 'Day of Week'),
         'description': fields.text('Description', size=124),
         'type':fields.selection([('even_sat', 'Even Saturday')],'Type'),
-        
+        #'date_to': fields.date('End Date', size=124),
+        #'calendar_line':fields.one2many('holiday.details','holiday_id'," ", size=124),
+        #'location':fields.selection([('Mumbai', 'Mumbai'),('Goa','Goa')],'Location'),
         }
     
     def onchange_date(self,cr,uid,ids,date_from):
@@ -58,11 +43,17 @@ class holidays_calendar(osv.osv):
     _name = "holidays.calendar"
     _description = "Holidays Calendar"
     _columns = {
-        
+        #'holiday_id': fields.many2one('leaves.calendar','Holidays ID', size=124),
         'name': fields.char('Holidays Calendar Name', size=124, required=True),
         'location':fields.selection([('Mumbai', 'Mumbai'),('Goa','Goa')],'Location'),
         'holidays_line':fields.one2many('leaves.calendar','holiday_id'," ", size=124),
-         
+        #'leave': fields.char('Holiday Name', size=124, required=True),
+#         'degree':fields.char('Degree', size=124),
+#         'institute':fields.char('Institute', size=124),
+#         'board': fields.char('University/Board', size=124),
+#         'marks': fields.char('% Marks', size=124),
+#         'year': fields.char('Year of Completion', size=124),
+ 
         }
  
 holidays_calendar()
@@ -148,7 +139,7 @@ class hr_attendance_table(osv.osv):
                             elif not search_for_weekly_off:
                                 absent_info = 'WO'
                         if absent_info:
-                            if j== 'P' and absent_info=='H': 
+                            if j== 'P' and absent_info=='H': #and attendance_status==True:
                                 final_result = 'HH'                
                             else:
                                  final_result = absent_info       
@@ -225,7 +216,7 @@ class hr_attendance_table_line(osv.osv):
 						 if absent_info_new: 
 						 	if attendance_status==True and absent_info_new=='H':
 						 	
-						 		self.write(cr,uid,leave_id,{'final_result':'P'})
+						 		self.write(cr,uid,leave_id,{'final_result':'HH'})
 					 		else:
 					 			self.write(cr,uid,leave_id,{'final_result':absent_info_new})
 					 	 else:
@@ -266,16 +257,16 @@ class hr_payslip(osv.osv):
                    
                       
             number = payslip.number or sequence_obj.get(cr, uid, 'salary.slip')
-            
+            #delete old payslip lines
             old_slipline_ids = slip_line_pool.search(cr, uid, [('slip_id', '=', payslip.id)], context=context)
-
+#            old_slipline_ids
             if old_slipline_ids:
                 slip_line_pool.unlink(cr, uid, old_slipline_ids, context=context)
             if payslip.contract_id:
-                
+                #set the list of contract for which the rules have to be applied
                 contract_ids = [payslip.contract_id.id]
             else:
-                
+                #if we don't give the contract, then the rules to apply should be for all current contracts of the employee
                 contract_ids = self.get_contract(cr, uid, payslip.employee_id, payslip.date_from, payslip.date_to, context=context)
             lines = [(0,0,line) for line in self.pool.get('hr.payslip').get_payslip_lines(cr, uid, contract_ids, payslip.id, context=context)]
             self.write(cr, uid, [payslip.id], {'line_ids': lines, 'number': number,}, context=context)
@@ -298,7 +289,7 @@ class hr_payslip(osv.osv):
                res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[0].holiday_status_id.name
            return res
        res = []
-       
+       print "here"
        for contract in self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context):
            loan_id = self.pool.get('hr.employee.loan').search(cr, uid,[('employee_id','=',contract.employee_id.id),('state','=','progress')])
            if loan_id:
@@ -405,18 +396,6 @@ class hr_payslip(osv.osv):
                    if att_obj.attendance == True:
                        worked['number_of_days'] += 1.0
                        worked['number_of_hours'] += 8.0
-                   if att_obj.attendance == True and att_obj.final_result == 'HH':
-                       
-                       P['number_of_days'] += 1.0
-                       P['number_of_hours'] += 8.0
-                   if att_obj.attendance == False and att_obj.absent_info == 'WO' and att_obj.final_result == 'HH':
-                       
-                       WO['number_of_days'] += 1.0
-                       WO['number_of_hours'] += 8.0
-                   if att_obj.attendance == False and att_obj.absent_info == 'Manual Attendance' and att_obj.final_result == 'HH':
-                       
-                       P['number_of_days'] += 1.0
-                       P['number_of_hours'] += 8.0            
                    if att_obj.final_result in att_records:
                        att_records[att_obj.final_result]['number_of_days'] += 1.0
                        att_records[att_obj.final_result]['number_of_hours'] += 8.0
@@ -432,10 +411,10 @@ class hr_payslip(osv.osv):
              else:
                 working_hours_on_day = self.pool.get('resource.calendar').working_hours_on_day(cr, uid, contract.working_hours, day_from + timedelta(days=day), context)
                 if working_hours_on_day:
-                    
+                    #the employee had to work
                     leave_type = was_on_leave(contract.employee_id.id, day_from + timedelta(days=day), context=context)
                     if leave_type:
-                        
+                        #if he was on leave, fill the leaves dict
                         if leave_type in leaves:
                             leaves[leave_type]['number_of_days'] += 1.0
                             leaves[leave_type]['number_of_hours'] += working_hours_on_day
@@ -449,7 +428,7 @@ class hr_payslip(osv.osv):
                                 'contract_id': contract.id,
                             }
                     else:
-                        
+                        #add the input vals to tmp (increment if existing)
                         att_records['P']['number_of_days'] += 1.0
                         att_records['P']['number_of_hours'] += working_hours_on_day          
            leaves = [value for key,value in leaves.items()]            
@@ -477,153 +456,5 @@ class hr_payslip(osv.osv):
            else:
                
                l = [salarydays,att_records['MONTHDAYS'], att_records['P'],  att_records['A'], att_records['PL'],  att_records['UL'],]  
-       return l
-   
-    def get_payslip_lines(self, cr, uid, contract_ids, payslip_id, context):
-        def _sum_salary_rule_category(localdict, category, amount):
-            if category.parent_id:
-                localdict = _sum_salary_rule_category(localdict, category.parent_id, amount)
-            localdict['categories'].dict[category.code] = category.code in localdict['categories'].dict and localdict['categories'].dict[category.code] + amount or amount
-            return localdict
-
-        class BrowsableObject(object):
-            def __init__(self, pool, cr, uid, employee_id, dict):
-                self.pool = pool
-                self.cr = cr
-                self.uid = uid
-                self.employee_id = employee_id
-                self.dict = dict
-
-            def __getattr__(self, attr):
-                return attr in self.dict and self.dict.__getitem__(attr) or 0.0
-
-        class InputLine(BrowsableObject):
-            """a class that will be used into the python code, mainly for usability purposes"""
-            def sum(self, code, from_date, to_date=None):
-                if to_date is None:
-                    to_date = datetime.now().strftime('%Y-%m-%d')
-                result = 0.0
-                self.cr.execute("SELECT sum(amount) as sum\
-                            FROM hr_payslip as hp, hr_payslip_input as pi \
-                            WHERE hp.employee_id = %s AND hp.state = 'done' \
-                            AND hp.date_from >= %s AND hp.date_to <= %s AND hp.id = pi.payslip_id AND pi.code = %s",
-                           (self.employee_id, from_date, to_date, code))
-                res = self.cr.fetchone()[0]
-                return res or 0.0
-
-        class WorkedDays(BrowsableObject):
-            """a class that will be used into the python code, mainly for usability purposes"""
-            def _sum(self, code, from_date, to_date=None):
-                if to_date is None:
-                    to_date = datetime.now().strftime('%Y-%m-%d')
-                result = 0.0
-                self.cr.execute("SELECT sum(number_of_days) as number_of_days, sum(number_of_hours) as number_of_hours\
-                            FROM hr_payslip as hp, hr_payslip_worked_days as pi \
-                            WHERE hp.employee_id = %s AND hp.state = 'done'\
-                            AND hp.date_from >= %s AND hp.date_to <= %s AND hp.id = pi.payslip_id AND pi.code = %s",
-                           (self.employee_id, from_date, to_date, code))
-                return self.cr.fetchone()
-
-            def sum(self, code, from_date, to_date=None):
-                res = self._sum(code, from_date, to_date)
-                return res and res[0] or 0.0
-
-            def sum_hours(self, code, from_date, to_date=None):
-                res = self._sum(code, from_date, to_date)
-                return res and res[1] or 0.0
-
-        class Payslips(BrowsableObject):
-            """a class that will be used into the python code, mainly for usability purposes"""
-
-            def sum(self, code, from_date, to_date=None):
-                if to_date is None:
-                    to_date = datetime.now().strftime('%Y-%m-%d')
-                self.cr.execute("SELECT sum(case when hp.credit_note = False then (pl.total) else (-pl.total) end)\
-                            FROM hr_payslip as hp, hr_payslip_line as pl \
-                            WHERE hp.employee_id = %s AND hp.state = 'done' \
-                            AND hp.date_from >= %s AND hp.date_to <= %s AND hp.id = pl.slip_id AND pl.code = %s",
-                            (self.employee_id, from_date, to_date, code))
-                res = self.cr.fetchone()
-                return res and res[0] or 0.0
-
-        #we keep a dict with the result because a value can be overwritten by another rule with the same code
-        result_dict = {}
-        rules = {}
-        categories_dict = {}
-        blacklist = []
-        payslip_obj = self.pool.get('hr.payslip')
-        inputs_obj = self.pool.get('hr.payslip.worked_days')
-        obj_rule = self.pool.get('hr.salary.rule')
-        payslip = payslip_obj.browse(cr, uid, payslip_id, context=context)
-        worked_days = {}
-        for worked_days_line in payslip.worked_days_line_ids:
-            worked_days[worked_days_line.code] = worked_days_line
-        inputs = {}
-        for input_line in payslip.input_line_ids:
-            inputs[input_line.code] = input_line
-
-        categories_obj = BrowsableObject(self.pool, cr, uid, payslip.employee_id.id, categories_dict)
-        input_obj = InputLine(self.pool, cr, uid, payslip.employee_id.id, inputs)
-        worked_days_obj = WorkedDays(self.pool, cr, uid, payslip.employee_id.id, worked_days)
-        payslip_obj = Payslips(self.pool, cr, uid, payslip.employee_id.id, payslip)
-        rules_obj = BrowsableObject(self.pool, cr, uid, payslip.employee_id.id, rules)
-
-        localdict = {'categories': categories_obj, 'rules': rules_obj, 'payslip': payslip_obj, 'worked_days': worked_days_obj, 'inputs': input_obj}
-        #get the ids of the structures on the contracts and their parent id as well
-        structure_ids = self.pool.get('hr.contract').get_all_structures(cr, uid, contract_ids, context=context)
-        #get the rules of the structure and thier children
-        rule_ids = self.pool.get('hr.payroll.structure').get_all_rules(cr, uid, structure_ids, context=context)
-        #run the rules by sequence
-        sorted_rule_ids = [id for id, sequence in sorted(rule_ids, key=lambda x:x[1])]
-
-        for contract in self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context):
-            employee = contract.employee_id
-            localdict.update({'employee': employee, 'contract': contract})
-            for rule in obj_rule.browse(cr, uid, sorted_rule_ids, context=context):
-                key = rule.code + '-' + str(contract.id)
-                localdict['result'] = None
-                localdict['result_qty'] = 1.0
-                #check if the rule can be applied
-                if obj_rule.satisfy_condition(cr, uid, rule.id, localdict, context=context) and rule.id not in blacklist:
-                    #compute the amount of the rule
-                    amount, qty, rate = obj_rule.compute_rule(cr, uid, rule.id, localdict, context=context)
-                    #check if there is already a rule computed with that code
-                    previous_amount = rule.code in localdict and localdict[rule.code] or 0.0
-                    #set/overwrite the amount computed for this rule in the localdict
-                    tot_rule = round(amount) * qty * rate / 100.0
-                    localdict[rule.code] = tot_rule
-                    rules[rule.code] = rule
-                    #sum the amount for its salary category
-                    localdict = _sum_salary_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
-                    #create/overwrite the rule in the temporary results
-                    result_dict[key] = {
-                        'salary_rule_id': rule.id,
-                        'contract_id': contract.id,
-                        'name': rule.name,
-                        'code': rule.code,
-                        'category_id': rule.category_id.id,
-                        'sequence': rule.sequence,
-                        'appears_on_payslip': rule.appears_on_payslip,
-                        'condition_select': rule.condition_select,
-                        'condition_python': rule.condition_python,
-                        'condition_range': rule.condition_range,
-                        'condition_range_min': rule.condition_range_min,
-                        'condition_range_max': rule.condition_range_max,
-                        'amount_select': rule.amount_select,
-                        'amount_fix': rule.amount_fix,
-                        'amount_python_compute': rule.amount_python_compute,
-                        'amount_percentage': rule.amount_percentage,
-                        'amount_percentage_base': rule.amount_percentage_base,
-                        'register_id': rule.register_id.id,
-                        'amount': round(amount),
-                        'employee_id': contract.employee_id.id,
-                        'quantity': qty,
-                        'rate': rate,
-                    }
-                else:
-                    #blacklist this rule and its children
-                    blacklist += [id for id, seq in self.pool.get('hr.salary.rule')._recursive_search_of_rules(cr, uid, [rule], context=context)]
-
-        result = [value for code, value in result_dict.items()]
-        return result        
+       return l         
     

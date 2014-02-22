@@ -201,7 +201,9 @@
                 	
                     
                     <field name="name"/>
-                    
+                    <!--field name="leave"/-->
+                    <!--field name="location"/-->
+                    <!--field name="date_to"/-->
                     
                        
            		                        
@@ -219,7 +221,9 @@
                 	
                    <group> 
                     <field name="name"/>
-                    
+                    <!--field name="leave"/-->
+                    <!--field name="location"/-->
+                    <!--field name="date_to"/-->
                    </group>
                    <group col="2" colspan="2" string="Public Holidays Line">
 					
@@ -265,7 +269,7 @@
             <field name="res_model">holidays.calendar</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            
+            <!--field name="view_id" ref="view_holidays_calendar_tree"/-->
         </record>
         
 

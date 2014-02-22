@@ -20,8 +20,8 @@
 ##############################################################################
 
 
-from openerp.osv import fields, osv
-from openerp.tools.translate import _
+from osv import fields, osv
+from tools.translate import _
 import StringIO
 import cStringIO
 import base64
@@ -37,6 +37,16 @@ class attendance_import(osv.osv_memory):
               'file':fields.binary("File Path:"),
               'file_name':fields.char('File Name:'),
               'location':fields.selection([('1', 'Mumbai'), ('2', 'Goa')],'Location',required=True),
+              #'from_date': fields.date('From Date',required=True),
+            #  'to_date': fields.date('To Date',required=True),
+#                'month' : fields.selection([('1', 'January'), ('2', 'February'), 
+#                                             ('3', 'March'), ('4', 'April'), 
+#                                            ('5', 'May'), ('6', 'June'),
+#                                             ('7', 'July'), ('8', 'August'),
+#                                             ('9', 'September'), ('10', 'October'),
+#                                             ('11', 'November'), ('12', 'December'),], 'Month'),
+#                'year' : fields.selection([('2012', '2012'),('2013', '2013'), ('2014', '2014'), 
+#                                             ('2015', '2015'), ('2016', '2016'),],'Year'),
               }
     def import_attendance(self,cr,uid,ids,context=None):
 
@@ -50,7 +60,7 @@ class attendance_import(osv.osv_memory):
         date_dict = {}
         if cur_obj.location == '1':
             date_from1 = sheet.row_values(0,0,sheet.ncols)[3] 
-            
+            print "date_from1",date_from1
             from_date = int(date_from1[:2])
             month = int(date_from1[3:5])
             year = int(date_from1[6:10])
@@ -98,7 +108,7 @@ class attendance_import(osv.osv_memory):
                             elif not search_for_weekly_off:
                                 absent_info = 'WO'
                         if absent_info:
-                            if j== 'P' and absent_info=='H': 
+                            if j== 'P' and absent_info=='H': #and attendance_status==True:
                                 final_result = 'HH'                
                             else:
                                  final_result = absent_info       
@@ -119,119 +129,110 @@ class attendance_import(osv.osv_memory):
                         
         else:
                 
-            #date_from1 = sheet.row_values(5,0,sheet.ncols)[6] 
-            #date_to1 = sheet.row_values(5,0,sheet.ncols)[13] 
+            date_from1 = sheet.row_values(5,0,sheet.ncols)[6] 
+            date_to1 = sheet.row_values(5,0,sheet.ncols)[13] 
             from_date = 1 #int(date_from1[:2])
-            month = 9 #int(date_from1[3:5])
+            month = 7 #int(date_from1[3:5])
             year = 2013 #int(date_from1[6:10])
-            to_date = 30 #int(date_to1[:2])
+            to_date = int(date_to1[:2])
              
-            
+            #last_date = monthrange(int(cur_obj.year), int(cur_obj.month))[1]
+            #print "date123",date_from1,date_to1,int(cur_obj.year), int(cur_obj.month)
+            #print "monthrange(int(cur_obj.year), int(cur_obj.month))",monthrange(int(cur_obj.year), int(cur_obj.month))
             
             
             for i in range(1,to_date+1):
                     
                    date_dict[i] = datetime.date(year,month ,i)
-                   
+            print "date_dict",date_dict       
             date_from = datetime.date(year, month, 1)
             date_to = datetime.date(year, month, to_date)
              
-            
-            for i in range(1,sheet.nrows):
-              emp_code =sheet.row_values(i,0,sheet.ncols)[1]
-              emp_name =sheet.row_values(i,0,sheet.ncols)[2]
+            #sheet.nrows
+            for i in range(9,sheet.nrows):
+              emp_code =sheet.row_values(i,0,sheet.ncols)[0]
+              emp_name =sheet.row_values(i,0,sheet.ncols)[1]
               employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id','=',emp_code)])
               if employee_id:
-                    
+                    #employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id': emp_code,'name':emp_name})
                 employee_id = employee_id[0]
                 emp_obj =   self.pool.get('hr.employee').browse(cr,uid,employee_id)
-                 
+                print emp_obj.id, "Employeeeeeeeeeeeee objjjjjjjjjjj" 
                      
                 attendance_id = self.pool.get('hr.attendance.table').create(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
                 d =1
     
-     
+     ## end of code for emp. import
                 
-                
+                #Add Computation Attendance Code
                 
         
                 contract_ids = self.pool.get('hr.payslip').get_contract( cr, uid, emp_obj, date_from, date_to, context=None)
-                
+                print contract_ids, "CONTRACT IDSSSSSSSSSSSS",emp_name,emp_code
                 if  contract_ids:
-                
+                   # raise osv.except_osv(('Warning !'),_('The Contract does not exist!'))
+#                     contract_id = self.pool.get('hr.contract').create(cr,uid,{'employee_id': employee_id,
+#                                                                            'name':emp_name,
+#                                                                            'wage':20000,
+#                                                                            'struct_id': 1,
+#                                                                            'working_hours': 1,
+#                                                                             'date_start':date_from,
+#                                                                             'holidays_id': 1    })
+                    #contract_ids = [contract_id]
                   contract_obj = self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context) and self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context)[0] or False
                      
-                  for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
+                  for j in sheet.row_values(i,2,monthrange(year, month)[1]+2):
                     absent_info = ''
                     final_result = ''
                     if contract_obj:
                         search_for_weekly_off = self.pool.get('resource.calendar').working_hours_on_day(cr, uid, contract_obj.working_hours, date_dict[d], context)
                          
                         search_for_even_saturday = self.pool.get('leaves.calendar').search(cr, uid, [('holiday_id','=',contract_obj.holidays_id.id),('date_from','=',date_dict[d]),('type','=','even_sat')])
-                        
-                        search_for_holiday=self.pool.get('leaves.calendar').search(cr, uid, [('holiday_id','=',contract_obj.holidays_id.id),('date_from','=',date_dict[d])])
-                        print search_for_holiday, "SEARCH FOR HOLIDAY"
-                        
+                        search_for_holiday=self.pool.get('leaves.calendar').search(cr, uid, [('holiday_id','=',contract_obj.holidays_id.id),('date_from','=',date_dict[d]),('type','<>','even_sat')])
                         search_for_leave=self.pool.get('hr.holidays').search(cr, uid, [('employee_id','=',employee_id),('state','=','validate'),('type','=','remove'),('date_from','<=',date_dict[d].strftime('%Y-%m-%d')),('date_to','>=',date_dict[d].strftime('%Y-%m-%d'))])
-                        
-                         
+                        #print search_for_leave, "SEARCHING FOR LEAVE"
+                        #print "date_dict[d].strftime('%Y-%m-%d')",date_dict[d].strftime('%Y-%m-%d'),search_for_leave 
                         if search_for_even_saturday:
                             search_for_weekly_off = 0.0
-                        
+                        print "date_dict[d]",date_dict[d],search_for_weekly_off,search_for_holiday,search_for_leave,search_for_even_saturday
                         if search_for_leave:  
                                   absent_info = self.pool.get('hr.holidays').browse(cr, uid, search_for_leave, context=context)[0].holiday_status_id.payroll_code.name or self.pool.get('hr.holidays').browse(cr, uid, search_for_leave, context=context)[0].holiday_status_id.name
-                                  
+                                  print absent_info, "ABSENT INFO"
                                   if  absent_info == "Unpaid":
                                       absent_info = 'UL'
                                   else:
                                       absent_info = 'PL'
                         elif search_for_holiday:
-                                
                                 absent_info = 'H'
+#                         elif not search_for_weekly_off:
+#                             absent_info = 'WO'
+                                 
                             
                     if absent_info:
-                        if j== 'P' and absent_info=='H': 
+                        if j== 'PP' and absent_info=='H': #and attendance_status==True:
                              final_result = 'HH'   
-                                 
-                                      
+                        elif  j== 'PP' and absent_info == 'WO':
+                             final_result = 'HH'         
+                                     
                         else:
                              final_result = absent_info       
                     else:
-                        if j== 'P':        
+                        if j== 'PP':        
                                     final_result ='P'
                         else:
-                            if j== 'C':
-                                    absent_info='Compensatory-Off'
-                                    final_result='WO'
-                            if j== 'W':
-                                    absent_info='WO'
-                                    final_result='WO'
-                            if j== 'L':
-                                    absent_info='L'
-                                    final_result='PL'
-                            if j== 'U':
-                                    absent_info='UL'
-                                    final_result='UL'
-#                             if j== 'H':
-#                                     absent_info='H'
-#                                     final_result='H'
-                            if j== 'O':
-                                    absent_info='Work at other Location'
-                                    final_result='P'
-                            if j== 'A':
-                                   absent_info='A'
                                    final_result ='A'  
-                    if j== 'P':
+                    if j == 'PP':
                        attendance_line_id = self.pool.get('hr.attendance.table.line').create(cr,uid,{'employee_id': employee_id,
                               'date' : date_dict[d],'attendance_table':attendance_id,
                               'attendance':True,'absent_info':absent_info,'final_result':final_result})
                     else:
-                        
                        attendance_line_id = self.pool.get('hr.attendance.table.line').create(cr,uid,{'employee_id': employee_id,
                               'date' : date_dict[d],'attendance_table':attendance_id,
                               'absent_info':absent_info,'final_result':final_result})   
                     d +=1
                    
         return True
+    
+        
     
 attendance_import()

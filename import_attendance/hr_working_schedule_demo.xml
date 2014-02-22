@@ -2,7 +2,7 @@
 <openerp>
     <data>
 
-        
+        <!-- Contribution Register -->
 
         <record id="hr_working_schedule1" model="resource.calendar">
             <field name="name">Working Schedule 1</field>
@@ -32,7 +32,8 @@
             <field name="name">Working Schedule 7</field>
         </record>
         
-        
+        <!-- Working Schedule 1 -->
+        <!-- Sunday Weekly-off -->
 
 		<record id="hr_monday1" model="resource.calendar.attendance">
             <field name="name">Monday</field>
@@ -83,7 +84,8 @@
         </record>
 
 
-        
+        <!-- Working Schedule 2 -->
+        <!-- Monday Weekly-off -->
         
         <record id="hr_tuesday2" model="resource.calendar.attendance">
             <field name="name">Tuesday</field>
@@ -133,7 +135,8 @@
             <field name="calendar_id" ref="hr_working_schedule2"/>
         </record>
         
-        
+        <!-- Working Schedule 3 -->
+        <!-- Tuesday Weekly-off -->
         
         <record id="hr_monday3" model="resource.calendar.attendance">
             <field name="name">Monday</field>
@@ -183,7 +186,8 @@
             <field name="calendar_id" ref="hr_working_schedule3"/>
         </record>
 
-        
+        <!-- Working Schedule 4 -->
+        <!-- Wednesday Weekly-off -->
         
         <record id="hr_monday4" model="resource.calendar.attendance">
             <field name="name">Monday</field>
@@ -233,7 +237,8 @@
             <field name="calendar_id" ref="hr_working_schedule4"/>
         </record>
 
-        
+        <!-- Working Schedule 5 -->
+        <!-- Thursday Weekly-off -->
         
         <record id="hr_monday5" model="resource.calendar.attendance">
             <field name="name">Monday</field>
@@ -284,7 +289,8 @@
         </record>
 
 
-        
+        <!-- Working Schedule 6 -->
+        <!-- Friday Weekly-off -->
         
         <record id="hr_monday6" model="resource.calendar.attendance">
             <field name="name">Monday</field>
@@ -334,7 +340,8 @@
             <field name="calendar_id" ref="hr_working_schedule6"/>
         </record>
         
-        
+        <!-- Working Schedule 7 -->
+        <!-- Saturday Weekly-off -->
         
         <record id="hr_monday7" model="resource.calendar.attendance">
             <field name="name">Monday</field>
