@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+    <record id="employee_increment_tree" model="ir.ui.view">
+            <field name="name">employee.increment.tree</field>
+            <field name="model">employee.increment</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <tree string="Employee Appraisal" >
+                    <field name="name" />
+                    <field name="appraisal_date"/>
+                    
+                </tree>
+            </field>
+      </record>
+        
+      <record id="employee_increment_form" model="ir.ui.view">
+            <field name="name">employee.increment.form</field>
+            <field name="model">employee.increment</field>
+            <field name="arch" type="xml">
+                <form string="Employee Appraisal" version="7.0">
+                    <header>
+                        <!-- <button name="loan_cancel" states="confirm,approved" string="Cancel" type="object" />
+                         <button name="loan_release" states="approved" string="Loan Release" type="object" />
+                         <button name="loan_approve" states="confirm" string="Approve" type="object" /> -->
+                        <button name="appraisal_confirm" states="draft" string="Confirm" type="object" />
+                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" />
+                </header>
+                <sheet>
+                    <h1>
+                       
+                        <field name="name" class="oe_inline"  />
+                    </h1>
+                    
+                    <group>
+                        <group >
+		                    <group>
+		                   <field name="appraisal_date"/>
+		                    </group>
+		                    <group>
+		                    <field name="category_ids"/>
+		                    </group>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Employee Appraisal Lines">
+                            <field name="increment_line" >
+                                    <tree  string="Employee Appraisal Line" editable="bottom" >
+                                    <field name="employee_id" />
+                                    <field name="current_wages" />
+                                    <field name="appraisal" />
+                                    
+                                    <field name="appraisal_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                    </notebook>
+                </sheet>
+                
+                </form>
+            </field>
+        </record>
+        
+       <record id="action_employee_increment" model="ir.actions.act_window">
+            <field name="name">Employee Increment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.increment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+       
+        <menuitem
+            action="action_employee_increment"
+            id="menu_employee_increment"
+            parent="menu_skill"
+            name = "Employee Appraisal"
+            sequence="3"  /> 
+               
+</data>
+</openerp>        

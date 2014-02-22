@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+     <record id="employee_skill_tree" model="ir.ui.view">
+            <field name="name">employee.skill.tree</field>
+            <field name="model">employee.skill</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <tree string="Skill" >
+                    <field name="name" />
+                    <field name="description"/>   
+                </tree>
+            </field>
+      </record>
+      
+      
+      <record id="employee_skill_tree" model="ir.ui.view">
+            <field name="name">employee.skill.tree</field>
+            <field name="model">employee.skill</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <form string="Skill" >
+                    <field name="name" />
+                    <field name="description"/>   
+                </form>
+            </field>
+      </record>
+      
+      <record id="action_employee_skill" model="ir.actions.act_window">
+            <field name="name">Skill</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.skill</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_skill" parent="hr.menu_hr_root" name="Skill Management" sequence="5"/>
+        <menuitem
+            action="action_employee_skill"
+            id="menu_hr_employee_skill"
+            parent="menu_skill"
+            name = "Skill"
+            sequence="1"  />
+        
+        
+        
+        <record id="employee_skill_line_tree" model="ir.ui.view">
+            <field name="name">employee.skill.line.tree</field>
+            <field name="model">employee.skill.line</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <tree string="Employee Skill Detail" >
+                    
+                    <field name="employee_id"/>
+                    <field name="skill_id"/>
+                    <field name="skill_rate"/>
+                    <field name="short_description"/>
+                    
+                </tree>
+            </field>
+        </record>
+        
+        
+        <record id="employee_skill_line_form" model="ir.ui.view">
+            <field name="name">employee.skill.line.form</field>
+            <field name="model">employee.skill.line</field>
+            <field name="arch" type="xml">
+                <form string="Employee Skill Detail" version="7.0">
+                <sheet>
+                    <h1>
+                        <field name="employee_id" class="oe_inline"  />
+                    </h1>
+                    <group>
+                        <group >
+		                    <group>
+		                   <field name="skill_id"/>
+		                    </group>
+		                    <group>
+		                    <field name="skill_rate"/>
+		                    </group>
+                        </group>
+                        
+                    </group>
+                    <group>
+                        <field name="short_description"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="notes">
+                            <field name="notes" />
+                        </page>
+                    </notebook>
+                </sheet>	
+                </form>
+            </field>
+        </record>
+    
+        <record id="action_employee_skill_line" model="ir.actions.act_window">
+            <field name="name">Employee Skill Detail</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.skill.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        <menuitem
+            action="action_employee_skill_line"
+            id="menu_hr_employee_skill_line"
+            parent="menu_skill"
+            name = "Employee Skill Detail"
+            sequence="1"  />
+    </data>
+</openerp>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<record id="hr_hr_employee_view_form_inherit" model="ir.ui.view">
+            <field name="name">hr.employee.view.form11</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+            <xpath expr="//group[@name='active_group']" position="before">
+                <group>
+                    <field name="joining_date"/>
+                    <field name="leave_allocation_date"/>
+                    <field name="bonus_leave_date"/>
+                    <field name="leave_allocation_type"/>
+                </group>
+            </xpath>
+            </field>
+        </record>
+        
+ </data>
+</openerp>
+        

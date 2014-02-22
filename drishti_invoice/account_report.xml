@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <report
+            auto="False"
+            id="account.account_invoices"
+            model="account.invoice"
+            name="account.invoice1"
+            rml="drishti_invoice/report/account_print_invoice.rml"
+            string="Invoice" />
+
+        
+    </data>
+</openerp>
