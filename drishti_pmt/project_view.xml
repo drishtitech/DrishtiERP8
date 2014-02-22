@@ -1,0 +1,152 @@
+<openerp>
+    <data>
+
+    <record id="view_task_search_form1" model="ir.ui.view">
+        <field name="name">project.task.search.form1</field>
+        <field name="model">project.task</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+           <search string="My Tasks">
+                    <field name="name" string="Tasks"/>
+                    <field name="categ_ids"/>
+                    <separator/>
+                    <filter icon="terp-mail-message-new" string="Unread Messages" name="message_unread" domain="[('message_unread','=',True)]"/>
+                    <separator/>
+                    <filter name="draft" string="New" domain="[('state','=','draft')]" help="New Tasks" icon="terp-check"/>
+                    <filter name="open" string="In Progress" domain="[('state','=','open')]" help="In Progress Tasks" icon="terp-camera_test"/>
+                    <filter string="Pending" domain="[('state','=','pending')]" context="{'show_delegated':False}" help="Pending Tasks" icon="terp-gtk-media-pause"/>
+                    <separator/>
+                    <filter name="My project" string="Project" domain="[('project_id.user_id','=',uid)]" help="My Projects" icon="terp-check"/>
+                    <separator/>
+                    <filter string="Deadlines" context="{'deadline_visible': False}" domain="[('date_deadline','&lt;&gt;',False)]"
+                        help="Show only tasks having a deadline" icon="terp-gnome-cpu-frequency-applet+"/>
+                    <field name="project_id"/>
+                    <filter string="Active task" domain="[('state','&lt;&gt;','done'),('state','&lt;&gt;','cancelled')]" name="not_done"
+                        help="Show only tasks having a deadline" icon="terp-gnome-cpu-frequency-applet+"/>
+                    <field name="project_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Project" name="group_project_id" icon="terp-folder-violet" domain="[]" context="{'group_by':'project_id'}"/>
+                        <filter string="Users" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'user_id'}"/>
+                        <filter string="Company" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'company_id'}"/>
+                        <filter string="Stage" name="group_stage_id" icon="terp-stage" domain="[]" context="{'group_by':'stage_id'}"/>
+                        <filter string="Deadline" icon="terp-gnome-cpu-frequency-applet+" domain="[]" context="{'group_by':'date_deadline'}"/>
+                        <filter string="Start Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" groups="base.group_no_one"/>
+                        <filter string="End Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_end'}" groups="base.group_no_one"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+    <record id="view_task_tree3" model="ir.ui.view">
+            <field name="name">project.task.tree</field>
+            <field name="model">project.task</field>
+            <field eval="2" name="priority"/>
+            <field name="arch" type="xml">
+                <tree fonts="bold:message_unread==True" colors="grey:state in ('cancelled','done');blue:state == 'pending';red:date_deadline and (date_deadline&lt;current_date) and (state in ('draft','pending','open'))" string="Tasks">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="sequence" invisible="not context.get('seq_visible', False)"/>
+                    <field name="name"/>
+                    <field name="project_id" icon="gtk-indent" invisible="context.get('user_invisible', False)"/>
+                    <!-- <field name="user_id" invisible="context.get('user_invisible', False)"/> 
+                    <field name="delegated_user_id" invisible="context.get('show_delegated', True)"/> -->
+                    <field name="total_hours" invisible="1"/>
+                    <field name="planned_hours" invisible="context.get('set_visible',False)" groups="project.group_time_work_estimation_tasks"/>
+                    <field name="effective_hours" widget="float_time" sum="Spent Hours" invisible="1"/>
+                    <field name="remaining_hours" widget="float_time" sum="Remaining Hours" on_change="onchange_remaining(remaining_hours,planned_hours)" invisible="context.get('set_visible',False)" groups="project.group_time_work_estimation_tasks"/>
+                    <field name="date_deadline" invisible="context.get('deadline_visible',True)"/>
+                    <field name="stage_id" invisible="context.get('set_visible',False)"/>
+                    <field name="state" invisible="1"/>
+                    <field name="date_start" groups="base.group_no_one"/>
+                    <field name="date_end" groups="base.group_no_one"/>
+                    <field name="progress" widget="progressbar" invisible="context.get('set_visible',False)"/>
+                </tree>
+            </field>
+        </record>
+        
+        
+    <record id="project.action_view_task" model="ir.actions.act_window">
+            <field name="name">Tasks</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">tree,form,calendar,gantt,graph</field>
+            <field name="search_view_id" ref="view_task_search_form1"/>
+            <field name="context">{'search_default_not_done':1, 'search_default_group_user_id' :1}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new task.
+              </p><p>
+                OpenERP's project management allows you to manage the pipeline
+                of tasks in order to get things done efficiently. You can
+                track progress, discuss on tasks, attach documents, etc.
+              </p>
+            </field>
+       </record>
+       
+       
+       
+       <record id="project.open_view_task_list_kanban" model="ir.actions.act_window.view">
+            <field name="sequence" eval="4"/>
+            <field name="view_mode">kanban</field>
+            <field name="act_window_id" ref="project.action_view_task"/>
+        </record>
+        <record id="project.open_view_task_list_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="act_window_id" ref="project.action_view_task"/>
+        </record>
+        
+       <record id="view_task_search_form_inherit" model="ir.ui.view">
+            <field name="name">project.task.search.form1</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_search_form"/>
+            <field name="arch" type="xml">
+            <xpath expr="/search/filter[@string='My Tasks']" position="attributes">
+                <attribute name="name">my_tasks</attribute>
+            </xpath>
+            </field>
+        </record>
+       
+       <record id="action_view_task1" model="ir.actions.act_window">
+            <field name="name">My Tasks</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">tree,form,calendar,kanban,gantt,graph</field>
+            <field name="search_view_id" ref="view_task_search_form1"/>
+	    <field name="domain">[('user_id','=',uid)]</field>
+            <field name="context">{'search_default_not_done':1}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new task.
+              </p><p>
+                OpenERP's project management allows you to manage the pipeline
+                of tasks in order to get things done efficiently. You can
+                track progress, discuss on tasks, attach documents, etc.
+              </p>
+            </field>
+       </record>
+       
+       <record id="action_invoice_tree1_view21" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_task_tree3"/>
+            <field name="act_window_id" ref="action_view_task1"/>
+        </record>
+       
+       
+       <menuitem action="action_view_task1" id="menu_action_view_task1" parent="project.menu_project_management" sequence="5"/>
+        
+        
+       <record id="view_task_form2_inherit" model="ir.ui.view">
+            <field name="name">project.task.form12</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+            <field name="categ_ids" position="after">
+            <field name="task_priority"/>
+            </field>
+           <!-- <xpath expr="/form/sheet/group/group/[@name='categ_ids']" position="after">
+                
+            </xpath> -->
+            </field>
+        </record> 
+    </data>
+   </openerp> 
