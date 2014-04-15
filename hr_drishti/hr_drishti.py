@@ -26,6 +26,8 @@ from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp import tools
 import pooler
+import time
+
 
 
 class hr_holidays(osv.osv):
@@ -53,7 +55,7 @@ class hr_employee(osv.osv):
        'pf_no':fields.char('PF No. GOA/12411/', size=124),
        'aadhar_no':fields.integer('Aadhar Card No.', size=124),
        'employment_exchange_no':fields.char('Employment Exchange No.', size=124),
-       'blood_group':fields.char('Blood Group', size=124),
+       'blood_group':fields.selection([('a-','A-'),('b-','B-'),('ab-','AB-'),('o-','O-'),('a+','A+'),('b+','B+'),('ab+','AB+'),('o+','O+')],'Blood Group'),
        'father_name':fields.char("Father's Name", size=124),
        'driving_license_no':fields.char("Driving License No", size=124),
        'nominee':fields.char("Nominee (Next of Kin)", size=124),
@@ -107,14 +109,15 @@ class hr_employee(osv.osv):
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', help="Employee bank salary account"),
        'country_id': fields.many2one('res.country', 'Nationality'),
        'identification_id1': fields.char('SLSG No.', size=32),
-       'place_of_birth': fields.char('Place of Birth', size=32),
+       'place_of_birth': fields.selection([('panjim','Panjim'),('calengute','Calengute'),('baga','Baga')],'Place of Birth'),
+       'birth_state':fields.selection([('goa','Goa'),('mumbai','Mumbai')],'State'),
        'bank_bic': fields.char('Bank Identifier Code', size=32),
        'passport_id':fields.char('Passport No', size=64),
        'acc_number':fields.char('Account Number', size=64),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', domain="[('partner_id','=',address_home_id)]", help="Employee bank salary account"),
        'otherid': fields.char('Other Id', size=64),
        'marital': fields.selection([('single', 'Single'), ('married', 'Married'), ('widower', 'Widower'), ('divorced', 'Divorced')], 'Marital Status'),
-       'birthday': fields.date("Date of Birth"),
+       'birthday': fields.date("Date of Birth",required=True),
        'address_home_id': fields.many2one('res.partner', 'Home Address', invisible="True"),
        'bank_line': fields.one2many('res.partner.bank', 'bank_no', 'Bank Details'),
        'state': fields.related('bank_line', 'state', type='selection', size=240, string='Bank Account Type'),
@@ -140,8 +143,41 @@ class hr_employee(osv.osv):
        'sequence': fields.related('bank_line','sequence',type="integer",string='Sequence'),
        'attachment_line':fields.one2many('ir.attachment','attachment_id','Attachments', size=124),
       'attendance':fields.boolean('Attendance'),
+      'creation_date':fields.date("Date",required=True),
          
         }
+    
+    
+    _defaults={
+               
+               
+               'creation_date': time.strftime('%Y-%m-%d'),
+               }
+    
+    
+    def _check_birth_date(self, cr, uid, ids, context=None):
+        for date in self.read(cr,uid,ids,['birthday','creation_date'],context=None):
+                if date['birthday'] and date['creation_date'] and date['creation_date']<=date['birthday']:
+                    return False
+        return True
+    
+    _constraints=[(_check_birth_date,'Error!birth date must be lesser than current date.',['birthday','creation_date'])] 
+    
+    
+    
+    
+    
+    def onchange_birth_place(self, cr, uid, ids, birth_state, context=None):
+        result = {}
+        if birth_state:
+            birth = self.pool.get('hr.employee').browse(cr, uid, birth_state, context=context)
+            result['birth_state'] = birth.place_of_birth
+            
+        return {'value': result}
+    
+    
+    
+    
     
     def onchange_bank_id(self, cr, uid, ids, bank_id, context=None):
         result = {}

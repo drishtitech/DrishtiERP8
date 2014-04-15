@@ -113,9 +113,13 @@
                  <field name="gender"/>
                  <field name="marital"/>
                  </group>
-                 <group string="Birth">
+                 <group string="Birth Details">
                  <field name="birthday"/>
+                 
+                 <field name="birth_state"/>
                  <field name="place_of_birth"/>
+                 
+                
                  </group>
            		 </group>
            		 
