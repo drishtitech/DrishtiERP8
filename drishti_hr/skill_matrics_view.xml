@@ -34,12 +34,13 @@
             <field name="view_mode">tree,form</field>
         </record>
         <menuitem id="menu_skill" parent="hr.menu_hr_root" name="Skill Management" sequence="5"/>
+        
         <menuitem
             action="action_employee_skill"
             id="menu_hr_employee_skill"
-            parent="menu_skill"
+            parent="hr.menu_hr_configuration"
             name = "Skill"
-            sequence="1"  />
+            sequence="12"  />
         
         
         

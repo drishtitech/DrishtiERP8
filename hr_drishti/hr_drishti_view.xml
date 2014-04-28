@@ -36,6 +36,7 @@
             <field name="identification_id1"/>
             <field name="category_ids"/>
            <field name="name"/>
+           <field name="type"/>
            
            
             </field>
@@ -49,6 +50,7 @@
             <field name="type">form</field>
 	    <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
+           
                    
            <xpath expr="/form/sheet/div[@class='oe_title']" position="attributes">
                     <attribute name="invisible">True</attribute>
@@ -67,7 +69,10 @@
                                 
                                 <field name="identification_id1"/>
                             </h2>
-                           
+                            <label for="type"/>
+                            <h2>
+                           		<field name="type"/>
+                           	</h2>
                             <label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
                             <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/>
                             <label for="category" class="oe_edit_only"/>
@@ -75,6 +80,38 @@
                         </div>
            </xpath>
                       
+            <xpath expr="/form/sheet/notebook/page[@string='Public Information']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+           </xpath>
+           
+           <xpath expr="/form/sheet/notebook/page[@string='Public Information']" position="replace"> 
+            <page string="Work Information">
+            <group>
+                  <group string="Contact Information">
+                      <field name="address_id" on_change="onchange_address_id(address_id)" context="{'show_address': 1}" options='{"always_reload": True, "highlight_first_line": True}'/>
+                      <field name="work_email" widget="email"/>
+                      <field name="work_phone"/>
+                      <field name="mobile_phone"/>
+                      <field name="work_location"/>
+                  </group>
+                  <group string="Position">
+                       <field name="department_id" on_change="onchange_department_id(department_id)"/>
+                       <field name="job_id" options='{"no_open": True}' domain="[('state','!=','old')]" context="{'form_view_ref': 'hr.view_hr_job_employee_form'}" position="replace"/>
+                       <field name="parent_id"/>
+                       <field name="coach_id"/>
+                  </group>
+                 <group>
+                       <field name="company_id" groups="base.group_multi_company" on_change="onchange_company(company_id)"/>
+                       <field name="user_id" on_change="onchange_user(user_id)" string="Related User"/>
+                 </group>
+              </group>
+               <field name="notes" placeholder="Other Information ..." colspan="4"/>
+            
+            </page>
+            </xpath>
+           
+           
+                  
            <xpath expr="/form/sheet/notebook/page[@string='Personal Information']" position="attributes">
                     <attribute name="invisible">True</attribute>
            </xpath>
@@ -83,22 +120,7 @@
             <page string="Personal Information" groups="base.group_hr_user">
                  <group>
                  <group string="Personal Particulars">
-                 
-           		 
-           		 
-           		 
-           		
-           		 
-          		 
-           		 
-           		 
-           		 
-           		 <field name="blood_group"/>
-           		 
-           		 
-           		 
-           		
-           		 
+                 <field name="blood_group"/>
            		 <field name="identification_marks"/>
            		 <field name="attendance" />
            		 </group>
@@ -114,14 +136,12 @@
                  <field name="marital"/>
                  </group>
                  <group string="Birth Details">
-                 <field name="birthday"/>
+                 	<field name="birthday"/>
+                 	<field name="birth_state"/>
+                 	<field name="birth_city"/>
                  
-                 <field name="birth_state"/>
-                 <field name="place_of_birth"/>
-                 
-                
-                 </group>
-           		 </group>
+                </group>
+           		</group>
            		 
            		 <group>
            		 <group string="Contact Details">
@@ -170,7 +190,7 @@
 				<group col="2" colspan="2" string="Family Particulars">
 					
 					<field name="father_name"/>
-					<field name="family_line" widget="one2many" colspan="4"/>
+					<field name="family_line" widget="one2many" string="Family Particulars" nolabel="1" colspan="4"/>
 				</group>
 				<group col="2" colspan="2" string="Nominee Details">
            		 <field name="nominee"/>
@@ -214,16 +234,16 @@
             	<page string="Qualification Details">
      			<group col="2" colspan="2" string="Professional Qualifications">
 					
-					<field name="professional_qualification_line" widget="one2many" colspan="4"/>
+					<field name="professional_qualification_line" string="Professional Qualification" nolabel="1" widget="one2many" colspan="4"/>
 				</group>
             	
            		 <group col="2" colspan="2" string="Educational Qualifications">
 					
-					<field name="educational_qualification_line" widget="one2many" colspan="4"/>
+					<field name="educational_qualification_line" string="Education Qualification" nolabel="1" widget="one2many" colspan="4"/>
 				</group>
 				<group col="2" colspan="2" string="Other Qualifications">
 					
-					<field name="other_qualification_line" widget="one2many" colspan="4"/>
+					<field name="other_qualification_line" string="Other Qualification" nolabel="1" widget="one2many" colspan="4"/>
 				</group>
             	</page>
             	
@@ -250,14 +270,15 @@
    	           		 
             	</page>
             	
-            	<page string="Lifeguards Training Section">
+            	<page string="Lifeguards Training Section" attrs="{'invisible':[('type','==','official')]}">
+                
        		    <group col="2" colspan="2" string="Beach Lifeguard Details">
 					
-					<field name="beach_line" widget="one2many" colspan="4"/>
+					<field name="beach_line" widget="one2many" string=" Beach Lifeguard Details" nolabel="1" colspan="4"/>
 				</group>
 				<group col="2" colspan="2" string="Jetski (Surf Rescue) Operator">
 					
-					<field name="jetski_line" widget="one2many" colspan="4"/>
+					<field name="jetski_line" widget="one2many" string="Jetski (Surf Rescue) Operator" nolabel="1" colspan="4"/>
 				</group>
             	
             	
@@ -265,18 +286,18 @@
             	
             	<page string="Performance History">
             	<group col="2" colspan="2" string="Annual Assessment">
-            	<field name="annual_line" widget="one2many" colspan="4"/>
+            	<field name="annual_line" widget="one2many" string="Annual Assessment" nolabel="1" colspan="4"/>
             	</group>
             	<group col="2" colspan="2" string="Achievements/Certificates">
-            	<field name="achievement_line" widget="one2many" colspan="4"/>
+            	<field name="achievement_line" widget="one2many" string="Achievements/Certificates" nolabel="1" colspan="4"/>
             	</group>
             	<group col="2" colspan="2" string="Offence Details">
-            	<field name="offence_line" widget="one2many" colspan="4"/>
+            	<field name="offence_line" widget="one2many" string="Offence Details" nolabel="1" colspan="4"/>
             	</group>
             	</page>
                 <page string="Attachments">
                 <group>
-                <field name="attachment_line" widget="one2many" colspan="4"/>
+                <field name="attachment_line" widget="one2many" string="Attachments" nolabel="1" colspan="4"/>
                 </group>
                 </page>           	
             	
