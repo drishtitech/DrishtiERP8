@@ -104,9 +104,7 @@
                 <field name="name" position="after">
                     <field name="payroll_code"/>
                     <field name="leave_code"/>
-                </field>
-               
-            
+                </field>             
             </field>
         </record>
         
@@ -125,6 +123,9 @@
                     <field name="special_allowance"/>
                     <field name="bonus_amount"/>
                     <field name="hra"/>
+                     <!--field name="start_date" position="replace"-->
+                	<!--field name="start_date" on_change="onchange_date(date_end)"/-->
+                
                    
                 </xpath>
                

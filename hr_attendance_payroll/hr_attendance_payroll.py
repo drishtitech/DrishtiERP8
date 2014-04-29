@@ -1,15 +1,11 @@
-import time
 from openerp.osv import fields, osv
-from datetime import datetime
-from openerp import tools
 from openerp.tools.translate import _
 
-import time                            
+import datetime
 from datetime import date
-from datetime import datetime
 from datetime import timedelta
-from dateutil import relativedelta
 import calendar
+import time
 
 class leaves_calendar(osv.osv):
     _name = "leaves.calendar"
@@ -31,7 +27,7 @@ class leaves_calendar(osv.osv):
     
     def onchange_date(self,cr,uid,ids,date_from):
         if date_from:
-            from_dt = datetime.strptime(date_from, "%Y-%m-%d")
+            from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%d")
             a=from_dt.weekday()
             return {'value' : {'day':str(a)}}
         return {'value' : {'day':False}}
@@ -84,9 +80,66 @@ class hr_contract(osv.osv):
         'special_allowance' : fields.integer('Special Allowance', size=124),
         'hra' : fields.integer('House Rent Allowance', size=124),
         'emi_amount': fields.integer('Loan EMI', size=124),
-        'bonus_amount': fields.float('Bonus Amount', size=124) 
-}
+        'bonus_amount': fields.float('Bonus Amount', size=124),
+        'current_date':fields.date('Current date'),
+        #'date_start':fields.date('Start Date')
+        }
+     
+    _defaults = {
+        'current_date': lambda *a: time.strftime("%Y-%m-%d")
+     }
+        
+    def onchange_emp(self, cr, uid, ids, employee_id, context=None):
+        if employee_id:
+            emp_id = self.pool.get('hr.employee').browse(cr, uid, employee_id, context)
+            function=emp_id.job_id.id
+        return {'value':{'job_id':function}} 
+    
+    
+    def default_get(self, cr, uid, fields, context=None):
+        res = super(hr_contract, self).default_get(cr, uid, fields, context=context)
+        act_id=context.get('active_id')
+        if context.get('active_id'):
+            tomerge = set([int(context['active_id'])])
+            obj = self.browse(cr, uid, int(context['active_id']), context=context)
+            
+            #a=str(obj.date_end)
+            #date_start=str(obj.date_start)
+            current_date=datetime.datetime.strptime(obj.current_date,'%Y-%m-%d')
+            #a=datetime.datetime.strptime(str(obj.date_end),'%Y-%m-%d')
+            #a=datetime.datetime.strptime(str(obj.date_end),'%Y-%m-%d').date()
+            previous_date=current_date + datetime.timedelta(days = -1)
+            print ">>>>>>>>>",previous_date,current_date, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            res.update({'name' : obj.name,'employee_id':obj.employee_id.id,'date_start':obj.current_date,'visa_expire' : obj.visa_expire,'permit_no':obj.permit_no,'visa_no':obj.visa_no,'driver_salay':obj.driver_salay,'house_rent_allowance_metro_nonmetro':obj.house_rent_allowance_metro_nonmetro,'supplementary_allowance':obj.supplementary_allowance,'tds':obj.tds,'voluntary_provident_fund':obj.voluntary_provident_fund,'medical_insurance':obj.medical_insurance,'advantages':obj.advantages,'notes':obj.notes,'nutritional_allowance':obj.nutritional_allowance,'attendance_incentive':obj.attendance_incentive,'da_lta_fa':obj.da_lta_fa,'special_allowance':obj.special_allowance,'bonus_amount':obj.bonus_amount,'hra':obj.hra,'schedule_pay':obj.schedule_pay,'struct_id':obj.struct_id.id,'working_hours':obj.working_hours.id, 'job_id':obj.job_id.id
+                    })
+            self.write(cr, uid, obj.id, {'date_end':str(previous_date)})
+        return res
+    
+#     _defaults = {
+#          
+#         'date_end': lambda *a: datetime.date.today().strftime('%Y-%m-%d')
+#         
+#        }
+    
+    def new_contract(self,cr,uid,vals,context={}):
+        
+        res = {
+                    
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'hr.contract',
+                    'target':'current',
+                    'nodestroy': True,
+                    'type': 'ir.actions.act_window',
+                    'name' : 'New Contract',
+                    
+                    }
+        
+        return res
+    
+    
 hr_contract()
+
 
 class hr_attendance_table(osv.osv):
     _name='hr.attendance.table'
@@ -113,7 +166,7 @@ class hr_attendance_table(osv.osv):
             contract_obj = self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context) and self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context)[0] or False
             for line in attendance.attendance_line:
                         date = line.date
-                        date1= datetime.strptime(date,'%Y-%m-%d')
+                        date1= datetime.datetime.strptime(date,'%Y-%m-%d')
                         j ='A'
                         if line.attendance:
                             j= 'P'
@@ -186,7 +239,7 @@ class hr_attendance_table_line(osv.osv):
 						 specific_date=p.date
 						 attendance_status=p.attendance
 						 absent_info=p.absent_info
-						 aa = datetime.strptime(specific_date,"%Y-%m-%d")
+						 aa = datetime.datetime.strptime(specific_date,"%Y-%m-%d")
 						 contract_ids = self.pool.get('hr.payslip').get_contract( cr, uid, p.employee_id, specific_date, specific_date, context=None)
 						 contract_obj = self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context) and self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context)[0] or False
 						 if contract_obj:
@@ -382,8 +435,8 @@ class hr_payslip(osv.osv):
                             'H':H,
                             'HH':HH
                               }
-           day_from = datetime.strptime(date_from,"%Y-%m-%d")
-           day_to = datetime.strptime(date_to,"%Y-%m-%d")
+           day_from = datetime.datetime.strptime(date_from,"%Y-%m-%d")
+           day_to = datetime.datetime.strptime(date_to,"%Y-%m-%d")
            nb_of_days = (day_to - day_from).days + 1
            attendance_line = self.pool.get('hr.attendance.table.line').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date','>=',date_from),('date','<=',date_to)])
            

@@ -29,7 +29,9 @@ from openerp.tools import amount_to_text_en
 #from openerp.tools.amount_to_text_in import amount_to_text
 import time
 from datetime import datetime
-from drishti_hr.amount_to_text_in import amount_to_text
+
+#from amount_to_text_in import amount_to_text
+
 class payslip_report(report_sxw.rml_parse):
 
     def __init__(self, cr, uid, name, context):
@@ -93,7 +95,7 @@ class payslip_report(report_sxw.rml_parse):
         print "total_ded",total_ded       
         print "res1",res1,obj[0].employee_id.company_id.id
         
-        res1['amount_in_word'] = amount_to_text(res1['net_pay'],'en', obj[0].employee_id.company_id.currency_id.name)    
+        res1['amount_in_word'] = False #amount_to_text(res1['net_pay'],'en', obj[0].employee_id.company_id.currency_id.name)    
            
         return [res1]
     

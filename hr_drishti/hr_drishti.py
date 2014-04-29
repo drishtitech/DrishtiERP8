@@ -19,13 +19,14 @@
 #
 ##############################################################################
 
-from osv import fields, osv
+
 from openerp import addons
+from datetime import datetime, timedelta
+from dateutil import relativedelta
 import logging
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp import tools
-import pooler
 import time
 
 
@@ -70,7 +71,7 @@ class hr_employee(osv.osv):
        'distance':fields.integer("Distance from Residence to Work Place (in Kms.)", size=124),
        'permanent_address':fields.text("Permanent Address", size=124),
        'telephone_no1':fields.char("Telephone No.", size=124),
-       'mobile_no1':fields.char("Mobile No."),
+       'mobile_no1':fields.integer("Mobile No.",size=10),
        'identification_marks':fields.char("Identification Marks", size=124),
        'height':fields.integer("Height", size=124),
        'weight':fields.integer("Weight", size=124),
@@ -109,21 +110,21 @@ class hr_employee(osv.osv):
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', help="Employee bank salary account"),
        'country_id': fields.many2one('res.country', 'Nationality'),
        'identification_id1': fields.char('SLSG No.', size=32),
-       'place_of_birth': fields.selection([('panjim','Panjim'),('calengute','Calengute'),('baga','Baga')],'Place of Birth'),
-       'birth_state':fields.selection([('goa','Goa'),('mumbai','Mumbai')],'State'),
+       'birth_state':fields.many2one('res.country.state','State',size=124),
+       'birth_city':fields.many2one('res.city','City',size=124,select=True,domain="[('state','=',birth_state)]"),
        'bank_bic': fields.char('Bank Identifier Code', size=32),
        'passport_id':fields.char('Passport No', size=64),
        'acc_number':fields.char('Account Number', size=64),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', domain="[('partner_id','=',address_home_id)]", help="Employee bank salary account"),
        'otherid': fields.char('Other Id', size=64),
        'marital': fields.selection([('single', 'Single'), ('married', 'Married'), ('widower', 'Widower'), ('divorced', 'Divorced')], 'Marital Status'),
-       'birthday': fields.date("Date of Birth",required=True),
+       'birthday': fields.date("Date of Birth"),
        'address_home_id': fields.many2one('res.partner', 'Home Address', invisible="True"),
        'bank_line': fields.one2many('res.partner.bank', 'bank_no', 'Bank Details'),
        'state': fields.related('bank_line', 'state', type='selection', size=240, string='Bank Account Type'),
        #'acc_number': fields.related('bank_line', 'acc_number', type='char', size=240, string='Account Number'),
        'bank_field':fields.many2one('res.bank', 'Bank'),
-      # 'bank': fields.related('bank_line', 'bank', type='many2one', relation='res.bank', size=240, string='Bank'),
+      # 'bank': fields.related('bank_line', 'bank', type='many2one', relation='res.bank', size=240, string='Bank '),
 #        'company_id': fields.related('bank_line','company_id', relation='res.company', string='Company',
 #             ondelete='cascade', help="Only if this bank account belong to your company"),
        'footer': fields.related('bank_line','footer', type="boolean", string='Display on Reports', help="Display this bank account on the footer of printed documents like invoices and sales orders."),
@@ -144,7 +145,11 @@ class hr_employee(osv.osv):
        'attachment_line':fields.one2many('ir.attachment','attachment_id','Attachments', size=124),
       'attendance':fields.boolean('Attendance'),
       'creation_date':fields.date("Date",required=True),
-         
+      'birthday':fields.date('Birth Date'),
+      'type':fields.selection([('official','Official'),('non-official','Non-Official')],'Type of Employee', required=True),
+      'official':fields.many2one('beach.lifeguard','Official Stuff',domain="[('type', '=', 'official')]"),
+      'non_official':fields.many2one('beach.lifeguard','Non-official Stuff',domain="[('type', '=', 'non_official')]"),
+
         }
     
     
@@ -152,28 +157,47 @@ class hr_employee(osv.osv):
                
                
                'creation_date': time.strftime('%Y-%m-%d'),
+               
                }
-    
-    
+        
+    def onchange_new_type(self, cr, uid, ids, type):
+            v={}
+            if type == 'official':
+                partner1=self.browse(cr, uid, type)
+                v['non_official']=False
+               
+            else:
+                v['official']=False
+            return {'value':v}    
     def _check_birth_date(self, cr, uid, ids, context=None):
         for date in self.read(cr,uid,ids,['birthday','creation_date'],context=None):
+                #bday = datetime.strptime(date['birthday'],'%Y-%m-%d')
+                dob=date['birthday']
+                dob_year = int(dob[:4])
+                print ">>>>>>>>>>>>>>>>>dob year>>>>>>>>>>>>>>>>",dob_year
+                
+                current_date=date['creation_date']
+                current_year= int(current_date[:4])
+                print ">>>>>>>>>>>>>>>>>>current year>>>>>>>>>>>>>>>>",current_year
+                
+                age=current_year-dob_year
+                print "age>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",age
+                print type(date['birthday'])
+                
                 if date['birthday'] and date['creation_date'] and date['creation_date']<=date['birthday']:
-                    return False
+                        
+                        return False
+                    
+                if age<18:
+                        return False
         return True
     
-    _constraints=[(_check_birth_date,'Error!birth date must be lesser than current date.',['birthday','creation_date'])] 
+    _constraints=[(_check_birth_date,'Error!birth date must be 18 years and lesser than current date.',['birthday','creation_date'])] 
     
     
     
     
     
-    def onchange_birth_place(self, cr, uid, ids, birth_state, context=None):
-        result = {}
-        if birth_state:
-            birth = self.pool.get('hr.employee').browse(cr, uid, birth_state, context=context)
-            result['birth_state'] = birth.place_of_birth
-            
-        return {'value': result}
     
     
     
@@ -445,8 +469,15 @@ class offence_details(osv.osv):
 
 offence_details()
 
-
-
-
+class res_city(osv.osv):
+    _name="res.city"
+    _description = "City of Birth"
+    _columns={
+           
+           'name':fields.char('City Name',size=124),
+           'state':fields.many2one('res.country.state','State'),
+           
+             }
+res_city()
 
 
