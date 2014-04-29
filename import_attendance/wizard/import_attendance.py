@@ -20,8 +20,8 @@
 ##############################################################################
 
 
-from osv import fields, osv
-from tools.translate import _
+from openerp.osv import fields, osv
+#from tools.translate import _
 import StringIO
 import cStringIO
 import base64
