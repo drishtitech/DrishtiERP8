@@ -37,7 +37,6 @@ class attendance_import(osv.osv_memory):
               'file':fields.binary("File Path:"),
               'file_name':fields.char('File Name:'),
               'location':fields.selection([('1', 'Mumbai'), ('2', 'Goa')],'Location'),
-              'date':fields.date('Date')
               #'from_date': fields.date('From Date',required=True),
             #  'to_date': fields.date('To Date',required=True),
 #                'month' : fields.selection([('1', 'January'), ('2', 'February'), 
@@ -49,7 +48,7 @@ class attendance_import(osv.osv_memory):
 #                'year' : fields.selection([('2012', '2012'),('2013', '2013'), ('2014', '2014'), 
 #                                             ('2015', '2015'), ('2016', '2016'),],'Year'),
               }
-    def import_attendance1(self,cr,uid,ids,context=None):
+    def import_attendance(self,cr,uid,ids,context=None):
  
         cur_obj = self.browse(cr,uid,ids)[0]
         file_data=cur_obj.file
@@ -229,8 +228,7 @@ class attendance_import(osv.osv_memory):
                     else:
                         attendance_line_id = self.pool.get('hr.attendance.table.line').create(cr,uid,{'employee_id': employee_id,
                               'date' : date_dict[d],'attendance_table':attendance_id,
-                              'absent_info':absent_info,'final_result':final_result})
-           
+                              'absent_info':absent_info,'final_result':final_result})   
                     d +=1
                     
         return True
@@ -239,94 +237,68 @@ class attendance_import(osv.osv_memory):
     
 
 
-    def import_attendance(self,cr, uid, ids, context=None):
+    
+    def import_attendance1(self,cr,uid,ids,context=None):
+            
         attendance_obj = self.pool.get('hr.attendance.table')
         attendance_line_obj = self.pool.get('hr.attendance.table.line')
-        employee_obj = self.pool.get('hr.employee')
         cur_obj = self.browse(cr,uid,ids)[0]
         file_data=cur_obj.file
         val=base64.decodestring(file_data)
-        fp = StringIO.StringIO()
-        fp.write(val)    
+        fp = StringIO.StringIO()#         fp.write(val)     
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
         sheet=wb.sheet_by_index(0)
         date_dict = {}
-        # Bio Metric Attendance
-        date=cur_obj.date
-        print'>>>>>>>>>>',date
-        
-        from time import strftime
-#         month = int(date[1:2])
-#         year = int(date[6:10])
-        year = int(date[:4])
-            
-        month = int(date[5:7])
-            
-        dob_date = int(date[8:10])
-        print'>>>>>>>>>>>>>>month,year',year,month
-        total_days= monthrange(year, month)[1]
-        for i in range(1,total_days+1):
-            date_dict[i] = datetime.date(year,month,i)
-        date_from = datetime.date(year,month, 1)
-        date_to = datetime.date(year, month, total_days)
-            
-        #sheet.nrows
+        emp_obj = self.pool.get('hr.employee')
+       
+         
+                 
+            #last_date = monthrange(int(cur_obj.year), int(cur_obj.month))[1]
+            #print "date123",date_from1,date_to1,int(cur_obj.year), int(cur_obj.month)
+            #print "monthrange(int(cur_obj.year), int(cur_obj.month))",monthrange(int(cur_obj.year), int(cur_obj.month))
+             
+             
+        for i in range(1,28+1):
+                     
+            date_dict[i] = datetime.date(2014,2 ,i)
+        print "date_dict",date_dict       
+        date_from = datetime.date(2014, 2, 1)
+        date_to = datetime.date(2014, 2, 28)
+             
+        for d in range(1,calendar.monthrange(2014, 2)[1]+5):
+            date_dict[d] = datetime.date(2014, 2 ,1)
+              
+            #sheet.nrows
         for i in range(2,sheet.nrows):
             emp_code =sheet.row_values(i,0,sheet.ncols)[1]
-           
-            employee_id = employee_obj.search(cr,uid,[('identification_id','=',emp_code)])
+            emp_name =sheet.row_values(i,0,sheet.ncols)[2]
+                
+            employee_id = emp_obj.search(cr,uid,[('identification_id','=',emp_code)])
             if employee_id:
+                    #employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id': emp_code,'name':emp_name})
                 employee_id = employee_id[0]
-                attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])
-                if not attendance_id:
-                    attendance_id = attendance_obj.create(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
-                else:
-                    attendance_id = attendance_id[0]
-                d = 1
-                for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
-                    
-                    if j =='T' or j=='O' or j=='M' or j=='P':
-                        final_result='P'
-                    elif j=='L' or j=='C':
-                        final_result='PL'
-                    elif j=='U':
-                        final_result='UL'
-                    elif j=='W':
-                        final_result='WO'
-                    elif j=='A':
-                        final_result='A'
-                    elif j=='H':
-                        final_result='H' 
-                                       
-                    att_line_id =attendance_line_obj.search(cr, uid, [('date', '=', date_dict[d]),
-                                                         ('attendance_table','=',attendance_id)])
-                    if att_line_id:
-                        attendance_line_obj.write(cr, uid,att_line_id,{'employee_id': employee_id,
-                          'date' : date_dict[d],'attendance_table':attendance_id,
-                          'goa_drive_attendance':j,'final_result':final_result})
-                    else:   
-                        attendance_line_obj.create(cr,uid,{'employee_id': employee_id,
-                          'date' : date_dict[d],'attendance_table':attendance_id,
-                          'goa_drive_attendance':j,'final_result':final_result}) 
+                attendance_id=attendance_obj.search(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
+            if not attendance_id:
                      
-                    d +=1
-                     
-               
-#       if goa_drive_attendance=='T' or goa_drive_attendance=='O' or goa_drive_attendance=='M' or goa_drive_attendance=='P':
-#                     final_result='P'
-#                 elif goa_drive_attendance=='L' or goa_drive_attendance=='C':
-#                     final_result='P'
-#                 elif goa_drive_attendance=='U':
-#                     final_result='UL'
-#                 elif goa_drive_attendance=='WO':
-#                     final_result='WO'
-#                 elif goa_drive_attendance=='A':
-#                     final_result='A'
-#                 else:
-#                     final_result='H'
-#      
-                   
-                                       
-                      
-                     
-        return True   
+                attendance_id=attendance_obj.create(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
+            else:
+                attendance_id=attendance_id[0]
+                d=1
+                for j in sheet.row_values(i,5,monthrange(2014, 2)[1]+5):
+                    attendance_line_id=attendance_line_obj.search(cr, uid, [('date', '=', date_dict[d]),('attendance_table','=',attendance_id)])
+                    if attendance_line_id:
+                        attendance_line_obj.write(cr,uid,{'employee_id':employee_id,'date':date_dict[d],'attendance_table':attendance_id,'attendance':True,'absent_info':j,})
+                    else :
+                        attendance_line_obj.create(cr,uid,{'employee_id':employee_id,'date':date_dict[d],'attendance_table':attendance_id,'attendance':True,'absent_info':j,})
+ 
+                             
+                d +=1 
+            return True
+
+attendance_import()
+
+   
+                                   
+ 
+
+

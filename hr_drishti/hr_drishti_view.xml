@@ -70,9 +70,9 @@
                                 <field name="identification_id1"/>
                             </h2>
                             <label for="type"/>
-                            <h2>
-                           		<field name="type"/>
-                           	</h2>
+                            
+                           		<field name="type" widget="selection"/>
+                           	
                             <label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
                             <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/>
                             <label for="category" class="oe_edit_only"/>
@@ -270,7 +270,7 @@
    	           		 
             	</page>
             	
-            	<page string="Lifeguards Training Section" attrs="{'invisible':[('type','==','official')]}">
+            	<page string="Lifeguards Training Section" attrs="{'invisible':[('type','==','office_staff')]}">
                 
        		    <group col="2" colspan="2" string="Beach Lifeguard Details">
 					

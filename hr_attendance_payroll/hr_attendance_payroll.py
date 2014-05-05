@@ -83,18 +83,24 @@ class hr_contract(osv.osv):
         'bonus_amount': fields.float('Bonus Amount', size=124),
         'current_date':fields.date('Current date'),
         #'date_start':fields.date('Start Date')
+        'driver_salary':fields.boolean('Driver Salary'),
+        'house_rent_allowance_metro_nonmetro':fields.float('House Rent Allowance(%)'),
+        'supplementary_allowance':fields.float(' Supplementary Allowance '),
+        'tds':fields.float('TDS'),
+        'voluntary_provident_fund':fields.float('Voluntary Provident Fund (%)'),
+        'medical_insurance':fields.float('Medical Insurance')
         }
      
     _defaults = {
         'current_date': lambda *a: time.strftime("%Y-%m-%d")
      }
         
-    def onchange_emp(self, cr, uid, ids, employee_id, context=None):
-        if employee_id:
-            emp_id = self.pool.get('hr.employee').browse(cr, uid, employee_id, context)
-            function=emp_id.job_id.id
-        return {'value':{'job_id':function}} 
-    
+#     def onchange_emp(self, cr, uid, ids, employee_id, context=None):
+#         if employee_id:
+#             emp_id = self.pool.get('hr.employee').browse(cr, uid, employee_id, context)
+#             function=emp_id.job_id.id
+#         return {'value':{'job_id':function}} 
+#     
     
     def default_get(self, cr, uid, fields, context=None):
         res = super(hr_contract, self).default_get(cr, uid, fields, context=context)
@@ -110,7 +116,7 @@ class hr_contract(osv.osv):
             #a=datetime.datetime.strptime(str(obj.date_end),'%Y-%m-%d').date()
             previous_date=current_date + datetime.timedelta(days = -1)
             print ">>>>>>>>>",previous_date,current_date, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-            res.update({'name' : obj.name,'employee_id':obj.employee_id.id,'date_start':obj.current_date,'visa_expire' : obj.visa_expire,'permit_no':obj.permit_no,'visa_no':obj.visa_no,'driver_salay':obj.driver_salay,'house_rent_allowance_metro_nonmetro':obj.house_rent_allowance_metro_nonmetro,'supplementary_allowance':obj.supplementary_allowance,'tds':obj.tds,'voluntary_provident_fund':obj.voluntary_provident_fund,'medical_insurance':obj.medical_insurance,'advantages':obj.advantages,'notes':obj.notes,'nutritional_allowance':obj.nutritional_allowance,'attendance_incentive':obj.attendance_incentive,'da_lta_fa':obj.da_lta_fa,'special_allowance':obj.special_allowance,'bonus_amount':obj.bonus_amount,'hra':obj.hra,'schedule_pay':obj.schedule_pay,'struct_id':obj.struct_id.id,'working_hours':obj.working_hours.id, 'job_id':obj.job_id.id
+            res.update({'name' : obj.name,'employee_id':obj.employee_id.id,'date_start':obj.current_date,'visa_expire' : obj.visa_expire,'permit_no':obj.permit_no,'visa_no':obj.visa_no,'house_rent_allowance_metro_nonmetro':obj.house_rent_allowance_metro_nonmetro,'supplementary_allowance':obj.supplementary_allowance,'tds':obj.tds,'voluntary_provident_fund':obj.voluntary_provident_fund,'medical_insurance':obj.medical_insurance,'advantages':obj.advantages,'notes':obj.notes,'nutritional_allowance':obj.nutritional_allowance,'attendance_incentive':obj.attendance_incentive,'da_lta_fa':obj.da_lta_fa,'special_allowance':obj.special_allowance,'bonus_amount':obj.bonus_amount,'hra':obj.hra,'schedule_pay':obj.schedule_pay,'struct_id':obj.struct_id.id,'working_hours':obj.working_hours.id, 'job_id':obj.job_id.id
                     })
             self.write(cr, uid, obj.id, {'date_end':str(previous_date)})
         return res
@@ -145,8 +151,8 @@ class hr_attendance_table(osv.osv):
     _name='hr.attendance.table'
     _description = 'Attendance Table'
     _columns = {
-        'date_from':fields.date('Date From'),
-        'date_to':fields.date('Date To'),
+        'date_from':fields.date('Date From',required=True),
+        'date_to':fields.date('Date To',required=True),
         'name':fields.char('Attendance Slip', size=124),
         'employee_id':fields.many2one('hr.employee', 'Employee', required=True), 
         'attendance_line':fields.one2many('hr.attendance.table.line','attendance_table','Attendance Lines', size=124),       
@@ -182,11 +188,11 @@ class hr_attendance_table(osv.osv):
                             if search_for_even_saturday:
                                 search_for_weekly_off = 0.0
                             if search_for_leave:  
-                                      absent_info = self.pool.get('hr.holidays').browse(cr, uid, search_for_leave, context=context)[0].holiday_status_id.payroll_code.name or self.pool.get('hr.holidays').browse(cr, uid, search_for_leave, context=context)[0].holiday_status_id.name
-                                      if  absent_info == "Unpaid":
-                                          absent_info = 'UL'
-                                      else:
-                                          absent_info = 'PL'
+                                    absent_info = self.pool.get('hr.holidays').browse(cr, uid, search_for_leave, context=context)[0].holiday_status_id.payroll_code.name or self.pool.get('hr.holidays').browse(cr, uid, search_for_leave, context=context)[0].holiday_status_id.name
+                                    if  absent_info == "Unpaid":
+                                        absent_info = 'UL'
+                                    else:
+                                        absent_info = 'PL'
                             elif search_for_holiday:
                                     absent_info = 'H'
                             elif not search_for_weekly_off:
@@ -195,19 +201,19 @@ class hr_attendance_table(osv.osv):
                             if j== 'P' and absent_info=='H': #and attendance_status==True:
                                 final_result = 'HH'                
                             else:
-                                 final_result = absent_info       
+                                final_result = absent_info       
                         else:
                             if j== 'P':        
-                                        final_result ='P'
+                                    final_result ='P'
                             else:
-                                       final_result ='A'  
+                                    final_result ='A'  
                         if j == 'P':
-                           attendance_line_id = self.pool.get('hr.attendance.table.line').write(cr,uid,line.id,{
+                            attendance_line_id = self.pool.get('hr.attendance.table.line').write(cr,uid,line.id,{
                                                                                                         
                                   
                                   'absent_info':absent_info,'final_result':final_result})
                         else:
-                                 self.pool.get('hr.attendance.table.line').write(cr,uid,line.id,{
+                            self.pool.get('hr.attendance.table.line').write(cr,uid,line.id,{
                                 
                                 
                                   'absent_info':absent_info,'final_result':final_result})   
@@ -225,12 +231,20 @@ class hr_attendance_table_line(osv.osv):
     _columns = {
     'attendance_table':fields.many2one('hr.attendance.table','Attendance'),
 	'name' : fields.char('Name'),
-    'employee_id': fields.many2one('hr.employee', 'Employee', required=True),
-    'date': fields.date('Day of the Month'),
+    'employee_id': fields.related('attendance_table', 'employee_id', string='Employee Id',store=True,type='many2one',relation="hr.employee",readonly=True),
+   # 'employee_id':fields.related('attendance_table','employee_id',type='many2one','Employee Id'),
+ #   'employee_id': fields.many2one('hr.employee', 'Employee', required=True),
+    'date': fields.date('Attendance Date'),
 	'attendance': fields.boolean('Absent/Present'),
-	'absent_info': fields.char('Information', size=124),
-	'final_result': fields.char('Result'),
-    }
+	'absent_info': fields.char('Holiday Information', size=124),
+	'final_result': fields.selection([('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')],'Result'),
+    
+    #'final_result':fields.('Result'),
+   'goa_drive_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('H','H'),('P','P'),('A','A'),('SL','SL')],'HR Drive Attendance'),
+   'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance'),
+   'login_time':fields.datetime('Punch In'),
+   'logout_time':fields.datetime('Punch Out')
+   }
        
     def fetch_attendance_info(self,cr,uid,ids,context=None):
 	 	for p in self.browse(cr, uid, ids,context=None):
@@ -303,10 +317,10 @@ class hr_payslip(osv.osv):
             
             loan_id = self.pool.get('hr.employee.loan').search(cr, uid,[('employee_id','=',payslip.employee_id.id),('state','=','progress')])
             if loan_id:
-               line_id = self.pool.get('hr.employee.loan.line').search(cr, uid,[('emi_date','>=',payslip.date_from),('emi_date','<=',payslip.date_to),('loan_id','=',loan_id[0])])
-               print "line_id",line_id
-               if line_id :
-                   self.pool.get('hr.employee.loan.line').write(cr, uid,line_id[0],{'payslip_id' :payslip.id }) 
+                line_id = self.pool.get('hr.employee.loan.line').search(cr, uid,[('emi_date','>=',payslip.date_from),('emi_date','<=',payslip.date_to),('loan_id','=',loan_id[0])])
+                print "line_id",line_id
+                if line_id :
+                    self.pool.get('hr.employee.loan.line').write(cr, uid,line_id[0],{'payslip_id' :payslip.id }) 
                    
                       
             number = payslip.number or sequence_obj.get(cr, uid, 'salary.slip')

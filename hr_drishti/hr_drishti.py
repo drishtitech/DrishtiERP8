@@ -146,9 +146,9 @@ class hr_employee(osv.osv):
       'attendance':fields.boolean('Attendance'),
       'creation_date':fields.date("Date",required=True),
       'birthday':fields.date('Birth Date'),
-      'type':fields.selection([('official','Official'),('non-official','Non-Official')],'Type of Employee', required=True),
-      'official':fields.many2one('beach.lifeguard','Official Stuff',domain="[('type', '=', 'official')]"),
-      'non_official':fields.many2one('beach.lifeguard','Non-official Stuff',domain="[('type', '=', 'non_official')]"),
+      'type':fields.selection([('office_staff','Office Staff'),('non_office_staff','Non-Office Staff')],'Type of Employee',required=True),
+      'office_staff':fields.many2one('beach.lifeguard','Official Staff',domain="[('type', '=', 'office_staff')]"),
+      'non_office_staff':fields.many2one('beach.lifeguard','Non-official Staff',domain="[('type', '=', 'non_office_staff')]"),
 
         }
     
@@ -172,6 +172,7 @@ class hr_employee(osv.osv):
     def _check_birth_date(self, cr, uid, ids, context=None):
         for date in self.read(cr,uid,ids,['birthday','creation_date'],context=None):
                 #bday = datetime.strptime(date['birthday'],'%Y-%m-%d')
+            if date['birthday']:
                 dob=date['birthday']
                 dob_year = int(dob[:4])
                 print ">>>>>>>>>>>>>>>>>dob year>>>>>>>>>>>>>>>>",dob_year
@@ -190,6 +191,8 @@ class hr_employee(osv.osv):
                     
                 if age<18:
                         return False
+            else:
+                pass
         return True
     
     _constraints=[(_check_birth_date,'Error!birth date must be 18 years and lesser than current date.',['birthday','creation_date'])] 

@@ -9,18 +9,18 @@
             <field name="name">hr.payroll.attendance.tree</field>
             <field name="model">hr.attendance.table.line</field>
             <field name="arch" type="xml">
-                <tree string="Attendance Record for the Day" version="7.0">
-                	
-                	
-                    
-                        <field name="name"/>
-                        <field name="employee_id"/>
+                <tree string="Attendance Record for the Day" version="7.0" editable="bottom">          
+                        <!--field name="name"/-->
+                        <field name="employee_id" invisible="1"/>
                         <field name="date"/>
-                        <field name="attendance"/>
-                        <field name="absent_info"/>
+                        <!--field name="attendance"/-->
+                        
+                        <field name="login_time"/>
+                        <field name="logout_time"/>
+                        <field name="biometric_attendance"/>
+                        <field name="goa_drive_attendance"/>
+                        <field name="absent_info"/>   
                         <field name="final_result"/>
-                 
-                    
                 </tree>
             </field>
         </record>
@@ -36,13 +36,13 @@
                     </header>
                 	
                     <group col="4">
-                        <field name="name"/>
-                        <field name="employee_id"/>
+                        <field name="name" invisible="1"/>  
                         <field name="date"/>
                         <field name="attendance"/>
                         <field name="absent_info"/>
                         <field name="final_result"/>
-                    </group>
+                        <field name="employee_id" invisible="1"/>
+                   </group>
                     
                 </form>
             </field>
@@ -78,15 +78,15 @@
                     </header>
                 	
                     <group col="4">
-                        <field name="name"/>
+                    	<field name="employee_id"/>
+                        <field name="name"/>       
                         <field name="date_from"/>
                         <field name="date_to"/>
-                        <field name="employee_id"/>
                         
                     </group>
-           		    <group col="2" colspan="2" string="Attendance Line">
+           		    <group col="2" colspan="2" string="Attendance Line"  >
 					
-					       <field name="attendance_line" widget="one2many" colspan="4"/>
+					       <field name="attendance_line" widget="one2many" colspan="4" nolabel="1"/>
 				    </group>
                     
                     
@@ -115,6 +115,12 @@
             <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
             <field name="arch" type="xml">
             <data>
+            	<!--xpath expr="//field[@name='name']" position="before"-->
+            	<xpath expr="/form[@string='Contract']/sheet" position="before">
+            		<header>
+            			<button name="new_contract" string="New Contract" type="object" class="oe_highlight"/>
+            		</header>
+            	</xpath>
                 <xpath expr="//field[@name='wage']" position="after">
                     <field name="holidays_id"/>
                     <field name="nutritional_allowance"/>
@@ -124,11 +130,27 @@
                     <field name="bonus_amount"/>
                     <field name="hra"/>
                      <!--field name="start_date" position="replace"-->
-                	<!--field name="start_date" on_change="onchange_date(date_end)"/-->
-                
-                   
+                	<!--field name="start_date" on_change="onchange_date(date_end)"/-->        	
                 </xpath>
+                <xpath expr="//field[@name='advantages']" position="before">
                
+                <group string="Allowance">
+                	<field name="driver_salary"/>
+                	<field name="house_rent_allowance_metro_nonmetro"/>
+                	<field name="supplementary_allowance"/>
+                	
+ 
+               <group string="Deduction">
+               	
+                	<field name="tds"/>
+                	<field name="voluntary_provident_fund"/>
+                	<field name="medical_insurance"/>
+                </group>
+               
+               </group>
+                </xpath>
+                
+              
             </data>
             </field>
         </record>

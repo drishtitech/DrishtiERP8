@@ -12,6 +12,7 @@
                         	<group>
                         		<field name='file' widget='binary'/>
                                         <field name='location'/> 
+                                        <field name='date'/>
                         	</group>
                         	<group>
                         		<field name='file_name'/>
