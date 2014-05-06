@@ -273,8 +273,9 @@ class attendance_import(osv.osv_memory):
         #sheet.nrows
         for i in range(2,sheet.nrows):
             emp_code =sheet.row_values(i,0,sheet.ncols)[1]
-           
+        
             employee_id = employee_obj.search(cr,uid,[('identification_id','=',emp_code)])
+            print'<<<<<<<<<<<<<<<<<<<<<<',emp_code
             if employee_id:
                 employee_id = employee_id[0]
                 attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])
@@ -284,12 +285,14 @@ class attendance_import(osv.osv_memory):
                     attendance_id = attendance_id[0]
                 d = 1
                 for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
+                    j=j.upper()
+                    print'<<<<<<<<<<<<<<',j
                     
                     if j =='T' or j=='O' or j=='M' or j=='P':
                         final_result='P'
-                    elif j=='L' or j=='C':
+                    elif j=='L' or j=='C' or j=='SL':
                         final_result='PL'
-                    elif j=='U':
+                    elif j=='U' or j=='SL':
                         final_result='UL'
                     elif j=='W':
                         final_result='WO'
@@ -297,6 +300,7 @@ class attendance_import(osv.osv_memory):
                         final_result='A'
                     elif j=='H':
                         final_result='H' 
+                   
                                        
                     att_line_id =attendance_line_obj.search(cr, uid, [('date', '=', date_dict[d]),
                                                          ('attendance_table','=',attendance_id)])

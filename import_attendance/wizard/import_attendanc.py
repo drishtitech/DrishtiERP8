@@ -260,6 +260,7 @@ class attendance_import(osv.osv_memory):
             emp_code =sheet.row_values(i,0,sheet.ncols)[1]
            
             employee_id = employee_obj.search(cr,uid,[('identification_id','=',emp_code)])
+            print'>>>>>>>>>>>>>>>>>>>',emp_code
             if employee_id:
                 employee_id = employee_id[0]
                 attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])

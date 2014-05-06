@@ -240,7 +240,9 @@ class hr_attendance_table_line(osv.osv):
 	'final_result': fields.selection([('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')],'Result'),
     
     #'final_result':fields.('Result'),
-   'goa_drive_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('H','H'),('P','P'),('A','A'),('SL','SL')],'HR Drive Attendance'),
+  'goa_drive_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('P','P'),('A','A'),('H','H'),('SL','SL')],'HR Drive Attendance'),
+    #'goa_drive_hr_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('P','P'),('A','A'),('SL','SL'),('H','H')],'HR Drive Attendance'),
+
    'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance'),
    'login_time':fields.datetime('Punch In'),
    'logout_time':fields.datetime('Punch Out')

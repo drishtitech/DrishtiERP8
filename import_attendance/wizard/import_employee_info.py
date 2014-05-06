@@ -40,6 +40,7 @@ class attendance_import(osv.osv_memory):
             pincode =sheet.row_values(i,0,sheet.ncols)[18]
             mobile_no =sheet.row_values(i,0,sheet.ncols)[19]
             gender =sheet.row_values(i,0,sheet.ncols)[44]
+            gender=gender.lower()
             country =sheet.row_values(i,0,sheet.ncols)[63]
             bank_name =sheet.row_values(i,0,sheet.ncols)[98]
             branch_name=sheet.row_values(i,0,sheet.ncols)[99]
@@ -52,6 +53,24 @@ class attendance_import(osv.osv_memory):
             #print e, "MOBILE NO. IN INTEGER"
             blood_group =sheet.row_values(i,0,sheet.ncols)[21]
             active =sheet.row_values(i,0,sheet.ncols)[37]
+            emp_mail =sheet.row_values(i,0,sheet.ncols)[26]
+            work_phone =sheet.row_values(i,0,sheet.ncols)[27]
+            work_mobile =sheet.row_values(i,0,sheet.ncols)[28]
+            office_location =sheet.row_values(i,0,sheet.ncols)[29]
+            job =sheet.row_values(i,0,sheet.ncols)[30]
+            manager =sheet.row_values(i,0,sheet.ncols)[31]
+            coach =sheet.row_values(i,0,sheet.ncols)[32]
+            reason =sheet.row_values(i,0,sheet.ncols)[10]
+
+
+            
+
+            
+
+
+
+ 
+
             import datetime
             #date_of_joining = datetime.datetime.strptime(dt_of_joining, "%d/%m/%Y")
             #print date_of_joining, "DATE OF JOINING"
@@ -60,7 +79,7 @@ class attendance_import(osv.osv_memory):
 
            # date_of_joining= dt_of_joining.strftime("")
             print emp_code, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b, dt_of_joining, dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
-            employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id','=',emp_code)])
+            employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
             print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!"
             print company_name, "COMPANY NAME !!!!!!!!!!"
             
@@ -110,7 +129,7 @@ class attendance_import(osv.osv_memory):
             print company, "COMPANY ARRAY.............."
             for yl in self.pool.get('res.company').browse(cr,uid,company):
                 company_number=yl.id
-                print company_number,"COMPANY-ID............"
+                print company_number,"COMPANY-ID............" 
             if not company:
                 company_number= self.pool.get('res.company').create(cr,uid,{'name': company_name})
                 print company_number,"COMPANY-ID............"
@@ -119,7 +138,10 @@ class attendance_import(osv.osv_memory):
                 print "If not employeeeeeeeeeeeeeeeeeeeeee"
                 print "COUNTRY IDDDDDDDDDDDDDDDDDDDD",country_number
                 #employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id': emp_code,'name':emp_name,'country_id':country_number}) 
-                employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number, 'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number})
+                employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number, 'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason})
+            if employee_id:
+                employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number, 'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason})
+
                 print "Emplyoteeeeeeeeee IDddddddddddddddddddddddddddddd",employee_id
             else:
                 employee_id = employee_id[0]

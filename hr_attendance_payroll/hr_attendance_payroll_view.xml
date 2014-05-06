@@ -35,7 +35,7 @@
                        <button string="Compute Sheet" name="fetch_attendance_info" type="object" icon="gtk-apply"/>
                     </header>
                 	
-                    <group col="4">
+                    <group col="2"  colspan="2">
                         <field name="name" invisible="1"/>  
                         <field name="date"/>
                         <field name="attendance"/>
