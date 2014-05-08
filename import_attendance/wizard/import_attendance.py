@@ -249,19 +249,22 @@ class attendance_import(osv.osv_memory):
         fp = StringIO.StringIO()
         fp.write(val)    
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
-        sheet=wb.sheet_by_index(0)
+        
+   # for i in range(0,6):
+        sheet=wb.sheet_by_index(6)
         date_dict = {}
         # Bio Metric Attendance
         date=cur_obj.date
+       
         print'>>>>>>>>>>',date
         
         from time import strftime
 #         month = int(date[1:2])
 #         year = int(date[6:10])
         year = int(date[:4])
-            
+             
         month = int(date[5:7])
-            
+             
         dob_date = int(date[8:10])
         print'>>>>>>>>>>>>>>month,year',year,month
         total_days= monthrange(year, month)[1]
@@ -271,10 +274,10 @@ class attendance_import(osv.osv_memory):
         date_to = datetime.date(year, month, total_days)
             
         #sheet.nrows
-        for i in range(2,sheet.nrows):
+        for i in range(1,sheet.nrows):
             emp_code =sheet.row_values(i,0,sheet.ncols)[1]
         
-            employee_id = employee_obj.search(cr,uid,[('identification_id','=',emp_code)])
+            employee_id = employee_obj.search(cr,uid,[('identification_id1','=',emp_code)])
             print'<<<<<<<<<<<<<<<<<<<<<<',emp_code
             if employee_id:
                 employee_id = employee_id[0]
@@ -284,7 +287,7 @@ class attendance_import(osv.osv_memory):
                 else:
                     attendance_id = attendance_id[0]
                 d = 1
-                for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
+                for j in sheet.row_values(i,3,monthrange(year, month)[1]+3):
                     j=j.upper()
                     print'<<<<<<<<<<<<<<',j
                     
@@ -314,21 +317,10 @@ class attendance_import(osv.osv_memory):
                           'goa_drive_attendance':j,'final_result':final_result}) 
                      
                     d +=1
+        #i+1
                      
                
-#       if goa_drive_attendance=='T' or goa_drive_attendance=='O' or goa_drive_attendance=='M' or goa_drive_attendance=='P':
-#                     final_result='P'
-#                 elif goa_drive_attendance=='L' or goa_drive_attendance=='C':
-#                     final_result='P'
-#                 elif goa_drive_attendance=='U':
-#                     final_result='UL'
-#                 elif goa_drive_attendance=='WO':
-#                     final_result='WO'
-#                 elif goa_drive_attendance=='A':
-#                     final_result='A'
-#                 else:
-#                     final_result='H'
-#      
+      
                    
                                        
                       

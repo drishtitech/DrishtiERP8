@@ -20,6 +20,7 @@
             <field name="name" position="replace">
             <field name="serial_no"/>
            <field name="name"/>
+           <field name="leave_allocation_date"/>
            
            
             </field>
@@ -34,9 +35,9 @@
             <field name="arch" type="xml">
             <field name="name" position="after">
             <field name="identification_id1"/>
-            <field name="category_ids"/>
+            <field name="category_ids" invisible="1"/>
            <field name="name"/>
-           <field name="type"/>
+           <!--field name="type"/-->
            
            
             </field>
@@ -69,12 +70,9 @@
                                 
                                 <field name="identification_id1"/>
                             </h2>
-                            <label for="type"/>
-                            
-                           		<field name="type" widget="selection"/>
-                           	
-                            <label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
-                            <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/>
+                           
+                            <!--label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
+                            <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/-->
                             <label for="category" class="oe_edit_only"/>
                             <field name="category" widget="selection"/>
                         </div>
@@ -96,7 +94,7 @@
                   </group>
                   <group string="Position">
                        <field name="department_id" on_change="onchange_department_id(department_id)"/>
-                       <field name="job_id" options='{"no_open": True}' domain="[('state','!=','old')]" context="{'form_view_ref': 'hr.view_hr_job_employee_form'}" position="replace"/>
+                       <!--field name="job_id" options='{"no_open": True}' domain="[('state','!=','old')]" context="{'form_view_ref': 'hr.view_hr_job_employee_form'}" position="replace"/-->
                        <field name="parent_id"/>
                        <field name="coach_id"/>
                   </group>
@@ -137,8 +135,8 @@
                  </group>
                  <group string="Birth Details">
                  	<field name="birthday"/>
-                 	<field name="birth_state"/>
-                 	<field name="birth_city"/>
+                 	<field name="place_of_birth"/>
+                 	<!--field name="birth_city"/-->
                  
                 </group>
            		</group>
@@ -210,7 +208,7 @@
 				<group>
 				<group>
 				<!--field name="identification_id" string="SLSG No."/-->
-				<field name="job_id" string="Designation"/>
+				<field name="job_id" string="Job Title"/>
 				</group>
 				<group>
 				<field name="app_letter"/>
@@ -234,16 +232,16 @@
             	<page string="Qualification Details">
      			<group col="2" colspan="2" string="Professional Qualifications">
 					
-					<field name="professional_qualification_line" widget="one2many" colspan="4"/>
+					<field name="professional_qualification_line" widget="one2many" string="Professional Qualifications" nolabel="1" colspan="4"/>
 				</group>
             	
            		 <group col="2" colspan="2" string="Educational Qualifications">
 					
-					<field name="educational_qualification_line" widget="one2many" colspan="4"/>
+					<field name="educational_qualification_line" widget="one2many" string="Educational Qualifications" nolabel="1" colspan="4"/>
 				</group>
 				<group col="2" colspan="2" string="Other Qualifications">
 					
-					<field name="other_qualification_line" widget="one2many" colspan="4"/>
+					<field name="other_qualification_line" widget="one2many" string="Other Qualifications" nolabel="1" colspan="4"/>
 				</group>
             	</page>
             	
@@ -270,7 +268,7 @@
    	           		 
             	</page>
             	
-            	<page string="Lifeguards Training Section" attrs="{'invisible':[('type','==','office_staff')]}">
+            	<page string="Lifeguards Training Section">
                 
        		    <group col="2" colspan="2" string="Beach Lifeguard Details">
 					
@@ -401,8 +399,8 @@
             </field>
         </record>        
         <record id="view_qualification_tree456" model="ir.ui.view">
-            <field name="name">qualification.details1.tree</field>
-            <field name="model">qualification.details1</field>
+            <field name="name">hr.employee.qualification.tree</field>
+            <field name="model">hr.employee.qualification</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Educational Qualifications">
@@ -418,8 +416,8 @@
         </record>
 
 	<record id="view_qualification_form456" model="ir.ui.view">
-            <field name="name">qualification.details1.form</field>
-            <field name="model">qualification.details1</field>
+            <field name="name">hr.employee.qualification.form</field>
+            <field name="model">hr.employee.qualification</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Educational Qualifications">
@@ -434,8 +432,8 @@
         </record>
         
         <record id="view_qualification_tree1456" model="ir.ui.view">
-            <field name="name">qualification.details2.tree</field>
-            <field name="model">qualification.details2</field>
+            <field name="name">hr.employee.qualification.tree</field>
+            <field name="model">hr.employee.qualification</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Professional Qualifications">
@@ -451,8 +449,8 @@
         </record>
 
 	<record id="view_qualification_form1456" model="ir.ui.view">
-            <field name="name">qualification.details2.form</field>
-            <field name="model">qualification.details2</field>
+            <field name="name">hr.employee.qualification.form</field>
+            <field name="model">hr.employee.qualification</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Professional Qualifications">
@@ -467,8 +465,8 @@
         </record>
         
         <record id="view_qualification_tree2456" model="ir.ui.view">
-            <field name="name">qualification.details3.tree</field>
-            <field name="model">qualification.details3</field>
+            <field name="name">hr.employee.qualification.tree</field>
+            <field name="model">hr.employee.qualification</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Other Qualifications">
@@ -484,8 +482,8 @@
         </record>
 
 	<record id="view_qualification_form2456" model="ir.ui.view">
-            <field name="name">qualification.details3.form</field>
-            <field name="model">qualification.details3</field>
+            <field name="name">hr.employee.qualification.form</field>
+            <field name="model">hr.employee.qualification</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Other Qualifications">

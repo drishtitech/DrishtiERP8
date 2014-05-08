@@ -37,6 +37,7 @@ class hr_holidays(osv.osv):
     _inherit = "hr.holidays"
     _columns = {
 	    'serial_no': fields.char('Serial No.', size=124),
+        'leave_allocation_date':fields.date('Leave Allocation date',required=True),
 		}
     
 hr_holidays()
@@ -54,7 +55,7 @@ class hr_employee(osv.osv):
        'app_letter':fields.char('Appointment Letter No. & Date', size=124),
        'esic_no':fields.char('ESIC No.', size=124),
        'pf_no':fields.char('PF No. GOA/12411/', size=124),
-       'aadhar_no':fields.integer('Aadhar Card No.', size=124),
+       'aadhar_no':fields.char('Aadhar Card No.', size=124),
        'employment_exchange_no':fields.char('Employment Exchange No.', size=124),
        'blood_group':fields.selection([('A-ve','A-ve'),('B-ve','B-ve'),('AB-ve','AB-ve'),('O-ve','O-ve'),('A+ve','A+ve'),('B+ve','B+ve'),('AB+ve','AB+ve'),('O+ve','O+ve')],'Blood Group'),
        'father_name':fields.char("Father's Name", size=124),
@@ -64,9 +65,11 @@ class hr_employee(osv.osv):
        'address':fields.text("Address", size=124),
        'telephone_no':fields.char("Telephone No. (Residence)", size=124),
        'mobile_no':fields.char("Mobile No.", size=124),
-       'educational_qualification_line':fields.one2many('qualification.details1','qualification_id1'," ", size=124),
-       'professional_qualification_line':fields.one2many('qualification.details2','qualification_id2'," ", size=124),
-       'other_qualification_line':fields.one2many('qualification.details3','qualification_id3'," ", size=124),
+       
+       'educational_qualification_line':fields.one2many('hr.employee.qualification','qualification_id1'," ", size=124),
+       'professional_qualification_line':fields.one2many('hr.employee.qualification','qualification_id2'," ", size=124),
+       'other_qualification_line':fields.one2many('hr.employee.qualification','qualification_id3'," ", size=124),
+       
        'email_id':fields.char("Email ID", size=124),
        'distance':fields.integer("Distance from Residence to Work Place (in Kms.)", size=124),
        'permanent_address':fields.text("Permanent Address", size=124),
@@ -97,7 +100,7 @@ class hr_employee(osv.osv):
        'ward':fields.char("Ward", size=124),
        'village':fields.char("Village/Town", size=124),
        'municipality':fields.char("Municipality/Gram Panchayat", size=124),
-       'district':fields.selection([('a', 'North Goa'),('b','South Goa'),('c','Other')],'District'),
+       'district':fields.selection([('North Goa', 'North Goa'),('South Goa','South Goa'),('Other','Other')],'District'),
        'constituency':fields.char("Constituency", size=124),
        'taluka':fields.many2one('taluka.name',"Taluka", size=124),
        'state_name':fields.many2one('state.name',"State", size=124),
@@ -109,15 +112,15 @@ class hr_employee(osv.osv):
        'gender': fields.selection([('male', 'male'),('female', 'female')], 'Gender'),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', help="Employee bank salary account"),
        'country_id': fields.many2one('res.country', 'Nationality'),
-       'identification_id1': fields.char('SLSG No.', size=32),
-       'birth_state':fields.many2one('res.country.state','State',size=124),
-       'birth_city':fields.many2one('res.city','City',size=124,select=True,domain="[('state','=',birth_state)]"),
+       'identification_id1': fields.char('Employee Id No.', size=32),
+#        'birth_state':fields.many2one('res.country.state','State',size=124),
+#        'birth_city':fields.many2one('res.city','City',size=124,select=True,domain="[('state','=',birth_state)]"),
        'bank_bic': fields.char('Bank Identifier Code', size=32),
        'passport_id':fields.char('Passport No', size=64),
        'acc_number':fields.char('Account Number', size=124),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', domain="[('partner_id','=',address_home_id)]", help="Employee bank salary account"),
        'otherid': fields.char('Other Id', size=64),
-       'marital': fields.selection([('single', 'Single'), ('married', 'Married'), ('widower', 'Widower'), ('divorced', 'Divorced')], 'Marital Status'),
+       'marital': fields.selection([('Unmarried', 'Unmarried'), ('Married', 'Married'), ('Widower', 'Widower'), ('Divorced', 'Divorced')], 'Marital Status'),
        'birthday': fields.date("Date of Birth"),
        'address_home_id': fields.many2one('res.partner', 'Home Address', invisible="True"),
        'bank_line': fields.one2many('res.partner.bank', 'bank_no', 'Bank Details'),
@@ -146,9 +149,10 @@ class hr_employee(osv.osv):
       'attendance':fields.boolean('Attendance'),
       'creation_date':fields.date("Date",required=True),
       'birthday':fields.date('Birth Date'),
-      'type':fields.selection([('office_staff','Office Staff'),('non_office_staff','Non-Office Staff')],'Type of Employee',required=True),
-      'office_staff':fields.many2one('beach.lifeguard','Official Staff',domain="[('type', '=', 'office_staff')]"),
-      'non_office_staff':fields.many2one('beach.lifeguard','Non-official Staff',domain="[('type', '=', 'non_office_staff')]"),
+#       'type':fields.selection([('office_staff','Office Staff'),('non_office_staff','Non-Office Staff')],'Type of Employee',required=True),
+#       'office_staff':fields.many2one('beach.lifeguard','Official Staff',domain="[('type', '=', 'office_staff')]"),
+#       'non_office_staff':fields.many2one('beach.lifeguard','Non-official Staff',domain="[('type', '=', 'non_office_staff')]"),
+      'place_of_birth':fields.text('Birth Place')
 
         }
     
@@ -265,10 +269,12 @@ ir_attachment()
 
 
 class qualification_details1(osv.osv):
-    _name = "qualification.details1"
+    _name = "hr.employee.qualification"
     _description = "Educational Qualifications"
     _columns = {
         'qualification_id1': fields.integer('Qualification No.', size=124),
+        'qualification_id2': fields.integer('Qualification No.', size=124),
+        'qualification_id3': fields.integer('Qualification No.', size=124),
         'degree':fields.char('Degree', size=124),
         'institute':fields.char('Institute', size=124),
         'board': fields.char('University/Board', size=124),
@@ -279,35 +285,35 @@ class qualification_details1(osv.osv):
 
 qualification_details1()
 
-class qualification_details2(osv.osv):
-    _name = "qualification.details2"
-    _description = "Professional Qualifications"
-    _columns = {
-        'qualification_id2': fields.integer('Qualification No.', size=124),
-        'degree':fields.char('Degree', size=124),
-        'institute':fields.char('Institute', size=124),
-        'board': fields.char('University/Board', size=124),
-        'marks': fields.char('% Marks', size=124),
-        'year': fields.char('Year of Completion', size=124),
-
-        }
-
-qualification_details2()
-
-class qualification_details3(osv.osv):
-    _name = "qualification.details3"
-    _description = "Other Qualifications"
-    _columns = {
-        'qualification_id3': fields.integer('Qualification No.', size=124),
-        'degree':fields.char('Degree', size=124),
-        'institute':fields.char('Institute', size=124),
-        'board': fields.char('University/Board', size=124),
-        'marks': fields.char('% Marks', size=124),
-        'year': fields.char('Year of Completion', size=124),
-
-        }
-
-qualification_details3()
+# class qualification_details2(osv.osv):
+#     _name = "qualification.details2"
+#     _description = "Professional Qualifications"
+#     _columns = {
+#         'qualification_id2': fields.integer('Qualification No.', size=124),
+#         'degree':fields.char('Degree', size=124),
+#         'institute':fields.char('Institute', size=124),
+#         'board': fields.char('University/Board', size=124),
+#         'marks': fields.char('% Marks', size=124),
+#         'year': fields.char('Year of Completion', size=124),
+# 
+#         }
+# 
+# qualification_details2()
+# 
+# class qualification_details3(osv.osv):
+#     _name = "qualification.details3"
+#     _description = "Other Qualifications"
+#     _columns = {
+#         'qualification_id3': fields.integer('Qualification No.', size=124),
+#         'degree':fields.char('Degree', size=124),
+#         'institute':fields.char('Institute', size=124),
+#         'board': fields.char('University/Board', size=124),
+#         'marks': fields.char('% Marks', size=124),
+#         'year': fields.char('Year of Completion', size=124),
+# 
+#         }
+# 
+# qualification_details3()
 
 class family_details(osv.osv):
     _name = "family.details"
@@ -472,15 +478,15 @@ class offence_details(osv.osv):
 
 offence_details()
 
-class res_city(osv.osv):
-    _name="res.city"
-    _description = "City of Birth"
-    _columns={
-           
-           'name':fields.char('City Name',size=124),
-           'state':fields.many2one('res.country.state','State'),
-           
-             }
-res_city()
+# class res_city(osv.osv):
+#     _name="res.city"
+#     _description = "City of Birth"
+#     _columns={
+#            
+#            'name':fields.char('City Name',size=124),
+#            'state':fields.many2one('res.country.state','State'),
+#            
+#              }
+# res_city()
 
 
