@@ -248,9 +248,11 @@ class attendance_import(osv.osv_memory):
         val=base64.decodestring(file_data)
         fp = StringIO.StringIO()
         fp.write(val)    
+        
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
         
    # for i in range(0,6):
+        final_result = ''
         sheet=wb.sheet_by_index(6)
         date_dict = {}
         # Bio Metric Attendance

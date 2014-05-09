@@ -350,6 +350,7 @@ class hr_payslip(osv.osv):
        @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
        """
        print "testing"
+       print "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
        def was_on_leave(employee_id, datetime_day, context=None):
            res = False
            day = datetime_day.strftime("%Y-%m-%d")
@@ -453,18 +454,24 @@ class hr_payslip(osv.osv):
                               }
            day_from = datetime.datetime.strptime(date_from,"%Y-%m-%d")
            day_to = datetime.datetime.strptime(date_to,"%Y-%m-%d")
+           print day_from, day_to, "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
            nb_of_days = (day_to - day_from).days + 1
            attendance_line = self.pool.get('hr.attendance.table.line').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date','>=',date_from),('date','<=',date_to)])
-           
+           print "attendance_line========",attendance_line,len(attendance_line)
            leaves = {}
            
            for day in range(0, nb_of_days):
              if  not contract.employee_id.attendance: 
                att_id = self.pool.get('hr.attendance.table.line').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date','=',day_from +timedelta(days=day))])
+               print att_id, "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
                for att_obj in self.pool.get('hr.attendance.table.line').browse(cr,uid, att_id):
-                   if att_obj.attendance == True:
-                       worked['number_of_days'] += 1.0
-                       worked['number_of_hours'] += 8.0
+                   print att_obj.attendance, "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+#                    if att_obj.attendance == True:
+#                        print "77777777777777777777777777777777777777"
+#                        worked['number_of_days'] += 1.0
+#                        worked['number_of_hours'] += 8.0
+                   print att_obj.final_result, "#################################################"
+                   print att_records, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                    if att_obj.final_result in att_records:
                        att_records[att_obj.final_result]['number_of_days'] += 1.0
                        att_records[att_obj.final_result]['number_of_hours'] += 8.0
@@ -518,6 +525,7 @@ class hr_payslip(osv.osv):
                                      'number_of_hours': 0.0,
                                      'contract_id': contract.id,
                          }
+           
             
            if  contract.employee_id.leave_allocation_type == 'goa':
                
@@ -526,4 +534,8 @@ class hr_payslip(osv.osv):
                
                l = [salarydays,att_records['MONTHDAYS'], att_records['P'],  att_records['A'], att_records['PL'],  att_records['UL'],]  
        return l         
+    
+    
+    
+    
     

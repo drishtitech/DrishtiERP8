@@ -24,7 +24,7 @@ class attendance_import(osv.osv_memory):
         fp = StringIO.StringIO()
         fp.write(val)     
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
-        sheet=wb.sheet_by_index(0)
+        sheet=wb.sheet_by_index(6)
         
         
         for i in range(1,sheet.nrows):
@@ -93,14 +93,13 @@ class attendance_import(osv.osv_memory):
             
 
 
-#             import datetime
-            #date_of_joining = datetime.datetime.strptime(dt_of_joining, "%d/%m/%Y")
-            #print date_of_joining, "DATE OF JOINING"
+            import datetime
+            date_of_joining = datetime.datetime.strptime(dt_of_joining, "%d/%m/%Y")            #print date_of_joining, "DATE OF JOINING"
             #date_of_birth = datetime.datetime.strptime(dt_of_birth, "%d/%m/%Y")
             #print date_of_birth, "DATE OF BIRTH"
 
            # date_of_joining= dt_of_joining.strftime("")
-            print emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b, dt_of_birth, dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+            print emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b, date_of_joining, dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
             print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!"
             print company_name, "COMPANY NAME !!!!!!!!!!"
@@ -194,10 +193,10 @@ class attendance_import(osv.osv_memory):
                 employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id1': emp_code,'name':emp_name,'country_id':country_number,'relationship':nominee,'nominee':nominee_name,'address':nominee_address,'telephone_no':nominee_phone,'state_name':state,'taluka':taluka,'constituency':constituency,'place_of_birth':place_of_birth,'category':tag_name,'driving_license_no':licence_no,'aadhar_no':adhar_no,'identification_marks':identific_mark,'driving_license_no':licence_no,'vehicle':company_vehicle,'vehicle_distance':work_distance,'notes':other_info,'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number,'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason}) 
                 #employee_id = self.pool.get('hr.employee').create(cr,uid,{'relationship':nominee,'nominee':nominee_name,'address':nominee_address,'telephone_no':nominee_phone,'state_name':state,'taluka':taluka,'constituency':constituency,'place_of_birth':place_of_birth,'category':tag_name,'marital':martial_status,'driving_license_no':licence_no,'aadhar_no':adhar_no,'identification_marks':identific_mark,'vehicle':company_vehicle,'vehicle_distance':work_distance,'medic_exam':medical_exam,'notes':other_info,'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number})
  #'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason
-#             if employee_id:
-#                 employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number, 'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason})
+            elif employee_id:
+                 employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'doj':date_of_joining,'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number, 'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason})
 
-                print "Emplyoteeeeeeeeee IDddddddddddddddddddddddddddddd",employee_id
+                 print "Emplyoteeeeeeeeee IDddddddddddddddddddddddddddddd",employee_id
             else:
                 employee_id = employee_id[0]
             emp_obj =   self.pool.get('hr.employee').browse(cr,uid,employee_id) 
