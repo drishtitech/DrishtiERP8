@@ -152,7 +152,8 @@ class hr_employee(osv.osv):
 #       'type':fields.selection([('office_staff','Office Staff'),('non_office_staff','Non-Office Staff')],'Type of Employee',required=True),
 #       'office_staff':fields.many2one('beach.lifeguard','Official Staff',domain="[('type', '=', 'office_staff')]"),
 #       'non_office_staff':fields.many2one('beach.lifeguard','Non-official Staff',domain="[('type', '=', 'non_office_staff')]"),
-      'place_of_birth':fields.text('Birth Place')
+      'place_of_birth':fields.text('Birth Place'),
+      'lifeguard':fields.boolean('Life Guard')
 
         }
     
@@ -161,18 +162,20 @@ class hr_employee(osv.osv):
                
                
                'creation_date': time.strftime('%Y-%m-%d'),
+               'lifeguard':True
                
                }
         
-    def onchange_new_type(self, cr, uid, ids, type):
-            v={}
-            if type == 'official':
-                partner1=self.browse(cr, uid, type)
-                v['non_official']=False
-               
-            else:
-                v['official']=False
-            return {'value':v}    
+#     def onchange_lifegaurd(self, cr, uid, ids, lifeguard):
+#             v={}
+#             if lifeguard == 'True':
+#                 partner1=self.browse(cr, uid, type)
+#                 v['beach_line']=False
+#                
+#             else:
+#                 v['beach_line']=True
+#             return {'value':v} 
+           
     def _check_birth_date(self, cr, uid, ids, context=None):
         for date in self.read(cr,uid,ids,['birthday','creation_date'],context=None):
                 #bday = datetime.strptime(date['birthday'],'%Y-%m-%d')

@@ -250,7 +250,7 @@
                    </group>
                    <group col="2" colspan="2" string="Public Holidays Line">
 					
-					<field name="holidays_line" widget="one2many" colspan="4"/>
+					<field name="holidays_line" widget="one2many" string="Public Holidays Line" nolabel="1" colspan="4"/>
 				   </group> 
                    
                     

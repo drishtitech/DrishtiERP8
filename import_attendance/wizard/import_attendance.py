@@ -251,78 +251,81 @@ class attendance_import(osv.osv_memory):
         
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
         
-   # for i in range(0,6):
+   #* for i in range(0,6):
+
         final_result = ''
-        sheet=wb.sheet_by_index(6)
-        date_dict = {}
-        # Bio Metric Attendance
         date=cur_obj.date
+        for i in range(0,6):  
+            sheet=wb.sheet_by_index(i)
+            date_dict = {}
+        # Bio Metric Attendance
        
-        print'>>>>>>>>>>',date
-        
-        from time import strftime
-#         month = int(date[1:2])
-#         year = int(date[6:10])
-        year = int(date[:4])
-             
-        month = int(date[5:7])
-             
-        dob_date = int(date[8:10])
-        print'>>>>>>>>>>>>>>month,year',year,month
-        total_days= monthrange(year, month)[1]
-        for i in range(1,total_days+1):
-            date_dict[i] = datetime.date(year,month,i)
-        date_from = datetime.date(year,month, 1)
-        date_to = datetime.date(year, month, total_days)
+       
+            print'>>>>>>>>>>',date
             
-        #sheet.nrows
-        for i in range(1,sheet.nrows):
-            emp_code =sheet.row_values(i,0,sheet.ncols)[1]
-        
-            employee_id = employee_obj.search(cr,uid,[('identification_id1','=',emp_code)])
-            print'<<<<<<<<<<<<<<<<<<<<<<',emp_code
-            if employee_id:
-                employee_id = employee_id[0]
-                attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])
-                if not attendance_id:
-                    attendance_id = attendance_obj.create(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
-                else:
-                    attendance_id = attendance_id[0]
-                d = 1
-                for j in sheet.row_values(i,3,monthrange(year, month)[1]+3):
-                    j=j.upper()
-                    print'<<<<<<<<<<<<<<',j
-                    
-                    if j =='T' or j=='O' or j=='M' or j=='P':
-                        final_result='P'
-                    elif j=='L' or j=='C' or j=='SL':
-                        final_result='PL'
-                    elif j=='U' or j=='SL':
-                        final_result='UL'
-                    elif j=='W':
-                        final_result='WO'
-                    elif j=='A':
-                        final_result='A'
-                    elif j=='H':
-                        final_result='H' 
+            from time import strftime
+    #         month = int(date[1:2])
+    #         year = int(date[6:10])
+            year = int(date[:4])
+                 
+            month = int(date[5:7])
+                 
+            dob_date = int(date[8:10])
+            print'>>>>>>>>>>>>>>month,year',year,month
+            total_days= monthrange(year, month)[1]
+            for i in range(1,total_days+1):
+                date_dict[i] = datetime.date(year,month,i)
+            date_from = datetime.date(year,month, 1)
+            date_to = datetime.date(year, month, total_days)
+                
+            #sheet.nrows
+            for i in range(1,sheet.nrows):
+                emp_code =sheet.row_values(i,0,sheet.ncols)[1]
+            
+                employee_id = employee_obj.search(cr,uid,[('identification_id1','=',emp_code)])
+                print'<<<<<<<<<<<<<<<<<<<<<<',emp_code
+                if employee_id:
+                    employee_id = employee_id[0]
+                    attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])
+                    if not attendance_id:
+                        attendance_id = attendance_obj.create(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
+                    else:
+                        attendance_id = attendance_id[0]
+                    d = 1
+                    for j in sheet.row_values(i,3,monthrange(year, month)[1]+3):
+                        j=j.upper()
+                        print'<<<<<<<<<<<<<<',j
+                        
+                        if j =='T' or j=='O' or j=='M' or j=='P':
+                            final_result='P'
+                        elif j=='L' or j=='C' or j=='SL':
+                            final_result='PL'
+                        elif j=='U' or j=='SL':
+                            final_result='UL'
+                        elif j=='W':
+                            final_result='WO'
+                        elif j=='A' or j=='':
+                            final_result='A'
+                        elif j=='H':
+                            final_result='H' 
+                       
+                                           
+                        att_line_id =attendance_line_obj.search(cr, uid, [('date', '=', date_dict[d]),
+                                                             ('attendance_table','=',attendance_id)])
+                        if att_line_id:
+                            attendance_line_obj.write(cr, uid,att_line_id,{'employee_id': employee_id,
+                              'date' : date_dict[d],'attendance_table':attendance_id,
+                              'goa_drive_attendance':j,'final_result':final_result})
+                        else:   
+                            attendance_line_obj.create(cr,uid,{'employee_id': employee_id,
+                              'date' : date_dict[d],'attendance_table':attendance_id,
+                              'goa_drive_attendance':j,'final_result':final_result}) 
+                         
+                        d +=1
+            i+=1
+                         
                    
-                                       
-                    att_line_id =attendance_line_obj.search(cr, uid, [('date', '=', date_dict[d]),
-                                                         ('attendance_table','=',attendance_id)])
-                    if att_line_id:
-                        attendance_line_obj.write(cr, uid,att_line_id,{'employee_id': employee_id,
-                          'date' : date_dict[d],'attendance_table':attendance_id,
-                          'goa_drive_attendance':j,'final_result':final_result})
-                    else:   
-                        attendance_line_obj.create(cr,uid,{'employee_id': employee_id,
-                          'date' : date_dict[d],'attendance_table':attendance_id,
-                          'goa_drive_attendance':j,'final_result':final_result}) 
-                     
-                    d +=1
-        #i+1
-                     
-               
-      
+          
                    
                                        
                       

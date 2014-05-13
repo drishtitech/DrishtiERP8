@@ -107,7 +107,14 @@
             
             </page>
             </xpath>
-           
+            
+              <xpath expr="/form/sheet/notebook/page[@string='HR Settings']" position="inside">
+              <group>
+              	<field name='lifeguard'/>
+              </group>
+                    
+           </xpath>
+                
            
                   
            <xpath expr="/form/sheet/notebook/page[@string='Personal Information']" position="attributes">
@@ -188,7 +195,7 @@
 				<group col="2" colspan="2" string="Family Particulars">
 					
 					<field name="father_name"/>
-					<field name="family_line" widget="one2many" colspan="4"/>
+					<field name="family_line" widget="one2many" string="Family Particulars" nolabel="1" colspan="4"/>
 				</group>
 				<group col="2" colspan="2" string="Nominee Details">
            		 <field name="nominee"/>
@@ -268,15 +275,15 @@
    	           		 
             	</page>
             	
-            	<page string="Lifeguards Training Section">
+            	<page string="Lifeguards Training Section" attrs="{'invisible':[('lifeguard', '=', False)]}">
                 
        		    <group col="2" colspan="2" string="Beach Lifeguard Details">
 					
-					<field name="beach_line" widget="one2many" colspan="4"/>
+					<field name="beach_line" widget="one2many" string="Beach Lifeguard Details" nolabel="1" colspan="4"/>
 				</group>
 				<group col="2" colspan="2" string="Jetski (Surf Rescue) Operator">
 					
-					<field name="jetski_line" widget="one2many" colspan="4"/>
+					<field name="jetski_line" widget="one2many" string="Jetski (Surf Rescue) Operator" nolabel="1" colspan="4"/>
 				</group>
             	
             	
@@ -284,18 +291,18 @@
             	
             	<page string="Performance History">
             	<group col="2" colspan="2" string="Annual Assessment">
-            	<field name="annual_line" widget="one2many" colspan="4"/>
+            	<field name="annual_line" widget="one2many" string="Annual Assessment" nolabel="1" colspan="4"/>
             	</group>
             	<group col="2" colspan="2" string="Achievements/Certificates">
-            	<field name="achievement_line" widget="one2many" colspan="4"/>
+            	<field name="achievement_line" widget="one2many" string="Achievements/Certificates" nolabel="1" colspan="4"/>
             	</group>
             	<group col="2" colspan="2" string="Offence Details">
-            	<field name="offence_line" widget="one2many" colspan="4"/>
+            	<field name="offence_line" widget="one2many" string="Offence Details" nolabel="1" colspan="4"/>
             	</group>
             	</page>
                 <page string="Attachments">
                 <group>
-                <field name="attachment_line" widget="one2many" colspan="4"/>
+                <field name="attachment_line" widget="one2many" string="Attachments" nolabel="1" colspan="4"/>
                 </group>
                 </page>           	
             	
