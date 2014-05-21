@@ -56,8 +56,8 @@ holidays_calendar()
 
 
 class hr_holidays_payroll_code(osv.osv):
-	_name = 'hr.holidays.payroll.code'
-	_columns = {
+    _name = "hr.holidays.payroll.code"
+    _columns = {
 		'name' : fields.char('Code'),
 		'description' : fields.char('Description'),
 }
@@ -88,7 +88,8 @@ class hr_contract(osv.osv):
         'supplementary_allowance':fields.float(' Supplementary Allowance '),
         'tds':fields.float('TDS'),
         'voluntary_provident_fund':fields.float('Voluntary Provident Fund (%)'),
-        'medical_insurance':fields.float('Medical Insurance')
+        'medical_insurance':fields.float('Medical Insurance'),
+        'over_time_allowence':fields.integer('Over Time',size=124)
         }
      
     _defaults = {
@@ -104,9 +105,7 @@ class hr_contract(osv.osv):
     
     def default_get(self, cr, uid, fields, context=None):
         res = super(hr_contract, self).default_get(cr, uid, fields, context=context)
-        act_id=context.get('active_id')
         if context.get('active_id'):
-            tomerge = set([int(context['active_id'])])
             obj = self.browse(cr, uid, int(context['active_id']), context=context)
             
             #a=str(obj.date_end)
@@ -234,7 +233,7 @@ class hr_attendance_table_line(osv.osv):
     'employee_id': fields.related('attendance_table', 'employee_id', string='Employee Id',store=True,type='many2one',relation="hr.employee",readonly=True),
    # 'employee_id':fields.related('attendance_table','employee_id',type='many2one','Employee Id'),
  #   'employee_id': fields.many2one('hr.employee', 'Employee', required=True),
-    'date': fields.date('Attendance Date'),
+    'date': fields.date('Attendance Date',required=True),
 	'attendance': fields.boolean('Absent/Present'),
 	'absent_info': fields.char('Holiday Information', size=124),
 	'final_result': fields.selection([('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')],'Result'),
@@ -244,8 +243,8 @@ class hr_attendance_table_line(osv.osv):
     #'goa_drive_hr_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('P','P'),('A','A'),('SL','SL'),('H','H')],'HR Drive Attendance'),
 
    'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance'),
-   'login_time':fields.datetime('Punch In'),
-   'logout_time':fields.datetime('Punch Out')
+   'login_time':fields.char('Punch In'),
+   'logout_time':fields.char('Punch Out')
    }
        
     def fetch_attendance_info(self,cr,uid,ids,context=None):
@@ -339,6 +338,9 @@ class hr_payslip(osv.osv):
                 contract_ids = self.get_contract(cr, uid, payslip.employee_id, payslip.date_from, payslip.date_to, context=context)
             lines = [(0,0,line) for line in self.pool.get('hr.payslip').get_payslip_lines(cr, uid, contract_ids, payslip.id, context=context)]
             self.write(cr, uid, [payslip.id], {'line_ids': lines, 'number': number,}, context=context)
+#             input_id=self.pool.get('hr.payslip.input').search(cr,uid,[('payslip_id','=',payslip.id),('code','=','OT')])
+#             self.pool.get('hr.payslip.input').write(cr,uid,input_id,{'amount':payslip.contract_id.over_time_allowence})
+#             
         return True
     
     
@@ -532,10 +534,38 @@ class hr_payslip(osv.osv):
                l = [salarydays,att_records['MONTHDAYS'], att_records['P'], att_records['worked'], att_records['A'], att_records['PL'], att_records['WO'], att_records['UL'], att_records['H'], att_records['HH'],]            
            else:
                
-               l = [salarydays,att_records['MONTHDAYS'], att_records['P'],  att_records['A'], att_records['PL'],  att_records['UL'],]  
+               l = [salarydays,att_records['MONTHDAYS'], att_records['P'], att_records['worked'], att_records['A'], att_records['PL'], att_records['WO'], att_records['UL'], att_records['H'], att_records['HH'],] 
+                
+                #l = [salarydays,att_records['MONTHDAYS'], att_records['P'],  att_records['A'], att_records['PL'],  att_records['UL'],]  
        return l         
     
+
+class employee_allowance(osv.osv):
     
+    _name ="employee.allowance"
+    
+    _columns = {
+               
+               'allowance_to_date':fields.date("Date To",required=True),
+               'allowance_from_date':fields.date("Date From",required=True),
+               'overtime_allowance_id':fields.one2many('employee.allowance.line','overtime_id','Employee allowance')
+        
+               }
+    
+    
+class employee_allowance_line(osv.osv):
+    
+    _name ="employee.allowance.line"
+    
+    _columns = {
+               'overtime_id':fields.many2one('employee.allowance','Employee Allowance'),
+               'employee_id':fields.many2one('hr.employee', 'Employee',required=True),
+               'overtime':fields.integer('Overtime',size=124),
+               'mobile_advance':fields.integer('Advance',size=124),
+               'arrears':fields.integer('Arrears',size=124)
+               }
+    
+       
     
     
     

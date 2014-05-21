@@ -18,18 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import StringIO
-import cStringIO
 import base64
 import xlrd
-import string
 import calendar
 from calendar import monthrange
 import datetime
+import time
+
+
 
 class attendance_import(osv.osv_memory):
     _name='attendance.import'
@@ -37,18 +38,14 @@ class attendance_import(osv.osv_memory):
               'file':fields.binary("File Path:"),
               'file_name':fields.char('File Name:'),
               'location':fields.selection([('1', 'Mumbai'), ('2', 'Goa')],'Location'),
-              'date':fields.date('Date')
-              #'from_date': fields.date('From Date',required=True),
-            #  'to_date': fields.date('To Date',required=True),
-#                'month' : fields.selection([('1', 'January'), ('2', 'February'), 
-#                                             ('3', 'March'), ('4', 'April'), 
-#                                            ('5', 'May'), ('6', 'June'),
-#                                             ('7', 'July'), ('8', 'August'),
-#                                             ('9', 'September'), ('10', 'October'),
-#                                             ('11', 'November'), ('12', 'December'),], 'Month'),
-#                'year' : fields.selection([('2012', '2012'),('2013', '2013'), ('2014', '2014'), 
-#                                             ('2015', '2015'), ('2016', '2016'),],'Year'),
+              'date':fields.date('Date'),
               }
+    
+    _defaults={
+               'date': lambda *a:time.strftime("%Y-%m-%d")
+               }
+    
+    
     def import_attendance1(self,cr,uid,ids,context=None):
  
         cur_obj = self.browse(cr,uid,ids)[0]
@@ -298,7 +295,7 @@ class attendance_import(osv.osv_memory):
                         
                         if j =='T' or j=='O' or j=='M' or j=='P':
                             final_result='P'
-                        elif j=='L' or j=='C' or j=='SL':
+                        elif j=='L' or j=='C' :
                             final_result='PL'
                         elif j=='U' or j=='SL':
                             final_result='UL'
@@ -331,3 +328,71 @@ class attendance_import(osv.osv_memory):
                       
                      
         return True   
+    
+    
+    
+    def import_attendance_mumbai(self,cr,uid,ids,context=None):
+        attendance_obj = self.pool.get('hr.attendance.table')
+        attendance_line_obj = self.pool.get('hr.attendance.table.line')
+        employee_obj = self.pool.get('hr.employee')
+        
+        cur_obj = self.browse(cr,uid,ids)[0]
+        file_data=cur_obj.file
+        val=base64.decodestring(file_data)
+        fp = StringIO.StringIO()
+        fp.write(val)    
+        wb = xlrd.open_workbook(file_contents=fp.getvalue())
+        sheet=wb.sheet_by_index(0)
+        
+        
+        date_dict = {}
+        date=cur_obj.date
+        year = int(date[:4])     
+        month = int(date[5:7])
+        total_days= monthrange(year, month)[1]
+        for i in range(1,total_days+1):
+            date_dict[i] = datetime.date(year,month,i)
+        date_from = datetime.date(year,month, 1)
+        date_to = datetime.date(year, month, total_days)
+        row =0
+        final_result=''
+        while row < sheet.nrows:
+            if sheet.cell_value(row,0) == 'Emp Code':
+                emp_code = str(int(sheet.cell_value(row,2)))
+                emp_code =emp_code[:len(emp_code)-11]
+                emp_code = '0'* (4-len(str(int(emp_code)))) + str(int(emp_code))
+                employee_id = employee_obj.search(cr,uid,[('identification_id1','=',emp_code)])
+                if employee_id:
+                    attendance_id = attendance_obj.create(cr,uid,{'employee_id': employee_id[0],'date_from' : date_from,'date_to' : date_to})
+                    row +=5
+                    for i in range(1,total_days+1):
+                        
+                        login_time = sheet.cell_value(row,5)
+                        logout_time = sheet.cell_value(row,6)
+                        print "row",row
+                        status = sheet.cell_value(row,10)
+                        if status=='P':
+                            final_result='P'
+                        elif status=='A' :
+                            final_result ='A'
+                            
+                        att_line_id =attendance_line_obj.search(cr, uid, [('date', '=', date_dict[i]),
+                                                      ('attendance_table','=',attendance_id)])
+                        if att_line_id:
+                            attendance_line_obj.write(cr, uid,att_line_id,{'final_result':final_result})
+                        else:   
+                            attendance_line_obj.create(cr,uid,{'employee_id': employee_id[0],
+                                                   'date' : date_dict[i],'attendance_table':attendance_id,
+                                                   'final_result':final_result,'login_time':login_time,'logout_time':logout_time}) 
+                        row +=1
+                            
+                else:
+                    row += total_days+5
+            else:        
+                row +=1
+        return True
+        
+  
+
+
+

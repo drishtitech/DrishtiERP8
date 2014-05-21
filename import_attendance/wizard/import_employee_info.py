@@ -223,6 +223,7 @@ class attendance_import(osv.osv_memory):
             contract_start_date =sheet.row_values(i,0,sheet.ncols)[9]
             da_lta_fa =sheet.row_values(i,0,sheet.ncols)[10]
             house_rent_allowance =sheet.row_values(i,0,sheet.ncols)[11]
+            over_time =sheet.row_values(i,0,sheet.ncols)[5]
             
             import datetime
             date_of_joining = datetime.datetime.strptime(contract_start_date, "%d/%m/%Y")
@@ -263,7 +264,7 @@ class attendance_import(osv.osv_memory):
             print contract_id, "CONTRACT-ID exists............."
             if not contract_id:
                 print "new contract created"
-                new_contract = self.pool.get('hr.contract').create(cr,uid,{'struct_id': structure_number,'name' : emp_name,'employee_id' : emp_number,'wage': emp_wage, 'nutritional_allowance': nutritional_allowance,  'attendance_incentive': att_inc_allowance, 'working_hours': schedule_number, 'date_start': date_of_joining, 'da_lta_fa': da_lta_fa, 'hra': house_rent_allowance})
+                new_contract = self.pool.get('hr.contract').create(cr,uid,{'over_time_allowence':over_time,'struct_id': structure_number,'name' : emp_name,'employee_id' : emp_number,'wage': emp_wage, 'nutritional_allowance': nutritional_allowance,  'attendance_incentive': att_inc_allowance, 'working_hours': schedule_number, 'date_start': date_of_joining, 'da_lta_fa': da_lta_fa, 'hra': house_rent_allowance})
         #    for cl_browse in self.pool.get('hr.contract').browse(cr,uid,contract_id):
                         #self.pool.get('hr.contract').write(cr,uid,cl_browse.id,{'wage': emp_wage, 'struct_id': structure_number, 'nutritional_allowance': nutritional_allowance,  'attendance_incentive': att_inc_allowance, 'holidays_id': calendar_number})
                         
