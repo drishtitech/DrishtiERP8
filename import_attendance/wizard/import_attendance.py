@@ -38,8 +38,8 @@ class attendance_import(osv.osv_memory):
               'file':fields.binary("File Path:"),
               'file_name':fields.char('File Name:'),
               'location':fields.selection([('1', 'Mumbai'), ('2', 'Goa')],'Location'),
-              'date':fields.date('Date'),
-              }
+              'date': fields.date('Date')             
+               }
     
     _defaults={
                'date': lambda *a:time.strftime("%Y-%m-%d")
@@ -297,7 +297,9 @@ class attendance_import(osv.osv_memory):
                             final_result='P'
                         elif j=='L' or j=='C' :
                             final_result='PL'
-                        elif j=='U' or j=='SL':
+                        elif j=='U':
+                            final_result='UL'
+                        elif j=='SL':
                             final_result='UL'
                         elif j=='W':
                             final_result='WO'
@@ -320,13 +322,6 @@ class attendance_import(osv.osv_memory):
                          
                         d +=1
             i+=1
-                         
-                   
-          
-                   
-                                       
-                      
-                     
         return True   
     
     
@@ -343,8 +338,6 @@ class attendance_import(osv.osv_memory):
         fp.write(val)    
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
         sheet=wb.sheet_by_index(0)
-        
-        
         date_dict = {}
         date=cur_obj.date
         year = int(date[:4])     

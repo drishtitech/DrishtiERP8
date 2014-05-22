@@ -2,9 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_annual_assessment,annual.assessment,model_annual_assessment,base.group_hr_user,1,1,1,1
 access_language_details,language.details,model_language_details,base.group_hr_user,1,1,1,1
 access_family_details,family.details,model_family_details,base.group_hr_user,1,1,1,1
-access_qualification_details3,qualification.details3,model_qualification_details3,base.group_hr_user,1,1,1,1
-access_qualification_details1,qualification.details1,model_qualification_details1,base.group_hr_user,1,1,1,1
-access_qualification_details2,qualification.details2,model_qualification_details2,base.group_hr_user,1,1,1,1
+access_hr_employee_qualification,hr.employee.qualification,model_hr_employee_qualification,base.group_hr_user,1,1,1,1
 access_achievement_details,achievement.details,model_achievement_details,base.group_hr_user,1,1,1,1
 access_beach_lifeguard,beach.lifeguard,model_beach_lifeguard,base.group_hr_user,1,1,1,1
 access_offence_details,offence.details,model_offence_details,base.group_hr_user,1,1,1,1
