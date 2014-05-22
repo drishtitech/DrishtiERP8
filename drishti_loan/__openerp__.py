@@ -33,7 +33,7 @@
  
     'images': [
                ],
-    'depends': ['base', 'hr','drishti_location'],
+    'depends': ['base', 'hr',],
     'data': [   'employee_loan_view.xml',
                 'emp_loan_sequence.xml',
                 'security/ir.model.access.csv',
