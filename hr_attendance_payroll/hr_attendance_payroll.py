@@ -94,14 +94,7 @@ class hr_contract(osv.osv):
      
     _defaults = {
         'current_date': lambda *a: time.strftime("%Y-%m-%d")
-     }
-        
-#     def onchange_emp(self, cr, uid, ids, employee_id, context=None):
-#         if employee_id:
-#             emp_id = self.pool.get('hr.employee').browse(cr, uid, employee_id, context)
-#             function=emp_id.job_id.id
-#         return {'value':{'job_id':function}} 
-#     
+     }     
     
     def default_get(self, cr, uid, fields, context=None):
         res = super(hr_contract, self).default_get(cr, uid, fields, context=context)
@@ -118,14 +111,7 @@ class hr_contract(osv.osv):
             res.update({'name' : obj.name,'employee_id':obj.employee_id.id,'date_start':obj.current_date,'visa_expire' : obj.visa_expire,'permit_no':obj.permit_no,'visa_no':obj.visa_no,'house_rent_allowance_metro_nonmetro':obj.house_rent_allowance_metro_nonmetro,'supplementary_allowance':obj.supplementary_allowance,'tds':obj.tds,'voluntary_provident_fund':obj.voluntary_provident_fund,'medical_insurance':obj.medical_insurance,'advantages':obj.advantages,'notes':obj.notes,'nutritional_allowance':obj.nutritional_allowance,'attendance_incentive':obj.attendance_incentive,'da_lta_fa':obj.da_lta_fa,'special_allowance':obj.special_allowance,'bonus_amount':obj.bonus_amount,'hra':obj.hra,'schedule_pay':obj.schedule_pay,'struct_id':obj.struct_id.id,'working_hours':obj.working_hours.id, 'job_id':obj.job_id.id
                     })
             self.write(cr, uid, obj.id, {'date_end':str(previous_date)})
-        return res
-    
-#     _defaults = {
-#          
-#         'date_end': lambda *a: datetime.date.today().strftime('%Y-%m-%d')
-#         
-#        }
-    
+        return res   
     def new_contract(self,cr,uid,vals,context={}):
         
         res = {

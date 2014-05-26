@@ -36,9 +36,6 @@
             <field name="name" position="after">
             <field name="identification_id1"/>
             <field name="category_ids" invisible="1"/>
-           <field name="name"/>
-           <!--field name="type"/-->
-           
            
             </field>
            </field>
@@ -129,11 +126,7 @@
            		 <field name="identification_marks"/>
            		 <field name="attendance" />
            		 </group>
-           		 <group string="Identification Proof Details">
-           		 
-           		 <field name="driving_license_no"/>
-           		 <field name="aadhar_no"/>
-           		 </group>
+           		
            		 </group>
            		 <group>
            		 <group string="Status">
@@ -161,8 +154,15 @@
 					<field name="complexion"/>
 				</group>
 				</group>
+			<group col="2" colspan="2" string="Current Address">
+           		 <field name="current_address_line"/>
+           		 <field name="current_city"/>
+           		 <field name="Current_state"/>
+           		 <field name="current_pincode"/>
+           		 <field name="current_district"/>				
+			</group>
            		 
-           		 <group col="2" colspan="2" string="Permanent Address">
+           	<group col="2" colspan="2" string="Permanent Address">
            		 <field name="house_no"/>
            		 <field name="ward"/>
            		 <field name="village"/>
@@ -175,9 +175,8 @@
            		 <field name="pincode"/>
            		 <field name="landmark"/>
            		 <field name="other"/>
-           		 	
-					
 				</group>
+			
 				<group string="Citizenship &amp; Other Info">
                 <field name="country_id"/>
                 
@@ -185,7 +184,10 @@
                 
                 <field name="otherid" groups="base.group_hr_user"/>
                 </group>
-				
+				 <group string="Identification Proof Details">
+           		 
+           		 <field name="employee_identification_proof_no" widget="one2many" colspan="4" nolabel="1"/>
+           		 </group>
            		 
            		<group col="2" colspan="2" string="Language Proficiency">
 					
@@ -308,10 +310,10 @@
             	
 				<page string="Previous Job History">
 				<group col="2" colspan="2" string="Previous Job History">
-				<field name="previous_employer"/>
-				<field name="previous_job"/>
+				<field name="previous_job_history" widget="one2many" string="Previous Job History" nolabel="1"/>
+				<!--field name="previous_job"/>
 				<field name="period"/>
-				<field name="reason_leaving"/>
+				<field name="reason_leaving"/-->
 				</group>
 				
 				</page>
@@ -673,12 +675,35 @@
 				</form>
             </field>
         </record>
-        
-        
-        
-        
-        
+ <record id="view_employee_documents_tree" model="ir.ui.view">
+            <field name="name">hr.employee.document.tree</field>
+            <field name="model">hr.employee.document</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Identification Details">
+			<field name="identification_proof_id" invisible="1"/>
+			<field name="document_name"/>
+			<field name="document_no"/> 
+			<field name="attachment"/>
+			      
+                </tree>
+            </field>
+        </record>
 
-	
+	<record id="view_employee_documents_form" model="ir.ui.view">
+            <field name="name">hr.employee.document.form</field>
+            <field name="model">hr.employee.document</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Identification Details">
+			<field name="identification_proof_id" invisible="1"/>
+			<field name="document_name"/>
+			<field name="document_no"/> 
+			<field name="attachment"/>
+			</form>
+            </field>
+        </record>
+        
+  
     </data>
 </openerp>

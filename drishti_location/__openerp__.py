@@ -33,7 +33,7 @@
  
     'images': [
                ],
-    'depends': ['base','hr','purchase','purchase_requisition'],
+    'depends': ['base','stock','hr','purchase','purchase_requisition'],
     'data': [    'security/location_security_view.xml',
                  'security/ir.model.access.csv',
                  'drishti_location_view.xml',

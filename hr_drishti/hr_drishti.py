@@ -59,7 +59,7 @@ class hr_employee(osv.osv):
        'employment_exchange_no':fields.char('Employment Exchange No.', size=124),
        'blood_group':fields.selection([('A-ve','A-ve'),('B-ve','B-ve'),('AB-ve','AB-ve'),('O-ve','O-ve'),('A+ve','A+ve'),('B+ve','B+ve'),('AB+ve','AB+ve'),('O+ve','O+ve')],'Blood Group'),
        'father_name':fields.char("Father's Name", size=124),
-       'driving_license_no':fields.char("Driving License No", size=124),
+       'employee_identification_proof_no':fields.one2many("hr.employee.document",'identification_proof_id',"Document", size=124),
        'nominee':fields.char("Nominee (Next of Kin)", size=124),
        'relationship':fields.many2one('relation.name',"Relationship", size=124),
        'address':fields.text("Address", size=124),
@@ -79,7 +79,7 @@ class hr_employee(osv.osv):
        'height':fields.integer("Height", size=124),
        'weight':fields.integer("Weight", size=124),
        'complexion':fields.char("Complexion", size=124),
-       'previous_employer':fields.char("Previous Employer", size=124),
+       'previous_job_history':fields.one2many("hr.employee.job.history",'previous_job_id','Previous Job History',size=124),
        'previous_job':fields.text("Job Description", size=124),
        'period':fields.char("Period", size=124),
        'reason_leaving':fields.text("Reason for leaving", size=124),
@@ -149,11 +149,16 @@ class hr_employee(osv.osv):
       'attendance':fields.boolean('Attendance'),
       'creation_date':fields.date("Date",required=True),
       'birthday':fields.date('Birth Date'),
-#       'type':fields.selection([('office_staff','Office Staff'),('non_office_staff','Non-Office Staff')],'Type of Employee',required=True),
-#       'office_staff':fields.many2one('beach.lifeguard','Official Staff',domain="[('type', '=', 'office_staff')]"),
-#       'non_office_staff':fields.many2one('beach.lifeguard','Non-official Staff',domain="[('type', '=', 'non_office_staff')]"),
-      'place_of_birth':fields.text('Birth Place'),
-      'lifeguard':fields.boolean('Life Guard')
+      'place_of_birth':fields.char('Birth Place'),
+      'lifeguard':fields.boolean('Life Guard'),
+      'current_address_line':fields.char("Adress Line No1"),
+      'current_city':fields.char("City"),
+      'Current_state':fields.many2one("res.country.state",'State'),
+      'current_pincode':fields.integer("Pincode"),
+      'current_district':fields.many2one("taluka.name","District/Taluka"),
+      'emp_first_name':fields.char("First Name"),
+      'emp_middle_name':fields.char("Middle Name"),
+      'emp_last_name':fields.char("Last Name")
 
         }
     
@@ -165,16 +170,6 @@ class hr_employee(osv.osv):
                'lifeguard':True
                
                }
-        
-#     def onchange_lifegaurd(self, cr, uid, ids, lifeguard):
-#             v={}
-#             if lifeguard == 'True':
-#                 partner1=self.browse(cr, uid, type)
-#                 v['beach_line']=False
-#                
-#             else:
-#                 v['beach_line']=True
-#             return {'value':v} 
            
     def _check_birth_date(self, cr, uid, ids, context=None):
         for date in self.read(cr,uid,ids,['birthday','creation_date'],context=None):
@@ -203,15 +198,6 @@ class hr_employee(osv.osv):
         return True
     
     _constraints=[(_check_birth_date,'Error!birth date must be 18 years and lesser than current date.',['birthday','creation_date'])] 
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     def onchange_bank_id(self, cr, uid, ids, bank_id, context=None):
         result = {}
@@ -288,35 +274,6 @@ class qualification_details1(osv.osv):
 
 qualification_details1()
 
-# class qualification_details2(osv.osv):
-#     _name = "qualification.details2"
-#     _description = "Professional Qualifications"
-#     _columns = {
-#         'qualification_id2': fields.integer('Qualification No.', size=124),
-#         'degree':fields.char('Degree', size=124),
-#         'institute':fields.char('Institute', size=124),
-#         'board': fields.char('University/Board', size=124),
-#         'marks': fields.char('% Marks', size=124),
-#         'year': fields.char('Year of Completion', size=124),
-# 
-#         }
-# 
-# qualification_details2()
-# 
-# class qualification_details3(osv.osv):
-#     _name = "qualification.details3"
-#     _description = "Other Qualifications"
-#     _columns = {
-#         'qualification_id3': fields.integer('Qualification No.', size=124),
-#         'degree':fields.char('Degree', size=124),
-#         'institute':fields.char('Institute', size=124),
-#         'board': fields.char('University/Board', size=124),
-#         'marks': fields.char('% Marks', size=124),
-#         'year': fields.char('Year of Completion', size=124),
-# 
-#         }
-# 
-# qualification_details3()
 
 class family_details(osv.osv):
     _name = "family.details"
@@ -481,15 +438,38 @@ class offence_details(osv.osv):
 
 offence_details()
 
-# class res_city(osv.osv):
-#     _name="res.city"
-#     _description = "City of Birth"
-#     _columns={
-#            
-#            'name':fields.char('City Name',size=124),
-#            'state':fields.many2one('res.country.state','State'),
-#            
-#              }
-# res_city()
+class hr_employee_job_history(osv.osv):
+    
+    _name = "hr.employee.job.history"
+    
+    _columns = {
+                
+                'previous_job_id':fields.many2one('hr.employee','Previous job History')
+                
+                }
+
+class hr_employee_document(osv.osv):
+    
+    _name = "hr.employee.document"
+    
+    _columns = {
+                
+               'identification_proof_id':fields.many2one("hr.employee",'Document'),
+               'document_name':fields.char("Identification Document"), 
+               'document_no':fields.integer("Document No"),
+               'attachment':fields.binary("Attachment")
+               
+                
+                }
+    
+# class hr_employee_document_details(osv.osv):
+#     
+#     _name = "hr.employee.document.details"
+#     
+#     _columns = {
+#                 'document_id':fields.many2one('hr.employee.document','Document'),
+#                 'document_name_':fields.char("Document")
+#                 }
+#     
 
 
