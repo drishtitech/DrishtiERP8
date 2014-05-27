@@ -62,12 +62,29 @@
                             <h2>
                                 <field name="name"/>
                             </h2>
+                            
+                            <label for="emp_first_name"/>
+                           <h2>
+                                
+                                <field name="emp_first_name" placeholder="First Name"/>
+                            </h2>
+                            <label for="emp_middle_name"/>
+                            
+                             <h2>
+                                
+                                <field name="emp_middle_name" placeholder="Middle Name"/>
+                            </h2>
+                            <label for="emp_last_name"/>
+                            
+                             <h2>
+                                
+                                <field name="emp_last_name" placeholder="Last Name"/>
+                            </h2>
                             <label for="identification_id1"/>
                             <h2>
                                 
                                 <field name="identification_id1"/>
                             </h2>
-                           
                             <!--label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
                             <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/-->
                             <label for="category" class="oe_edit_only"/>
@@ -108,6 +125,7 @@
               <xpath expr="/form/sheet/notebook/page[@string='HR Settings']" position="inside">
               <group>
               	<field name='lifeguard'/>
+              	 <field name="attendance" />
               </group>
                     
            </xpath>
@@ -124,7 +142,7 @@
                  <group string="Personal Particulars">
                  <field name="blood_group"/>
            		 <field name="identification_marks"/>
-           		 <field name="attendance" />
+           		
            		 </group>
            		
            		 </group>
@@ -132,6 +150,8 @@
            		 <group string="Status">
                  <field name="gender"/>
                  <field name="marital"/>
+                 <field name="marrage_date" attrs="{'invisible':[('marital', '=', 'Unmarried')]}"/>
+                 <field name="no_of_children" attrs="{'invisible':[('marital', '=', 'Unmarried')]}"/>
                  </group>
                  <group string="Birth Details">
                  	<field name="birthday"/>
@@ -146,6 +166,7 @@
            		 <field name="emergency_contact"/>
            		 <field name="telephone_no1"/>
            		 <field name="mobile_no1"/>
+           		 <field name="email_id"/>
            		 </group>
           		 <group string="Physical Particulars">
 					
@@ -154,26 +175,46 @@
 					<field name="complexion"/>
 				</group>
 				</group>
-			<group col="2" colspan="2" string="Current Address">
-           		 <field name="current_address_line"/>
-           		 <field name="current_city"/>
-           		 <field name="Current_state"/>
-           		 <field name="current_pincode"/>
-           		 <field name="current_district"/>				
-			</group>
+			
+			 <!--label for="street1" string=" Current Address"/-->
+			 <group col ="2" colspan="2" string="Current Address" >
+			 
+		          <field name="street1" placeholder="Street1..."  attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+                 	<field name="street2" placeholder="Street2..."  attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+                 
+                 <div class="address_format">
+                     <field name="current_city" placeholder="City" style="width: 40%%" attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+                     <field name="Current_state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'  attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+                     <field name="pincode" placeholder="ZIP" style="width: 20%%" attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+                      
+                 </div>
+           		 <field name ="landmark" placeholder="Landmark" style="width: 20%%" attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+           		 <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}' attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+           	</group>
+           		
+			
            		 
            	<group col="2" colspan="2" string="Permanent Address">
-           		 <field name="house_no"/>
-           		 <field name="ward"/>
+           		<field name="goa_employee"/>
+           		 <field name="same_current_address"/>
+           		 <field name="house_no" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
+           		 <field name="ward" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="village"/>
-           		 <field name="municipality"/>
-           		 <field name="district"/>
-           		 <field name="constituency"/>
-           		 <field name="taluka"/>
+           		 <field name="municipality" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
+           		 <field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
+           		 <field name="constituency" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
+           		 <field name="taluka" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="state_name"/>
-           		 <field name="post_office"/>
+           		 <field name="post_office" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="pincode"/>
            		 <field name="landmark"/>
+           		 
+           		 <group col="2" colspan ="2" attrs="{'invisible':[('goa_employee','!=',False)]}">
+           		 <field name ="street1"/>
+           		 <field name ="street2"/>
+           		 <field name="country_id"/>
+           		 </group>
+           	
            		 <field name="other"/>
 				</group>
 			
@@ -186,7 +227,7 @@
                 </group>
 				 <group string="Identification Proof Details">
            		 
-           		 <field name="employee_identification_proof_no" widget="one2many" colspan="4" nolabel="1"/>
+           		 <field name="employee_identification_proof_detail" colspan="4" nolabel="1"/>
            		 </group>
            		 
            		<group col="2" colspan="2" string="Language Proficiency">
@@ -205,7 +246,6 @@
            		 <field name="address"/>
            		 <field name="telephone_no"/>
            		 <field name="mobile_no"/>
-           		 <field name="email_id"/>
            		 </group>
 				
 				
@@ -310,10 +350,7 @@
             	
 				<page string="Previous Job History">
 				<group col="2" colspan="2" string="Previous Job History">
-				<field name="previous_job_history" widget="one2many" string="Previous Job History" nolabel="1"/>
-				<!--field name="previous_job"/>
-				<field name="period"/>
-				<field name="reason_leaving"/-->
+				<field name="previous_job_history" nolabel="1"/>
 				</group>
 				
 				</page>
@@ -415,6 +452,7 @@
                 <tree string="Educational Qualifications">
 			<field name="qualification_id1" invisible="1"/>
 			<field name="degree"/>
+			<field name="specialization"/>
 			<field name="institute"/> 
 			<field name="board"/>
 			<field name="marks"/>
@@ -432,6 +470,7 @@
                 <form string="Educational Qualifications">
 			<field name="qualification_id1" invisible="1"/>
 			<field name="degree"/>
+			<field name="specialization"/>
 			<field name="institute"/> 
 			<field name="board"/>
 			<field name="marks"/>
@@ -448,6 +487,7 @@
                 <tree string="Professional Qualifications">
 			<field name="qualification_id2" invisible="1"/>
 			<field name="degree"/>
+			<field name="specialization"/>
 			<field name="institute"/> 
 			<field name="board"/>
 			<field name="marks"/>
@@ -465,6 +505,7 @@
                 <form string="Professional Qualifications">
 			<field name="qualification_id2" invisible="1"/>
 			<field name="degree"/>
+			<field name="specialization"/>
 			<field name="institute"/> 
 			<field name="board"/>
 			<field name="marks"/>
@@ -481,6 +522,7 @@
                 <tree string="Other Qualifications">
 			<field name="qualification_id3" invisible="1"/>
 			<field name="degree"/>
+			<field name="specialization"/>
 			<field name="institute"/> 
 			<field name="board"/>
 			<field name="marks"/>
@@ -495,14 +537,17 @@
             <field name="model">hr.employee.qualification</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Other Qualifications">
-			<field name="qualification_id3" invisible="1"/>
-			<field name="degree"/>
-			<field name="institute"/> 
-			<field name="board"/>
-			<field name="marks"/>
-			<field name="year"/>
-                </form>
+            <form string="Other Qualifications">
+	           	<group>
+				<field name="qualification_id3" invisible="1"/>
+				<field name="degree"/>
+				<field name="specialization"/>
+				<field name="institute"/> 
+				<field name="board"/>
+				<field name="marks"/>
+				<field name="year"/>
+				</group>
+	           </form>
             </field>
         </record>
         <record id="view_family_tree456" model="ir.ui.view">
@@ -510,13 +555,13 @@
             <field name="model">family.details</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="Family Particulars">
-			<field name="family_id" invisible="1"/>
-			<field name="name"/>
-			<field name="relation"/> 
-			<field name="date_of_birth"/>
-			<field name="age"/>
-			<field name="occupation"/>
+            <tree string="Family Particulars">
+				<field name="family_id" invisible="1"/>
+				<field name="name"/>
+				<field name="relation"/> 
+				<field name="date_of_birth"/>
+				<field name="age"/>
+				<field name="occupation"/>
 			<!--field name="masters"/-->        
                 </tree>
             </field>
@@ -675,35 +720,73 @@
 				</form>
             </field>
         </record>
- <record id="view_employee_documents_tree" model="ir.ui.view">
-            <field name="name">hr.employee.document.tree</field>
-            <field name="model">hr.employee.document</field>
+ <record id="view_Identification Proof Detail_tree" model="ir.ui.view">
+            <field name="name">hr.employee.identification.detail.tree</field>
+            <field name="model">hr.employee.identification.detail</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="Identification Details">
-			<field name="identification_proof_id" invisible="1"/>
-			<field name="document_name"/>
-			<field name="document_no"/> 
-			<field name="attachment"/>
+            <tree string="Identification Proof Detail">
+				<field name="employee_id" invisible="1"/>
+				<field name="name"/>
+				<field name="number"/> 
+				<field name="attachment"/>
+				<field name="document_purpose"/>
 			      
                 </tree>
             </field>
         </record>
 
-	<record id="view_employee_documents_form" model="ir.ui.view">
-            <field name="name">hr.employee.document.form</field>
-            <field name="model">hr.employee.document</field>
+	<record id="view_Identification Proof Detail_form" model="ir.ui.view">
+            <field name="name">hr.employee.identification.detail.form</field>
+            <field name="model">hr.employee.identification.detail</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Identification Details">
-			<field name="identification_proof_id" invisible="1"/>
-			<field name="document_name"/>
-			<field name="document_no"/> 
-			<field name="attachment"/>
+            <form string="Identification Proof Detail">
+				<field name="name"/>
+				<field name="number"/> 
+				<field name="attachment"/>
+				<field name="document_purpose"/>
+			
 			</form>
             </field>
         </record>
         
+  
+  <record id="view_employee_job_history_tree" model="ir.ui.view">
+            <field name="name">hr.employee.job.history.tree</field>
+            <field name="model">hr.employee.job.history</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="Previous job History">
+				<field name="employee_id" invisible="1"/>
+				<field name="name"/>
+				<field name="designation"/> 
+				<field name="joining_date"/>
+				<field name="total_exp"/>
+				<field name="change_reason"/>
+			      
+                </tree>
+            </field>
+        </record>
+
+	<record id="view_employee_job_history_tree_form" model="ir.ui.view">
+            <field name="name">hr.employee.job.history.form</field>
+            <field name="model">hr.employee.job.history</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Previous job History">
+				<field name="name"/>
+				<field name="designation"/> 
+				<field name="joining_date"/>
+				<field name="total_exp"/>
+				<field name="change_reason"/>
+			
+			</form>
+            </field>
+        </record>
+        
+  
+  
   
     </data>
 </openerp>

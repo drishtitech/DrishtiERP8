@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-##############################################################################
+##############################################################################git add -A
 
 
 from openerp import addons
@@ -59,7 +59,7 @@ class hr_employee(osv.osv):
        'employment_exchange_no':fields.char('Employment Exchange No.', size=124),
        'blood_group':fields.selection([('A-ve','A-ve'),('B-ve','B-ve'),('AB-ve','AB-ve'),('O-ve','O-ve'),('A+ve','A+ve'),('B+ve','B+ve'),('AB+ve','AB+ve'),('O+ve','O+ve')],'Blood Group'),
        'father_name':fields.char("Father's Name", size=124),
-       'employee_identification_proof_no':fields.one2many("hr.employee.document",'identification_proof_id',"Document", size=124),
+       'employee_identification_proof_detail':fields.one2many("hr.employee.identification.detail",'employee_id',"Identification Proof Detail", size=124),
        'nominee':fields.char("Nominee (Next of Kin)", size=124),
        'relationship':fields.many2one('relation.name',"Relationship", size=124),
        'address':fields.text("Address", size=124),
@@ -79,7 +79,7 @@ class hr_employee(osv.osv):
        'height':fields.integer("Height", size=124),
        'weight':fields.integer("Weight", size=124),
        'complexion':fields.char("Complexion", size=124),
-       'previous_job_history':fields.one2many("hr.employee.job.history",'previous_job_id','Previous Job History',size=124),
+       'previous_job_history':fields.one2many("hr.employee.job.history",'employee_id','Previous Job History',size=124),
        'previous_job':fields.text("Job Description", size=124),
        'period':fields.char("Period", size=124),
        'reason_leaving':fields.text("Reason for leaving", size=124),
@@ -98,14 +98,14 @@ class hr_employee(osv.osv):
        'offence_line':fields.one2many('offence.details','offence_id'," ", size=124),
        'house_no':fields.char("House No./Flat No.", size=124),
        'ward':fields.char("Ward", size=124),
-       'village':fields.char("Village/Town", size=124),
+       'village':fields.char("Village/Town/City", size=124),
        'municipality':fields.char("Municipality/Gram Panchayat", size=124),
        'district':fields.selection([('North Goa', 'North Goa'),('South Goa','South Goa'),('Other','Other')],'District'),
        'constituency':fields.char("Constituency", size=124),
        'taluka':fields.many2one('taluka.name',"Taluka", size=124),
-       'state_name':fields.many2one('state.name',"State", size=124),
+       'state_name':fields.many2one('res.country.state',"State", size=124),
        'post_office':fields.char("Post Office", size=124),
-       'pincode':fields.integer("Pincode", size=124),
+       'pincode':fields.char("Pincode", size=124),
        'landmark':fields.char("Landmark", size=124),
        'other':fields.char("Other", size=124),  
        'address_home_id': fields.many2one('res.partner', 'Home Address'),
@@ -149,16 +149,22 @@ class hr_employee(osv.osv):
       'attendance':fields.boolean('Attendance'),
       'creation_date':fields.date("Date",required=True),
       'birthday':fields.date('Birth Date'),
-      'place_of_birth':fields.char('Birth Place'),
+      'place_of_birth':fields.char('Birth Place',size=124),
       'lifeguard':fields.boolean('Life Guard'),
-      'current_address_line':fields.char("Adress Line No1"),
+      'street1':fields.char("Street"),
+      'street2':fields.char("Street2"),
+      'landmark':fields.char("Landmark"),
       'current_city':fields.char("City"),
-      'Current_state':fields.many2one("res.country.state",'State'),
-      'current_pincode':fields.integer("Pincode"),
-      'current_district':fields.many2one("taluka.name","District/Taluka"),
+      'Current_state_id':fields.many2one("res.country.state",'State'),
+      'country_id':fields.many2one("res.country",'Country'),
+      #'current_pincode':fields.char("Zip"),
       'emp_first_name':fields.char("First Name"),
       'emp_middle_name':fields.char("Middle Name"),
-      'emp_last_name':fields.char("Last Name")
+      'emp_last_name':fields.char("Last Name"),
+      'marrage_date':fields.date("Marriage date"),
+      'no_of_children':fields.integer("Number of children"),
+      'goa_employee':fields.boolean("Goa Employee"),
+      'same_current_address':fields.boolean("Same as above address")
 
         }
     
@@ -198,6 +204,7 @@ class hr_employee(osv.osv):
         return True
     
     _constraints=[(_check_birth_date,'Error!birth date must be 18 years and lesser than current date.',['birthday','creation_date'])] 
+    
     
     def onchange_bank_id(self, cr, uid, ids, bank_id, context=None):
         result = {}
@@ -264,7 +271,8 @@ class qualification_details1(osv.osv):
         'qualification_id1': fields.integer('Qualification No.', size=124),
         'qualification_id2': fields.integer('Qualification No.', size=124),
         'qualification_id3': fields.integer('Qualification No.', size=124),
-        'degree':fields.char('Degree', size=124),
+        'degree':fields.many2one('hr.employee.academic.degree','Degree'),
+        'specialization':fields.many2one('hr.employee.academic.degree.division','specialization'),
         'institute':fields.char('Institute', size=124),
         'board': fields.char('University/Board', size=124),
         'marks': fields.char('% Marks', size=124),
@@ -334,19 +342,6 @@ class relation_name(osv.osv):
         }
 
 relation_name()
-
-
-class state_name(osv.osv):
-    _name = "state.name"
-    _description = "State"
-    _columns = {
-        'name':fields.char('State', size=124),
-
-        }
-
-state_name()
-
-
 
 class beach_lifeguard(osv.osv):
     _name = "beach.lifeguard"
@@ -444,32 +439,44 @@ class hr_employee_job_history(osv.osv):
     
     _columns = {
                 
-                'previous_job_id':fields.many2one('hr.employee','Previous job History')
+                'employee_id':fields.many2one('hr.employee','Previous job History',required=True),
+                'name':fields.char("Previouse Employee Name",required=True),
+                'designation':fields.char("Designation",required=True),
+                'joining_date':fields.date("Date of Joining",required=True),
+                'total_exp':fields.integer("Total Experience(In Months)",required=True),
+                'change_reason':fields.char("Reason For change",required=True)
                 
                 }
 
-class hr_employee_document(osv.osv):
+class hr_employee_identification_detail(osv.osv):
     
-    _name = "hr.employee.document"
+    _name = "hr.employee.identification.detail"
     
     _columns = {
                 
-               'identification_proof_id':fields.many2one("hr.employee",'Document'),
-               'document_name':fields.char("Identification Document"), 
+               'employee_id':fields.many2one("hr.employee",'Employee'),
+               'name':fields.selection([('driving_licence','Driving License'),('aadhar_card','Aadhar Card'),('pan_card','Pan Card'),('voter_id_card','Voter Id Card')],'Identification Name'),
+               'number':fields.char("Identification Number"), 
                'document_no':fields.integer("Document No"),
-               'attachment':fields.binary("Attachment")
+               'attachment':fields.many2one('ir.attachment',"Attachment"),
+               'document_purpose':fields.char("Document Purpose")
                
                 
                 }
     
-# class hr_employee_document_details(osv.osv):
-#     
-#     _name = "hr.employee.document.details"
-#     
-#     _columns = {
-#                 'document_id':fields.many2one('hr.employee.document','Document'),
-#                 'document_name_':fields.char("Document")
-#                 }
-#     
-
-
+class hr_employee_academic_degree(osv.osv):
+    
+    _name= "hr.employee.academic.degree" 
+    _columns = {
+                'name':fields.char("Name",required =  True),
+                'code':fields.char("Code",required= True)
+                
+                }
+class hr_employee_academic_degree_division(osv.osv):
+    
+    _name= "hr.employee.academic.degree.division" 
+    _columns = {
+                'name':fields.char("Name",required =  True),
+                'code':fields.char("Code",required= True)
+                
+                }
