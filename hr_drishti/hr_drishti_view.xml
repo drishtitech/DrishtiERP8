@@ -56,6 +56,14 @@
            
            <xpath expr="/form/sheet/notebook" position="before">
            <div class="oe_title">
+           		<h2>
+           			<div class="address_format">
+                     <field name="emp_first_name" placeholder="First Name" style="width: 30%%"  nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
+                     <field name="emp_middle_name" placeholder="Middle Name" style="width: 30%%" nolabel="1" />
+                     <field name="emp_last_name" placeholder="Last Name" style="width: 30%%"  nolabel="1"/>
+                      
+                 </div>
+                 </h2>
            				
                             <label for="name" class="oe_edit_only"/>
                             
@@ -63,7 +71,7 @@
                                 <field name="name"/>
                             </h2>
                             
-                            <label for="emp_first_name"/>
+                            <!--label for="emp_first_name"/>
                            <h2>
                                 
                                 <field name="emp_first_name" placeholder="First Name"/>
@@ -79,7 +87,7 @@
                              <h2>
                                 
                                 <field name="emp_last_name" placeholder="Last Name"/>
-                            </h2>
+                            </h2-->
                             <label for="identification_id1"/>
                             <h2>
                                 
@@ -179,26 +187,29 @@
 			 <!--label for="street1" string=" Current Address"/-->
 			 <group col ="2" colspan="2" string="Current Address" >
 			 
-		          <field name="street1" placeholder="Street1..."  attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
-                 	<field name="street2" placeholder="Street2..."  attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+		          <field name="street1" placeholder="Street1..."   nolabel="1"/>
+                 	<field name="street2" placeholder="Street2..."  nolabel="1"/>
                  
                  <div class="address_format">
-                     <field name="current_city" placeholder="City" style="width: 40%%" attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
-                     <field name="Current_state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'  attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
-                     <field name="pincode" placeholder="ZIP" style="width: 20%%" attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+                     <field name="current_city" placeholder="City" style="width: 40%%"  nolabel="1"/>
+                     <field name="Current_state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'   nolabel="1"/>
+                     <field name="pincode" placeholder="ZIP" style="width: 20%%"  nolabel="1"/>
                       
                  </div>
-           		 <field name ="landmark" placeholder="Landmark" style="width: 20%%" attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
-           		 <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}' attrs="{'invisible': [('goa_employee','=',True)]}" nolabel="1"/>
+           		 <field name ="landmark" placeholder="Landmark" style="width: 20%%"  nolabel="1"/>
+           		 <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}'  nolabel="1"/>
            	</group>
            		
 			
            		 
            	<group col="2" colspan="2" string="Permanent Address">
            		<field name="goa_employee"/>
-           		 <field name="same_current_address"/>
+           		 <field name="same_current_address" on_change="onchange_same_current_address(same_current_address,street1,street2,current_city,Current_state_id,pincode,landmark)"/>
            		 <field name="house_no" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="ward" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
+           		 <field name="street" attrs="{'invisible': [('goa_employee','=',True)]}"/>
+                 <field name="street3" attrs="{'invisible': [('goa_employee','=',True)]}"/>
+                 <field name="landmark1" attrs="{'invisible': [('goa_employee','=',True)]}"/>
            		 <field name="village"/>
            		 <field name="municipality" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
@@ -206,20 +217,12 @@
            		 <field name="taluka" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="state_name"/>
            		 <field name="post_office" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="pincode"/>
-           		 <field name="landmark"/>
-           		 
-           		 <group col="2" colspan ="2" attrs="{'invisible':[('goa_employee','!=',False)]}">
-           		 <field name ="street1"/>
-           		 <field name ="street2"/>
-           		 <field name="country_id"/>
-           		 </group>
-           	
+           		 <field name="zip_code"/>
            		 <field name="other"/>
 				</group>
 			
 				<group string="Citizenship &amp; Other Info">
-                <field name="country_id"/>
+                <field name="country_id" />
                 
                 <field name="passport_id" groups="base.group_hr_user"/>
                 
@@ -450,7 +453,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Educational Qualifications">
-			<field name="qualification_id1" invisible="1"/>
+			<field name="employee_id1" invisible="1"/>
 			<field name="degree"/>
 			<field name="specialization"/>
 			<field name="institute"/> 
@@ -468,7 +471,7 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Educational Qualifications">
-			<field name="qualification_id1" invisible="1"/>
+			<field name="employee_id1" invisible="1"/>
 			<field name="degree"/>
 			<field name="specialization"/>
 			<field name="institute"/> 
@@ -485,7 +488,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Professional Qualifications">
-			<field name="qualification_id2" invisible="1"/>
+			<field name="employee_id2" invisible="1"/>
 			<field name="degree"/>
 			<field name="specialization"/>
 			<field name="institute"/> 
@@ -503,7 +506,7 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Professional Qualifications">
-			<field name="qualification_id2" invisible="1"/>
+			<field name="employee_id2" invisible="1"/>
 			<field name="degree"/>
 			<field name="specialization"/>
 			<field name="institute"/> 
@@ -520,7 +523,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="Other Qualifications">
-			<field name="qualification_id3" invisible="1"/>
+			<field name="employee_id3" invisible="1"/>
 			<field name="degree"/>
 			<field name="specialization"/>
 			<field name="institute"/> 
@@ -539,7 +542,7 @@
             <field name="arch" type="xml">
             <form string="Other Qualifications">
 	           	<group>
-				<field name="qualification_id3" invisible="1"/>
+				<field name="employee_id3" invisible="1"/>
 				<field name="degree"/>
 				<field name="specialization"/>
 				<field name="institute"/> 

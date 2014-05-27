@@ -66,10 +66,9 @@ class hr_employee(osv.osv):
        'telephone_no':fields.char("Telephone No. (Residence)", size=124),
        'mobile_no':fields.char("Mobile No.", size=124),
        
-       'educational_qualification_line':fields.one2many('hr.employee.qualification','qualification_id1'," ", size=124),
-       'professional_qualification_line':fields.one2many('hr.employee.qualification','qualification_id2'," ", size=124),
-       'other_qualification_line':fields.one2many('hr.employee.qualification','qualification_id3'," ", size=124),
-       
+       'educational_qualification_line':fields.one2many('hr.employee.qualification','employee_id1',"Educational Qualification ", size=124),
+       'professional_qualification_line':fields.one2many('hr.employee.qualification','employee_id2',"Professional Qualification ", size=124),
+       'other_qualification_line':fields.one2many('hr.employee.qualification','employee_id3'," Other Qualification", size=124),
        'email_id':fields.char("Email ID", size=124),
        'distance':fields.integer("Distance from Residence to Work Place (in Kms.)", size=124),
        'permanent_address':fields.text("Permanent Address", size=124),
@@ -83,19 +82,19 @@ class hr_employee(osv.osv):
        'previous_job':fields.text("Job Description", size=124),
        'period':fields.char("Period", size=124),
        'reason_leaving':fields.text("Reason for leaving", size=124),
-       'family_line':fields.one2many('family.details','family_id'," ", size=124),
+       'family_line':fields.one2many('family.details','family_id'," Family Particulars", size=124),
        'bank_name':fields.char("Name of Bank", size=124),
        'branch_name':fields.char("Branch", size=124),
        'bank_address':fields.text("Bank Address", size=124),
        'account_number':fields.integer("A/C No.", size=124),
        'ifsc':fields.char("IFSC", size=124),
        'code':fields.char("IFSC Code", size=124),
-       'language_line':fields.one2many('language.details','language_id'," ", size=124),
-       'beach_line':fields.one2many('beach.lifeguard','beach_id'," ", size=124),
-       'jetski_line':fields.one2many('jetski.details','jetski_id'," ", size=124),
-       'annual_line':fields.one2many('annual.assessment','annual_id'," ", size=124),
-       'achievement_line':fields.one2many('achievement.details','achievement_id'," ", size=124),
-       'offence_line':fields.one2many('offence.details','offence_id'," ", size=124),
+       'language_line':fields.one2many('language.details','language_id'," Language Proficiency ", size=124),
+       'beach_line':fields.one2many('beach.lifeguard','beach_id'," Beach Lifeguard Details ", size=124),
+       'jetski_line':fields.one2many('jetski.details','jetski_id'," Jetski (Surf Rescue) Operator ", size=124),
+       'annual_line':fields.one2many('annual.assessment','annual_id'," Annual Assessment ", size=124),
+       'achievement_line':fields.one2many('achievement.details','achievement_id'," Achievements/Certificates ", size=124),
+       'offence_line':fields.one2many('offence.details','offence_id'," Offence Details ", size=124),
        'house_no':fields.char("House No./Flat No.", size=124),
        'ward':fields.char("Ward", size=124),
        'village':fields.char("Village/Town/City", size=124),
@@ -151,8 +150,9 @@ class hr_employee(osv.osv):
       'birthday':fields.date('Birth Date'),
       'place_of_birth':fields.char('Birth Place',size=124),
       'lifeguard':fields.boolean('Life Guard'),
-      'street1':fields.char("Street"),
+      'street1':fields.char("Street1"),
       'street2':fields.char("Street2"),
+      'landmark1':fields.char("Landmark"),
       'landmark':fields.char("Landmark"),
       'current_city':fields.char("City"),
       'Current_state_id':fields.many2one("res.country.state",'State'),
@@ -164,7 +164,10 @@ class hr_employee(osv.osv):
       'marrage_date':fields.date("Marriage date"),
       'no_of_children':fields.integer("Number of children"),
       'goa_employee':fields.boolean("Goa Employee"),
-      'same_current_address':fields.boolean("Same as above address")
+      'same_current_address':fields.boolean("Same as above address"),
+      'street':fields.char("Street1"),
+      'street3':fields.char("Street2"),
+      'zip_code':fields.char("Zip")
 
         }
     
@@ -206,6 +209,18 @@ class hr_employee(osv.osv):
     _constraints=[(_check_birth_date,'Error!birth date must be 18 years and lesser than current date.',['birthday','creation_date'])] 
     
     
+    def onchange_same_current_address(self, cr, uid,ids,same_current_address,street1,street2,current_city,Current_state_id,pincode,landmark):
+         
+        return {'value':{'same_current_address':same_current_address,'street':street1,'landmark1':landmark,'street3':street2,'village':current_city,'state_name':Current_state_id,'zip_code':pincode}}
+ 
+    def onchange_name(self, cr, uid,ids,emp_first_name,emp_middle_name,emp_last_name):
+        
+          
+        return {'value':{'name':emp_first_name}}
+    
+   
+    
+   
     def onchange_bank_id(self, cr, uid, ids, bank_id, context=None):
         result = {}
         if bank_id:
@@ -221,7 +236,7 @@ class hr_employee(osv.osv):
             part = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
             result['owner_name'] = part.name
             result['street'] = part.street or False
-            result['city'] = part.city or False
+            result['street1'] = part.city or False
             result['zip'] =  part.zip or False
             result['country_id'] =  part.country_id.id
             result['state_id'] = part.state_id.id
@@ -268,9 +283,9 @@ class qualification_details1(osv.osv):
     _name = "hr.employee.qualification"
     _description = "Educational Qualifications"
     _columns = {
-        'qualification_id1': fields.integer('Qualification No.', size=124),
-        'qualification_id2': fields.integer('Qualification No.', size=124),
-        'qualification_id3': fields.integer('Qualification No.', size=124),
+        'employee_id1': fields.many2one("hr.employee",'Employee Name(Educational)'),
+        'employee_id2': fields.many2one("hr.employee",'Employee Name(Professional)'),
+        'employee_id3': fields.many2one("hr.employee",'Employee Name(Other)'),
         'degree':fields.many2one('hr.employee.academic.degree','Degree'),
         'specialization':fields.many2one('hr.employee.academic.degree.division','specialization'),
         'institute':fields.char('Institute', size=124),
