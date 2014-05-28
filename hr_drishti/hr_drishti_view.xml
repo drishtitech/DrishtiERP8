@@ -59,8 +59,8 @@
            		<h2>
            			<div class="address_format">
                      <field name="emp_first_name" placeholder="First Name" style="width: 30%%"  nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
-                     <field name="emp_middle_name" placeholder="Middle Name" style="width: 30%%" nolabel="1" />
-                     <field name="emp_last_name" placeholder="Last Name" style="width: 30%%"  nolabel="1"/>
+                     <field name="emp_middle_name" placeholder="Middle Name" style="width: 30%%" nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
+                     <field name="emp_last_name" placeholder="Last Name" style="width: 30%%"  nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
                       
                  </div>
                  </h2>
@@ -187,17 +187,17 @@
 			 <!--label for="street1" string=" Current Address"/-->
 			 <group col ="2" colspan="2" string="Current Address" >
 			 
-		          <field name="street1" placeholder="Street1..."   nolabel="1"/>
-                 	<field name="street2" placeholder="Street2..."  nolabel="1"/>
+		          <field name="current_street1" placeholder="Street1..."   nolabel="1"/>
+                 	<field name="current_street2" placeholder="Street2..."  nolabel="1"/>
                  
                  <div class="address_format">
                      <field name="current_city" placeholder="City" style="width: 40%%"  nolabel="1"/>
-                     <field name="Current_state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'   nolabel="1"/>
-                     <field name="pincode" placeholder="ZIP" style="width: 20%%"  nolabel="1"/>
+                     <field name="current_state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'   nolabel="1"/>
+                     <field name="current_pincode" placeholder="ZIP" style="width: 20%%"  nolabel="1"/>
                       
                  </div>
-           		 <field name ="landmark" placeholder="Landmark" style="width: 20%%"  nolabel="1"/>
-           		 <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}'  nolabel="1"/>
+           		 <field name ="current_landmark" placeholder="Landmark" style="width: 20%%"  nolabel="1"/>
+           		 <field name="current_country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}'  nolabel="1"/>
            	</group>
            		
 			
@@ -207,26 +207,24 @@
            		 <field name="same_current_address" on_change="onchange_same_current_address(same_current_address,street1,street2,current_city,Current_state_id,pincode,landmark)"/>
            		 <field name="house_no" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="ward" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="street" attrs="{'invisible': [('goa_employee','=',True)]}"/>
-                 <field name="street3" attrs="{'invisible': [('goa_employee','=',True)]}"/>
-                 <field name="landmark1" attrs="{'invisible': [('goa_employee','=',True)]}"/>
-           		 <field name="village"/>
+           		 <field name="home_street1" attrs="{'invisible': [('goa_employee','=',True)]}"/>
+                 <field name="home_street2" attrs="{'invisible': [('goa_employee','=',True)]}"/>
+                 <field name="home_landmark" attrs="{'invisible': [('goa_employee','=',True)]}"/>
+           		 <field name="home_village"/>
            		 <field name="municipality" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="constituency" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="taluka" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="state_name"/>
+           		 <field name="home_state_id"/>
            		 <field name="post_office" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="zip_code"/>
+           		 <field name="home_pin_code"/>
            		 <field name="other"/>
 				</group>
 			
 				<group string="Citizenship &amp; Other Info">
-                <field name="country_id" />
+                <field name="home_country_id" />
                 
-                <field name="passport_id" groups="base.group_hr_user"/>
                 
-                <field name="otherid" groups="base.group_hr_user"/>
                 </group>
 				 <group string="Identification Proof Details">
            		 

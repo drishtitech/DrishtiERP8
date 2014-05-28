@@ -97,20 +97,20 @@ class hr_employee(osv.osv):
        'offence_line':fields.one2many('offence.details','offence_id'," Offence Details ", size=124),
        'house_no':fields.char("House No./Flat No.", size=124),
        'ward':fields.char("Ward", size=124),
-       'village':fields.char("Village/Town/City", size=124),
+       'home_village':fields.char("Village/Town/City", size=124),
        'municipality':fields.char("Municipality/Gram Panchayat", size=124),
        'district':fields.selection([('North Goa', 'North Goa'),('South Goa','South Goa'),('Other','Other')],'District'),
        'constituency':fields.char("Constituency", size=124),
        'taluka':fields.many2one('taluka.name',"Taluka", size=124),
-       'state_name':fields.many2one('res.country.state',"State", size=124),
+       'home_state_id':fields.many2one('res.country.state',"State", size=124),
        'post_office':fields.char("Post Office", size=124),
-       'pincode':fields.char("Pincode", size=124),
+       'current_pincode':fields.char("Pincode", size=124),
        'landmark':fields.char("Landmark", size=124),
        'other':fields.char("Other", size=124),  
        'address_home_id': fields.many2one('res.partner', 'Home Address'),
        'gender': fields.selection([('male', 'male'),('female', 'female')], 'Gender'),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', help="Employee bank salary account"),
-       'country_id': fields.many2one('res.country', 'Nationality'),
+       'current_country_id': fields.many2one('res.country', 'Nationality'),
        'identification_id1': fields.char('Employee Id No.', size=32),
 #        'birth_state':fields.many2one('res.country.state','State',size=124),
 #        'birth_city':fields.many2one('res.city','City',size=124,select=True,domain="[('state','=',birth_state)]"),
@@ -150,12 +150,12 @@ class hr_employee(osv.osv):
       'birthday':fields.date('Birth Date'),
       'place_of_birth':fields.char('Birth Place',size=124),
       'lifeguard':fields.boolean('Life Guard'),
-      'street1':fields.char("Street1"),
-      'street2':fields.char("Street2"),
-      'landmark1':fields.char("Landmark"),
-      'landmark':fields.char("Landmark"),
+      'current_street1':fields.char("Street1"),
+      'current_street2':fields.char("Street2"),
+      'home_landmark':fields.char("Landmark"),
+      'current_landmark':fields.char("Landmark"),
       'current_city':fields.char("City"),
-      'Current_state_id':fields.many2one("res.country.state",'State'),
+      'current_state_id':fields.many2one("res.country.state",'State'),
       'country_id':fields.many2one("res.country",'Country'),
       #'current_pincode':fields.char("Zip"),
       'emp_first_name':fields.char("First Name"),
@@ -165,9 +165,12 @@ class hr_employee(osv.osv):
       'no_of_children':fields.integer("Number of children"),
       'goa_employee':fields.boolean("Goa Employee"),
       'same_current_address':fields.boolean("Same as above address"),
-      'street':fields.char("Street1"),
-      'street3':fields.char("Street2"),
-      'zip_code':fields.char("Zip")
+      'home_street1':fields.char("Street1"),
+      'home_street2':fields.char("Street2"),
+      'home_pin_code':fields.char("Zip"),
+      'home_country_id': fields.many2one('res.country', 'Nationality'),
+
+      
 
         }
     
@@ -214,11 +217,17 @@ class hr_employee(osv.osv):
         return {'value':{'same_current_address':same_current_address,'street':street1,'landmark1':landmark,'street3':street2,'village':current_city,'state_name':Current_state_id,'zip_code':pincode}}
  
     def onchange_name(self, cr, uid,ids,emp_first_name,emp_middle_name,emp_last_name):
+        name = ''
+        if emp_first_name:
+            name += emp_first_name
+        if emp_middle_name:
+            name += ' ' +emp_middle_name
+        if emp_last_name:
+            name += ' ' +emp_last_name    
         
-          
-        return {'value':{'name':emp_first_name}}
+        return {'value':{'name':name}}
     
-   
+
     
    
     def onchange_bank_id(self, cr, uid, ids, bank_id, context=None):
@@ -227,10 +236,11 @@ class hr_employee(osv.osv):
             bank = self.pool.get('res.bank').browse(cr, uid, bank_id, context=context)
             result['bank_name'] = bank.name
             result['bank_bic'] = bank.bic
+            
         return {'value': result}
 
     
-    def onchange_partner_id(self, cr, uid, id, partner_id, context=None):
+    def onchange_partner_id(self, cr, uid, ids, partner_id, context=None):
         result = {}
         if partner_id:
             part = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
@@ -470,7 +480,7 @@ class hr_employee_identification_detail(osv.osv):
     _columns = {
                 
                'employee_id':fields.many2one("hr.employee",'Employee'),
-               'name':fields.selection([('driving_licence','Driving License'),('aadhar_card','Aadhar Card'),('pan_card','Pan Card'),('voter_id_card','Voter Id Card')],'Identification Name'),
+               'name':fields.selection([('driving_licence','Driving License'),('aadhar_card','Aadhar Card'),('pan_card','Pan Card'),('voter_id_card','Voter Id Card'),('other','Other')],'Identification Name'),
                'number':fields.char("Identification Number"), 
                'document_no':fields.integer("Document No"),
                'attachment':fields.many2one('ir.attachment',"Attachment"),
