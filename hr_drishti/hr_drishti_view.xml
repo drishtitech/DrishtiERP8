@@ -158,14 +158,12 @@
            		 <group string="Status">
                  <field name="gender"/>
                  <field name="marital"/>
-                 <field name="marrage_date" attrs="{'invisible':[('marital', '=', 'Unmarried')]}"/>
+                 <field name="marriage_date" attrs="{'invisible':[('marital', '=', 'Unmarried')]}"/>
                  <field name="no_of_children" attrs="{'invisible':[('marital', '=', 'Unmarried')]}"/>
                  </group>
                  <group string="Birth Details">
                  	<field name="birthday"/>
                  	<field name="place_of_birth"/>
-                 	<!--field name="birth_city"/-->
-                 
                 </group>
            		</group>
            		 
@@ -175,6 +173,7 @@
            		 <field name="telephone_no1"/>
            		 <field name="mobile_no1"/>
            		 <field name="email_id"/>
+           		 <field name ="alternative_email"/>
            		 </group>
           		 <group string="Physical Particulars">
 					
@@ -183,20 +182,20 @@
 					<field name="complexion"/>
 				</group>
 				</group>
-			
-			 <!--label for="street1" string=" Current Address"/-->
 			 <group col ="2" colspan="2" string="Current Address" >
 			 
-		          <field name="current_street1" placeholder="Street1..."   nolabel="1"/>
+		          	<field name="current_street1" placeholder="Street1..."   nolabel="1"/>
                  	<field name="current_street2" placeholder="Street2..."  nolabel="1"/>
                  
                  <div class="address_format">
-                     <field name="current_city" placeholder="City" style="width: 40%%"  nolabel="1"/>
-                     <field name="current_state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}'   nolabel="1"/>
+                     <field name="current_city" placeholder="City" style="width: 20%%"  nolabel="1"/>
+                     <field name="current_district_id" placeholder="District" style="width: 20%%"  nolabel="1" on_change="onchange_current_district(current_district_id)"/>
+                     <field name="current_state_id" class="oe_no_button" placeholder="State" style="width: 20%%" options='{"no_open": True}' nolabel="1" on_change ="onchange_current_state(current_state_id)"/>
                      <field name="current_pincode" placeholder="ZIP" style="width: 20%%"  nolabel="1"/>
+                     <field name ="current_landmark" placeholder="Landmark" style="width: 20%%"  nolabel="1"/>
+                     
                       
                  </div>
-           		 <field name ="current_landmark" placeholder="Landmark" style="width: 20%%"  nolabel="1"/>
            		 <field name="current_country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}'  nolabel="1"/>
            	</group>
            		
@@ -204,7 +203,7 @@
            		 
            	<group col="2" colspan="2" string="Permanent Address">
            		<field name="goa_employee"/>
-           		 <field name="same_current_address" on_change="onchange_same_current_address(same_current_address,street1,street2,current_city,Current_state_id,pincode,landmark)"/>
+           		 <field name="same_current_address" on_change="onchange_same_current_address(same_current_address,current_street1,current_street2,current_city,current_state_id,current_landmark,current_pincode,current_country_id,current_district_id)"/>
            		 <field name="house_no" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="ward" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="home_street1" attrs="{'invisible': [('goa_employee','=',True)]}"/>
@@ -212,18 +211,20 @@
                  <field name="home_landmark" attrs="{'invisible': [('goa_employee','=',True)]}"/>
            		 <field name="home_village"/>
            		 <field name="municipality" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
+           		 <!--field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/-->
            		 <field name="constituency" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="taluka" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="home_state_id"/>
+           		 <field name="home_district_id" on_change ="onchange_home_district(home_district_id)"/>
+           		 <field name="home_state_id" on_change ="onchange_home_state(home_state_id)"/>/>
            		 <field name="post_office" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
            		 <field name="home_pin_code"/>
+           		 <field name="home_country_id" />
            		 <field name="other"/>
 				</group>
 			
 				<group string="Citizenship &amp; Other Info">
-                <field name="home_country_id" />
-                
+					<field name="nationality"/>
+               
                 
                 </group>
 				 <group string="Identification Proof Details">
@@ -308,7 +309,7 @@
                         
                         <group name="bank" string="Information About the Bank">
                             <!--field name="bank" on_change="onchange_bank_id(bank)"/-->
-			                <field name="bank_field"/>
+			                <field name="bank_field" on_change ="onchange_bank_id(bank_field)"/>
 			                <field name="branch_name"/>
                             <!--field name="bank_name" attrs="{'required': [('company_id','&lt;&gt;',False)]}"/-->
                             <field name="bank_bic" placeholder="e.g. GEBABEBB" />
@@ -468,15 +469,19 @@
             <field name="model">hr.employee.qualification</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Educational Qualifications">
-			<field name="employee_id1" invisible="1"/>
-			<field name="degree"/>
-			<field name="specialization"/>
-			<field name="institute"/> 
-			<field name="board"/>
-			<field name="marks"/>
-			<field name="year"/>
-                </form>
+            <form string="Educational Qualifications">
+            <group col="2" colspan ="2">
+				<field name="employee_id1" invisible="1"/>
+				<field name="degree"/>
+				<field name="specialization"/>
+				<field name="institute"/> 
+				<field name="board"/>
+				<field name="marks"/>
+				<field name="year"/>
+				<field name="edu_gap"/>
+				<field name="gap_reason"  attrs="{'invisible': [('edu_gap','!=',True)]}"/>
+			</group>
+             </form>
             </field>
         </record>
         
@@ -726,7 +731,7 @@
             <field name="model">hr.employee.identification.detail</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-            <tree string="Identification Proof Detail">
+            <tree string="Identification Proof Detail" editable="bottom">
 				<field name="employee_id" invisible="1"/>
 				<field name="name"/>
 				<field name="number"/> 
@@ -785,8 +790,28 @@
 			</form>
             </field>
         </record>
-        
+   <record id="view_branch_details_form" model="ir.ui.view">
+            <field name="name">res.bank.form</field>
+            <field name="model">res.bank</field>
+            <field name="type">form</field>
+	    <field name="inherit_id" ref="base.view_res_bank_form"/>
+            <field name="arch" type="xml">
+           
+                   
+           <xpath expr="/form/sheet/group" position="inside">
+           	<field name ="branch_name"/>
+                    
+           </xpath>
+           
+           
+            </field>
+          
+        </record>
   
+  
+  
+        
+         
   
   
     </data>

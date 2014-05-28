@@ -110,7 +110,7 @@ class hr_employee(osv.osv):
        'address_home_id': fields.many2one('res.partner', 'Home Address'),
        'gender': fields.selection([('male', 'male'),('female', 'female')], 'Gender'),
        'bank_account_id':fields.many2one('res.partner.bank', 'Bank Account Number', help="Employee bank salary account"),
-       'current_country_id': fields.many2one('res.country', 'Nationality'),
+       'current_country_id': fields.many2one('res.country', 'Country'),
        'identification_id1': fields.char('Employee Id No.', size=32),
 #        'birth_state':fields.many2one('res.country.state','State',size=124),
 #        'birth_city':fields.many2one('res.city','City',size=124,select=True,domain="[('state','=',birth_state)]"),
@@ -156,19 +156,21 @@ class hr_employee(osv.osv):
       'current_landmark':fields.char("Landmark"),
       'current_city':fields.char("City"),
       'current_state_id':fields.many2one("res.country.state",'State'),
-      'country_id':fields.many2one("res.country",'Country'),
-      #'current_pincode':fields.char("Zip"),
       'emp_first_name':fields.char("First Name"),
       'emp_middle_name':fields.char("Middle Name"),
       'emp_last_name':fields.char("Last Name"),
-      'marrage_date':fields.date("Marriage date"),
+      'marriage_date':fields.date("Marriage date"),
       'no_of_children':fields.integer("Number of children"),
       'goa_employee':fields.boolean("Goa Employee"),
       'same_current_address':fields.boolean("Same as above address"),
       'home_street1':fields.char("Street1"),
       'home_street2':fields.char("Street2"),
       'home_pin_code':fields.char("Zip"),
-      'home_country_id': fields.many2one('res.country', 'Nationality'),
+      'home_country_id': fields.many2one('res.country', 'Country'),
+      'nationality':fields.char("Nationality"),
+      'alternative_email':fields.char("Alternative Email"),
+      'home_district_id':fields.many2one("res.state.district","Home District "),
+      'current_district_id':fields.many2one("res.state.district","Current District")
 
       
 
@@ -212,9 +214,39 @@ class hr_employee(osv.osv):
     _constraints=[(_check_birth_date,'Error!birth date must be 18 years and lesser than current date.',['birthday','creation_date'])] 
     
     
-    def onchange_same_current_address(self, cr, uid,ids,same_current_address,street1,street2,current_city,Current_state_id,pincode,landmark):
+    
+    def onchange_current_district(self, cr, uid, ids, current_district_id,context=None):
+        if current_district_id:
+            state_id = self.pool['res.state.district'].browse(cr, uid, current_district_id,context).state.id
+        
+            return {'value':{'current_state_id':state_id}}
+        return {}
+    
+    def onchange_current_state(self, cr, uid, ids, current_state_id, context=None):
+        if current_state_id:
+            country_id = self.pool['res.country.state'].browse(cr, uid, current_state_id, context).country_id.id
+            return {'value':{'current_country_id':country_id}}
+        return {}
+   
+   
+    def onchange_home_district(self, cr, uid, ids, home_district_id,context=None):
+        if home_district_id:
+            state_id = self.pool['res.state.district'].browse(cr, uid, home_district_id,context).state.id
+        
+            return {'value':{'home_state_id':state_id}}
+        return {}
+    
+    def onchange_home_state(self, cr, uid, ids, home_state_id, context=None):
+        if home_state_id:
+            country_id = self.pool['res.country.state'].browse(cr, uid, home_state_id, context).country_id.id
+            return {'value':{'home_country_id':country_id}}
+        return {}
+   
+   
+   
+    def onchange_same_current_address(self, cr, uid,ids,same_current_address,current_street1,current_street2,current_city,current_state_id,current_landmark,current_pincode,current_country_id,current_district_id):
          
-        return {'value':{'same_current_address':same_current_address,'street':street1,'landmark1':landmark,'street3':street2,'village':current_city,'state_name':Current_state_id,'zip_code':pincode}}
+        return {'value':{'same_current_address':same_current_address,'home_street1':current_street1,'home_landmark':current_landmark,'home_street2':current_street2,'home_village':current_city,'home_state_id':current_state_id,'home_pin_code':current_pincode,'home_country_id':current_country_id,'home_district_id':current_district_id}}
  
     def onchange_name(self, cr, uid,ids,emp_first_name,emp_middle_name,emp_last_name):
         name = ''
@@ -226,18 +258,18 @@ class hr_employee(osv.osv):
             name += ' ' +emp_last_name    
         
         return {'value':{'name':name}}
-    
-
-    
    
-    def onchange_bank_id(self, cr, uid, ids, bank_id, context=None):
+   
+    def onchange_bank_id(self, cr, uid, ids, bank_field, context=None):
         result = {}
-        if bank_id:
-            bank = self.pool.get('res.bank').browse(cr, uid, bank_id, context=context)
-            result['bank_name'] = bank.name
+        if bank_field:
+            bank = self.pool.get('res.bank').browse(cr, uid, bank_field, context=context)
+            result['bank_field'] = bank.name
             result['bank_bic'] = bank.bic
+            result['branch_name'] = bank.branch_name
             
         return {'value': result}
+ 
 
     
     def onchange_partner_id(self, cr, uid, ids, partner_id, context=None):
@@ -277,6 +309,19 @@ class res_partner_bank(osv.osv):
 
 res_partner_bank()
 
+
+class res_bank(osv.osv):
+    _name = "res.bank"
+    _description = "Branch Details"
+    _inherit = "res.bank"
+    _columns = {
+        'branch_name': fields.char('Branch name'),
+        }
+
+res_partner_bank()
+
+
+
 class ir_attachment(osv.osv):
     _name = "ir.attachment"
     _description = "Attachments"
@@ -297,11 +342,14 @@ class qualification_details1(osv.osv):
         'employee_id2': fields.many2one("hr.employee",'Employee Name(Professional)'),
         'employee_id3': fields.many2one("hr.employee",'Employee Name(Other)'),
         'degree':fields.many2one('hr.employee.academic.degree','Degree'),
-        'specialization':fields.many2one('hr.employee.academic.degree.division','specialization'),
+        'specialization':fields.many2one('hr.employee.academic.degree.division','Specialization',required=True),
         'institute':fields.char('Institute', size=124),
         'board': fields.char('University/Board', size=124),
         'marks': fields.char('% Marks', size=124),
         'year': fields.char('Year of Completion', size=124),
+        'edu_gap':fields.boolean("Any gap in Education/Career"),
+        'gap_reason':fields.text("Reason of Gap")
+        
 
         }
 
@@ -314,7 +362,7 @@ class family_details(osv.osv):
     _columns = {
         'family_id': fields.integer('Family No.', size=124),
         'name':fields.char('Name', size=124),
-        'relation':fields.many2one('relation.name','Relation', size=124),
+        'relation':fields.many2one('relation.name','Relation', size=124,required=True),
         'date_of_birth': fields.date('Date of Birth', size=124),
         'age': fields.integer('Age', size=124),
         'occupation': fields.char('Occupation', size=124),
@@ -328,7 +376,7 @@ class language_details(osv.osv):
     _description = "Language Details"
     _columns = {
         'language_id': fields.integer('Language No.', size=124),
-        'name':fields.many2one('language.name','Language', size=124),
+        'name':fields.many2one('language.name','Language', size=124,required = True),
         'proficiency':fields.selection([('yes', 'Yes'),('no','No')],'Proficiency'),
         'read': fields.selection([('yes', 'Yes'),('no','No')],'Read'),
         'write': fields.selection([('yes', 'Yes'),('no','No')],'Write'),
@@ -342,7 +390,7 @@ class language_name(osv.osv):
     _name = "language.name"
     _description = "Language"
     _columns = {
-        'name':fields.char('Language', size=124),
+        'name':fields.char('Language', size=124,required =True),
 
         }
 
@@ -362,7 +410,7 @@ class relation_name(osv.osv):
     _name = "relation.name"
     _description = "Relation"
     _columns = {
-        'name':fields.char('Relation', size=124),
+        'name':fields.char('Relation', size=124,required=True),
 
         }
 
@@ -373,7 +421,7 @@ class beach_lifeguard(osv.osv):
     _description = "Beach Lifeguard"
     _columns = {
         'beach_id': fields.integer('Beach No.', size=124),
-        'sl_no':fields.integer('Sl No.', size=124),
+        'sl_no':fields.integer('Sl No.', size=124,required=True),
         'slsg_no':fields.integer('SLSG No', size=124),
         'name': fields.char('Name', size=124),
         'swim': fields.char('40 mtr. Swim', size=124),
@@ -402,7 +450,7 @@ class jetski_details(osv.osv):
     _description = "Jetski (Surf Rescue) Operator"
     _columns = {
         'jetski_id': fields.integer('Jetski ID', size=124),
-        'sr_no': fields.integer('Sr. No.', size=124),
+        'sr_no': fields.integer('Sr. No.', size=124,required =True),
         'slsg_code':fields.integer('SLSG Code', size=124),
         'name':fields.char('Name', size=124),
         'date_of_test': fields.date('Date of Test', size=124),
@@ -424,7 +472,7 @@ class annual_assessment(osv.osv):
     _description = "Annual Assessment"
     _columns = {
         'annual_id': fields.integer('Assessment No.', size=124),
-        'efficiency':fields.text('Suggested Efficiency'),
+        'efficiency':fields.text('Suggested Efficiency',required = True),
         'date':fields.date('Date', size=124),
         'by_whom': fields.char('By whom', size=124),
 
@@ -437,7 +485,7 @@ class achievement_details(osv.osv):
     _description = "Achievement/Certificates"
     _columns = {
         'achievement_id': fields.integer('Achievement No.', size=124),
-        'date': fields.date('Date', size=124),
+        'date': fields.date('Date', size=124,required =True),
         'incident_reference':fields.text('Incident Reference'),
         'remarks':fields.text('Remarks'),
 
@@ -450,7 +498,7 @@ class offence_details(osv.osv):
     _description = "Record of Offences"
     _columns = {
         'offence_id': fields.integer('Offence No.', size=124),
-        'date': fields.date('Date', size=124),
+        'date': fields.date('Date', size=124,required = True),
         'offence_description':fields.text('Offence Description'),
         'punishment':fields.text('Punishment Awarded'),
 
@@ -480,10 +528,10 @@ class hr_employee_identification_detail(osv.osv):
     _columns = {
                 
                'employee_id':fields.many2one("hr.employee",'Employee'),
-               'name':fields.selection([('driving_licence','Driving License'),('aadhar_card','Aadhar Card'),('pan_card','Pan Card'),('voter_id_card','Voter Id Card'),('other','Other')],'Identification Name'),
+               'name':fields.selection([('driving_licence','Driving License'),('aadhar_card','Aadhar Card'),('pan_card','Pan Card'),('voter_id_card','Voter Id Card'),('other','Other'),('ration_ard','Ration Card'),('passport_no','Passport No'),('telephone_bill','Telephone Bill'),('electricity_bill','Electricity Bill'),('water_bill','Water Bill'),('gas_connection','Gas Connection')],'Identification Name',required =True),
                'number':fields.char("Identification Number"), 
                'document_no':fields.integer("Document No"),
-               'attachment':fields.many2one('ir.attachment',"Attachment"),
+               'attachment':fields.binary("Attachment"),
                'document_purpose':fields.char("Document Purpose")
                
                 
@@ -505,3 +553,14 @@ class hr_employee_academic_degree_division(osv.osv):
                 'code':fields.char("Code",required= True)
                 
                 }
+    
+class res_state_district(osv.osv):
+    
+    _name = "res.state.district"
+    _columns={
+              'state':fields.many2one("res.country.state","State",required=True),
+              'name':fields.char("district")
+              
+              }
+
+  
