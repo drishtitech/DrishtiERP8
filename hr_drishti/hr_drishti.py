@@ -498,7 +498,7 @@ class offence_details(osv.osv):
     _description = "Record of Offences"
     _columns = {
         'offence_id': fields.integer('Offence No.', size=124),
-        'date': fields.date('Date', size=124,required = True),
+        'date': fields.date('Date', size=124),
         'offence_description':fields.text('Offence Description'),
         'punishment':fields.text('Punishment Awarded'),
 
@@ -558,7 +558,7 @@ class res_state_district(osv.osv):
     
     _name = "res.state.district"
     _columns={
-              'state':fields.many2one("res.country.state","State",required=True),
+              'state':fields.many2one("res.country.state","State"),
               'name':fields.char("district")
               
               }

@@ -7,8 +7,9 @@ import xlrd
 import string
 import calendar
 from calendar import monthrange
-import datetime 
 from datetime import datetime
+import datetime
+
 
 
 class attendance_import(osv.osv_memory):
@@ -34,15 +35,16 @@ class attendance_import(osv.osv_memory):
             tag =sheet.row_values(i,0,sheet.ncols)[3]
             emp_designation =sheet.row_values(i,0,sheet.ncols)[4]
             emp_department =sheet.row_values(i,0,sheet.ncols)[5]
-            emp_epf_no =sheet.row_values(i,0,sheet.ncols)[6]
+            emp_epf_no =sheet.row_values(i,0,sheet.ncols)[6] and str(sheet.row_values(i,0,sheet.ncols)[6])
             a =sheet.row_values(i,0,sheet.ncols)[7]
             b =sheet.row_values(i,0,sheet.ncols)[8]
             #reason_for_leaving =sheet.row_values(i,0,sheet.ncols)[10]
-            dt_of_joining =sheet.row_values(i,0,sheet.ncols)[11]
+            dt_of_joining =str(sheet.row_values(i,0,sheet.ncols)[11])
             dt_of_birth =sheet.row_values(i,0,sheet.ncols)[12]
             father_name =sheet.row_values(i,0,sheet.ncols)[14]
-            pincode =sheet.row_values(i,0,sheet.ncols)[18]
-            mobile_no =sheet.row_values(i,0,sheet.ncols)[19]
+            pincode =sheet.row_values(i,0,sheet.ncols)[18] and str(int(sheet.row_values(i,0,sheet.ncols)[18]))
+            city =sheet.row_values(i,0,sheet.ncols)[17]
+            mobile_no =sheet.row_values(i,0,sheet.ncols)[19] and str(sheet.row_values(i,0,sheet.ncols)[19])
             gender =sheet.row_values(i,0,sheet.ncols)[44]
             gender=gender.lower()
             country =sheet.row_values(i,0,sheet.ncols)[63]
@@ -50,35 +52,27 @@ class attendance_import(osv.osv_memory):
             branch_name=sheet.row_values(i,0,sheet.ncols)[99]
             bank_code=sheet.row_values(i,0,sheet.ncols)[100]
             company_name=sheet.row_values(i,0,sheet.ncols)[101]
-#             d=float(mobile_no)
-#             e=int(float(mobile_no))
-            #e=int(mobile_no)
-            #print d, "MOBILE NO. IN FLOAT"dt_of_joining
-            #print e, "MOBILE NO. IN INTEGER"
+            address =sheet.row_values(i,0,sheet.ncols)[16]
+
             blood_group =sheet.row_values(i,0,sheet.ncols)[21]
             active =sheet.row_values(i,0,sheet.ncols)[37]
             emp_mail =sheet.row_values(i,0,sheet.ncols)[26]
             work_phone =sheet.row_values(i,0,sheet.ncols)[27]
             work_mobile =sheet.row_values(i,0,sheet.ncols)[28]
             office_location =sheet.row_values(i,0,sheet.ncols)[29]
-            job =sheet.row_values(i,0,sheet.ncols)[30]
-            manager =sheet.row_values(i,0,sheet.ncols)[31]
-            coach =sheet.row_values(i,0,sheet.ncols)[32]
             reason =sheet.row_values(i,0,sheet.ncols)[10]
-            state =sheet.row_values(i,0,sheet.ncols)[17]
             other_info =sheet.row_values(i,0,sheet.ncols)[34]
-           # remaing_leaves =sheet.row_values(i,0,sheet.ncols)[36]
             medical_exam =sheet.row_values(i,0,sheet.ncols)[38]
             company_vehicle =sheet.row_values(i,0,sheet.ncols)[39]
             work_distance =sheet.row_values(i,0,sheet.ncols)[40]
-            identific_mark =sheet.row_values(i,0,sheet.ncols)[41]
-            licence_no =sheet.row_values(i,0,sheet.ncols)[42]
+            
             adhar_no =sheet.row_values(i,0,sheet.ncols)[43]
             martial_status =sheet.row_values(i,0,sheet.ncols)[45]
             #martial_status=martial_status.lower()
             service_remark =sheet.row_values(i,0,sheet.ncols)[22]
             place_of_birth =sheet.row_values(i,0,sheet.ncols)[46]
-            #district = sheet.row_values(i,0,sheet.ncols)[56]
+            district = sheet.row_values(i,0,sheet.ncols)[56]
+            post_office =sheet.row_values(i,0,sheet.ncols)[60]
             constituency =sheet.row_values(i,0,sheet.ncols)[57]
             emp_taluka =sheet.row_values(i,0,sheet.ncols)[58]
             emp_state = sheet.row_values(i,0,sheet.ncols)[59]
@@ -86,21 +80,19 @@ class attendance_import(osv.osv_memory):
             nominee_address =sheet.row_values(i,0,sheet.ncols)[78]
             nominee_phone =sheet.row_values(i,0,sheet.ncols)[79]
             nominee_relationship =sheet.row_values(i,0,sheet.ncols)[77]
-            bank_account_no =sheet.row_values(i,0,sheet.ncols)[7]
+            bank_account_no =sheet.row_values(i,0,sheet.ncols)[7] and str(int(sheet.row_values(i,0,sheet.ncols)[7]))
             esic_no =sheet.row_values(i,0,sheet.ncols)[8]
-            identification_mark =sheet.row_values(i,0,sheet.ncols)[41]
-    
+            driving_licence_no = sheet.row_values(i,0,sheet.ncols)[42] and str(sheet.row_values(i,0,sheet.ncols)[42])
             
-           # dt=datetime.strptime(dt_of_joining,"%Y-%m-%d")
-            #dt_of_joining=datetime.datetime.strptime(dt_of_joining,"%d/%m/%Y")
-
+            if dt_of_joining:
+                dt_of_joining=datetime.datetime.strptime(dt_of_joining,"%m/%d/%Y").date()
+                print'//////////',dt_of_joining
             
-            #date_of_joining = dt_of_joining.datetime.datetime.strftime("%Y-%m-%d %H:%M:%S")            #print date_of_joining, "DATE OF JOINING"
-            #date_of_birth = datetime.datetime.strptime(dt_of_birth, "%d/%m/%Y")
-            #print date_of_birth, "DATE OF BIRTH"
+            if dt_of_birth:
+                dt_of_birth=datetime.datetime.strptime(dt_of_birth,"%d/%m/%Y").date()
+                print'[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[',dt_of_birth,
 
-           # date_of_joining= dt_of_joining.strftime("")
-            print emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b,dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+            print city,emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b,dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
             print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!"
             print company_name, "COMPANY NAME !!!!!!!!!!"
@@ -117,8 +109,8 @@ class attendance_import(osv.osv_memory):
             emp_tag = self.pool.get('hr.employee.category').search(cr,uid,[('name','=',tag)])
             print emp_tag, "TAG ARRAY.............."
             for tl in self.pool.get('hr.employee.category').browse(cr,uid,emp_tag):
-                tag_name=tl.id
-                print tag_name,"TAG-NAME..........."
+                tag_id=tl.id
+                print tag_id,"TAG-NAME..........."
             if not emp_tag:
                 tag_id= self.pool.get('hr.employee.category').create(cr,uid,{'name': tag})
                 print tag_id, "TAG-ID..........."    
@@ -131,36 +123,25 @@ class attendance_import(osv.osv_memory):
             if not department:
                 department= self.pool.get('hr.department').create(cr,uid,{'name': emp_department})
                 print department,"DEPARTMENT-ID............"
-            
-#             identification = self.pool.get('hr.employee.identification.detail').search(cr,uid,[('name','=',identification_mark)])
-#             
-#             for pl in self.pool.get('hr.employee.identification.detail').browse(cr,uid,identification):
-#                 identification=pl.id
-#                 
-#             if not identification:
-#                 identification= self.pool.get('hr.employee.identification.detail').create(cr,uid,{'name': identification_mark})
-#                 
-            
-                
-                
-            taluka= self.pool.get('taluka.name').search(cr,uid,[('name','=',emp_taluka)])
-            print taluka, "TALUKA -ID.............."
-            for al in self.pool.get('taluka.name').browse(cr,uid,taluka):
-                taluka=al.id
-                print taluka,"TALUKA-ID............"
-            if not taluka:
-                taluka= self.pool.get('taluka.name').create(cr,uid,{'name': emp_taluka})
-                print taluka,"TALUKA-ID............"
-#                 
-#             state= self.pool.get('res.country.state').search(cr,uid,[('name', '=',emp_state)])
-#             print state,"STATE-ID..........................." 
-#             for nl in self.pool.get('res.country.state').browse(cr,uid,state):
-#                 state=nl.id
-#                 print state,"STATE-ID............"
-#             if not state:
-#                 state= self.pool.get('res.country.state').create(cr,uid,{'name': emp_state})
-#                 print state,"STATE-ID............"   
-#             
+          
+            taluka_name= self.pool.get('taluka.name').search(cr,uid,[('name','=',emp_taluka)])
+            print taluka_name, "TALUKA -ID.............."
+            for al in self.pool.get('taluka.name').browse(cr,uid,taluka_name):
+                taluka_name=al.id
+                print taluka_name,"TALUKA-ID............"
+            if not taluka_name:
+                taluka_name= self.pool.get('taluka.name').create(cr,uid,{'name': emp_taluka})
+                print taluka_name,"TALUKA-ID............"
+                 
+            district_name= self.pool.get('res.state.district').search(cr,uid,[('name', '=',district)])
+            print district_name,"DISTRICT-ID..........................." 
+            for al in self.pool.get('res.state.district').browse(cr,uid,district_name):
+                district_name=al.id
+                print district_name,"DISTRICT-ID............"
+            if not district_name:
+                district_name= self.pool.get('res.state.district').create(cr,uid,{'name': district})
+                print district_name,"DISTRICT-ID............"   
+             
                    
             nominee= self.pool.get('relation.name').search(cr,uid,[('name', '=',nominee_relationship)])
             print nominee,"NOMINEE-ID..........................." 
@@ -199,18 +180,70 @@ class attendance_import(osv.osv_memory):
                 print company_number,"COMPANY-ID............"
             
             if not employee_id:
-                print "If not employeeeeeeeeeeeeeeeeeeeeee"
-                print "COUNTRY IDDDDDDDDDDDDDDDDDDDD",country_number
-                employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id1': emp_code,'name':emp_name,'current_country_id':country_number,'relationship':nominee,'nominee':nominee_name,'address':nominee_address,'telephone_no':nominee_phone,'taluka':taluka,'constituency':constituency,'place_of_birth':place_of_birth,'category':tag_name,'vehicle':company_vehicle,'vehicle_distance':work_distance,'notes':other_info,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no,'father_name':father_name, 'current_pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender),'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason,'acc_number':bank_account_no,'esic_no':esic_no,'bank_field':bank_number,'bank_bic':bank_code}) 
-                #employee_id = self.pool.get('hr.employee').create(cr,uid,{'relationship':nominee,'nominee':nominee_name,'address':nominee_address,'telephone_no':nominee_phone,'state_name':state,'taluka':taluka,'constituency':constituency,'place_of_birth':place_of_birth,'category':tag_name,'marital':martial_status,'driving_license_no':licence_no,'aadhar_no':adhar_no,'identification_marks':identific_mark,'vehicle':company_vehicle,'vehicle_distance':work_distance,'medic_exam':medical_exam,'notes':other_info,'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'acc_number':a, 'esic_no':b, 'father_name':father_name, 'pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'country_id':country_number})
- #'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason
+                employee_identification_proof_detail = []
+                if adhar_no:
+                    employee_identification_proof_detail.append((0,0,{'name':'aadhar_card','number' :adhar_no}))
+                if driving_licence_no:
+                    employee_identification_proof_detail.append((0,0,{'name':'driving_licence','number':driving_licence_no}))
+                offence_line = []
+                if service_remark:
+                    offence_line.append((0,0,{'name':'punishment','punishment':service_remark}))
+              
+                employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id1': emp_code,
+                                                                          'name':emp_name,
+                                                                          'current_country_id':country_number,
+                                                                          'relationship':nominee,
+                                                                          'nominee':nominee_name,
+                                                                          'address':nominee_address,
+                                                                          'telephone_no':nominee_phone,
+                                                                          'post_office':post_office,
+                                                                          'constituency':constituency,
+                                                                          'place_of_birth':place_of_birth,
+                                                                          'category':tag_id,
+                                                                          'vehicle':company_vehicle,
+                                                                          'vehicle_distance':work_distance,
+                                                                          'notes':other_info,
+                                                                          'name':emp_name,
+                                                                          'job_id':position, 
+                                                                          'department_id':department,
+                                                                          'pf_no':emp_epf_no,
+                                                                          'father_name':father_name,
+                                                                          'current_pincode':pincode,
+                                                                          'mobile_no1':mobile_no,
+                                                                          'blood_group':blood_group, 
+                                                                          'active':str(active),
+                                                                          'gender':str(gender),
+                                                                          'bank_field':bank_number, 
+                                                                                'branch_name':branch_name,
+                                                                                'bank_bic':bank_code,
+                                                                                 'company_id':company_number,
+                                                                                 'marital':martial_status,
+                                                                                 'work_email':emp_mail,
+                                                                                 'work_phone':work_phone,
+                                                                                 'mobile_phone':work_mobile,
+                                                                                 'work_location':office_location,
+                                                                                 'reason_leaving':reason,
+                                                                                 'acc_number':bank_account_no,
+                                                                                 'esic_no':esic_no,
+                                                                                 'bank_field':bank_number,
+                                                                                 'bank_bic':bank_code,
+                                                                                 'employee_identification_proof_detail' : employee_identification_proof_detail,
+                                                                                 'current_city':city,
+                                                                                 'current_street1':address,
+                                                                                 'current_district_id':district_name,
+                                                                                 'taluka':taluka_name,
+                                                                                 'offence_line':offence_line,
+#                                                                                  'doj':dt_of_joining,
+#                                                                                  'birthday':dt_of_birth
+                                                                                 }) 
+#   
 #             elif employee_id:
-#                  employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'identification_id1': emp_code,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no, 'esic_no':b, 'father_name':father_name, 'home_pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender), 'home_country_id':country_number, 'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason,'acc_number':bank_account_no,'esic_no':esic_no,'bank_field':bank_number,'bank_bic':bank_code})
+#                 employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'birthday':dt_of_birth,  'doj':dt_of_joining,})
+                                                                                       
 
                 #'home_country_id':country_number,'relationship':nominee,'nominee':nominee_name,'address':nominee_address,'telephone_no':nominee_phone,'home_state_name':state,'taluka':taluka,'constituency':constituency,'place_of_birth':place_of_birth,'category':tag_name,'vehicle':company_vehicle,'vehicle_distance':work_distance,'notes':other_info,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no,'father_name':father_name, 'home_pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender),'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason,'acc_number':bank_account_no,'esic_no':esic_no,'bank_field':bank_number,'bank_bic':bank_code
             else:
                 employee_id = employee_id[0]
-                emp_obj =   self.pool.get('hr.employee').browse(cr,uid,employee_id) 
         return True
     
     def import_payment_info(self,cr,uid,ids,context=None):
@@ -236,7 +269,7 @@ class attendance_import(osv.osv_memory):
             house_rent_allowance =sheet.row_values(i,0,sheet.ncols)[11]
             over_time =sheet.row_values(i,0,sheet.ncols)[5]
             
-            import datetime
+            
             date_of_joining = datetime.datetime.strptime(contract_start_date, "%d/%m/%Y")
             print date_of_joining, "CONTRACT START DATE"
             
