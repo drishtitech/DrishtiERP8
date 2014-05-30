@@ -28,7 +28,9 @@ class attendance_import(osv.osv_memory):
         sheet=wb.sheet_by_index(0)
         
         
+        
         for i in range(1,sheet.nrows):
+            emp_deatil={}
             emp_code =sheet.row_values(i,0,sheet.ncols)[1]
             emp_name =sheet.row_values(i,0,sheet.ncols)[2]
             #emp_site =sheet.row_values(i,0,sheet.ncols)[3]
@@ -40,7 +42,7 @@ class attendance_import(osv.osv_memory):
             b =sheet.row_values(i,0,sheet.ncols)[8]
             #reason_for_leaving =sheet.row_values(i,0,sheet.ncols)[10]
             dt_of_joining =str(sheet.row_values(i,0,sheet.ncols)[11])
-            dt_of_birth =sheet.row_values(i,0,sheet.ncols)[12]
+            dt_of_birth =str(sheet.row_values(i,0,sheet.ncols)[12])
             father_name =sheet.row_values(i,0,sheet.ncols)[14]
             pincode =sheet.row_values(i,0,sheet.ncols)[18] and str(int(sheet.row_values(i,0,sheet.ncols)[18]))
             city =sheet.row_values(i,0,sheet.ncols)[17]
@@ -85,14 +87,17 @@ class attendance_import(osv.osv_memory):
             driving_licence_no = sheet.row_values(i,0,sheet.ncols)[42] and str(sheet.row_values(i,0,sheet.ncols)[42])
             
             if dt_of_joining:
+                print'/////dt_of_joining==================/////',dt_of_joining
                 dt_of_joining=datetime.datetime.strptime(dt_of_joining,"%m/%d/%Y").date()
-                print'//////////',dt_of_joining
-            
+                emp_deatil['doj']=dt_of_joining
+                
             if dt_of_birth:
+                print'===========dt_of_birth=================',dt_of_birth,
                 dt_of_birth=datetime.datetime.strptime(dt_of_birth,"%d/%m/%Y").date()
-                print'[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[',dt_of_birth,
+                emp_deatil['birthday']=dt_of_birth
+           
 
-            print city,emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b,dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+     #       print city,emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b,dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
             print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!"
             print company_name, "COMPANY NAME !!!!!!!!!!"
@@ -170,14 +175,14 @@ class attendance_import(osv.osv_memory):
                 bank_number= self.pool.get('res.bank').create(cr,uid,{'name': bank_name})
                 print bank_number,"BANK-ID............"
                 
-            company = self.pool.get('res.company').search(cr,uid,[('name','=',company_name)])
-            print company, "COMPANY ARRAY.............."
-            for yl in self.pool.get('res.company').browse(cr,uid,company):
-                company_number=yl.id
-                print company_number,"COMPANY-ID............" 
-            if not company:
-                company_number= self.pool.get('res.company').create(cr,uid,{'name': company_name})
-                print company_number,"COMPANY-ID............"
+            company_number = self.pool.get('res.company').search(cr,uid,[('name','=',company_name)]) and \
+                                self.pool.get('res.company').search(cr,uid,[('name','=',company_name)])[0] or False
+           # for yl in self.pool.get('res.company').browse(cr,uid,company):
+               # company_number=yl.id
+               # print company_number,"COMPANY-ID............" 
+          #  if not company:
+               # company_number= self.pool.get('res.company').create(cr,uid,{'name': company_name})
+               # print company_number,"COMPANY-ID............"
             
             if not employee_id:
                 employee_identification_proof_detail = []
@@ -188,9 +193,9 @@ class attendance_import(osv.osv_memory):
                 offence_line = []
                 if service_remark:
                     offence_line.append((0,0,{'name':'punishment','punishment':service_remark}))
-              
-                employee_id = self.pool.get('hr.employee').create(cr,uid,{'identification_id1': emp_code,
-                                                                          'name':emp_name,
+                    
+                emp_deatil.update({'identification_id1': emp_code,
+                                  'name':emp_name,
                                                                           'current_country_id':country_number,
                                                                           'relationship':nominee,
                                                                           'nominee':nominee_name,
@@ -232,10 +237,11 @@ class attendance_import(osv.osv_memory):
                                                                                  'current_street1':address,
                                                                                  'current_district_id':district_name,
                                                                                  'taluka':taluka_name,
-                                                                                 'offence_line':offence_line,
-#                                                                                  'doj':dt_of_joining,
-#                                                                                  'birthday':dt_of_birth
-                                                                                 }) 
+                                                                                 'offence_line':offence_line,})
+              
+                employee_id = self.pool.get('hr.employee').create(cr,uid,emp_deatil)
+                print "employee_id==============",employee_id,i
+                                                                                 
 #   
 #             elif employee_id:
 #                 employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'birthday':dt_of_birth,  'doj':dt_of_joining,})
@@ -291,6 +297,8 @@ class attendance_import(osv.osv_memory):
             for sl in self.pool.get('hr.payroll.structure').browse(cr,uid,structure_id):
                 structure_number=sl.id
                 print structure_number,"SALARY STRUCTURE-ID............"
+            if not structure_id:
+                structure_number=self.pool.get('hr.payroll.structure').create(cr,uid,{'name': salary_structure})
                 
             calendar_id = self.pool.get('holidays.calendar').search(cr,uid,[('name','=',holidays_calendar)])
             print calendar_id, "HOLIDAYS CALENDAR ARRAY !!!!!!!!!!!!!!!"
