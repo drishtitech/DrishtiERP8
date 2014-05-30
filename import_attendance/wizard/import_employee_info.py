@@ -37,9 +37,15 @@ class attendance_import(osv.osv_memory):
             tag =sheet.row_values(i,0,sheet.ncols)[3]
             emp_designation =sheet.row_values(i,0,sheet.ncols)[4]
             emp_department =sheet.row_values(i,0,sheet.ncols)[5]
-            emp_epf_no =sheet.row_values(i,0,sheet.ncols)[6] and str(sheet.row_values(i,0,sheet.ncols)[6])
-            a =sheet.row_values(i,0,sheet.ncols)[7]
-            b =sheet.row_values(i,0,sheet.ncols)[8]
+            emp_epf_no =sheet.row_values(i,0,sheet.ncols)[6] 
+            if emp_epf_no=='NA':
+                emp_epf_no=str(emp_epf_no)
+            elif emp_epf_no=='':
+                emp_epf_no=str(emp_epf_no)
+            else:
+                emp_epf_no =str(int(emp_epf_no))
+               
+                print'><><><><><><> epf_no',emp_epf_no
             #reason_for_leaving =sheet.row_values(i,0,sheet.ncols)[10]
             dt_of_joining =str(sheet.row_values(i,0,sheet.ncols)[11])
             dt_of_birth =str(sheet.row_values(i,0,sheet.ncols)[12])
@@ -64,13 +70,11 @@ class attendance_import(osv.osv_memory):
             office_location =sheet.row_values(i,0,sheet.ncols)[29]
             reason =sheet.row_values(i,0,sheet.ncols)[10]
             other_info =sheet.row_values(i,0,sheet.ncols)[34]
-            medical_exam =sheet.row_values(i,0,sheet.ncols)[38]
             company_vehicle =sheet.row_values(i,0,sheet.ncols)[39]
             work_distance =sheet.row_values(i,0,sheet.ncols)[40]
             
             adhar_no =sheet.row_values(i,0,sheet.ncols)[43]
             martial_status =sheet.row_values(i,0,sheet.ncols)[45]
-            #martial_status=martial_status.lower()
             service_remark =sheet.row_values(i,0,sheet.ncols)[22]
             place_of_birth =sheet.row_values(i,0,sheet.ncols)[46]
             district = sheet.row_values(i,0,sheet.ncols)[56]
@@ -85,7 +89,7 @@ class attendance_import(osv.osv_memory):
             bank_account_no =sheet.row_values(i,0,sheet.ncols)[7] and str(int(sheet.row_values(i,0,sheet.ncols)[7]))
             esic_no =sheet.row_values(i,0,sheet.ncols)[8]
             driving_licence_no = sheet.row_values(i,0,sheet.ncols)[42] and str(sheet.row_values(i,0,sheet.ncols)[42])
-            
+             
             if dt_of_joining:
                 print'/////dt_of_joining==================/////',dt_of_joining
                 dt_of_joining=datetime.datetime.strptime(dt_of_joining,"%m/%d/%Y").date()
@@ -95,9 +99,7 @@ class attendance_import(osv.osv_memory):
                 print'===========dt_of_birth=================',dt_of_birth,
                 dt_of_birth=datetime.datetime.strptime(dt_of_birth,"%d/%m/%Y").date()
                 emp_deatil['birthday']=dt_of_birth
-           
-
-     #       print city,emp_code,medical_exam, emp_name, tag, emp_designation, emp_department, emp_epf_no, a, b,dt_of_birth,active, gender,country,bank_name,branch_name,bank_code,company_name, "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+            
             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
             print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!"
             print company_name, "COMPANY NAME !!!!!!!!!!"
@@ -157,7 +159,12 @@ class attendance_import(osv.osv_memory):
                 nominee= self.pool.get('relation.name').create(cr,uid,{'name': nominee_relationship})
                 print nominee,"NOMINEE-ID............"   
             
-            
+            state_name = self.pool.get('res.country.state').search(cr,uid,[('name','=',emp_state)])
+            print state_name, "State Name.............."
+            for cl in self.pool.get('res.country.state').browse(cr,uid,state_name):
+                state_name=cl.id
+                print state_name, "State Name.............."
+                
                 
                 
             country_number = self.pool.get('res.country').search(cr,uid,[('name','=',country)])
@@ -177,12 +184,6 @@ class attendance_import(osv.osv_memory):
                 
             company_number = self.pool.get('res.company').search(cr,uid,[('name','=',company_name)]) and \
                                 self.pool.get('res.company').search(cr,uid,[('name','=',company_name)])[0] or False
-           # for yl in self.pool.get('res.company').browse(cr,uid,company):
-               # company_number=yl.id
-               # print company_number,"COMPANY-ID............" 
-          #  if not company:
-               # company_number= self.pool.get('res.company').create(cr,uid,{'name': company_name})
-               # print company_number,"COMPANY-ID............"
             
             if not employee_id:
                 employee_identification_proof_detail = []
@@ -237,17 +238,16 @@ class attendance_import(osv.osv_memory):
                                                                                  'current_street1':address,
                                                                                  'current_district_id':district_name,
                                                                                  'taluka':taluka_name,
-                                                                                 'offence_line':offence_line,})
+                                                                                 'offence_line':offence_line,
+                                                                                 'current_state_id':state_name,})
               
                 employee_id = self.pool.get('hr.employee').create(cr,uid,emp_deatil)
-                print "employee_id==============",employee_id,i
+                print "employee_id==============",employee_id
                                                                                  
-#   
-#             elif employee_id:
-#                 employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,{'birthday':dt_of_birth,  'doj':dt_of_joining,})
-                                                                                       
-
-                #'home_country_id':country_number,'relationship':nominee,'nominee':nominee_name,'address':nominee_address,'telephone_no':nominee_phone,'home_state_name':state,'taluka':taluka,'constituency':constituency,'place_of_birth':place_of_birth,'category':tag_name,'vehicle':company_vehicle,'vehicle_distance':work_distance,'notes':other_info,'name':emp_name, 'job_id':position, 'department_id':department, 'pf_no':emp_epf_no,'father_name':father_name, 'home_pincode':pincode, 'mobile_no1':mobile_no, 'blood_group':blood_group, 'active':str(active), 'gender':str(gender),'bank_field':bank_number, 'branch_name':branch_name,'bank_bic':bank_code, 'company_id':company_number,'work_email':emp_mail,'work_email':emp_mail,'work_phone':work_phone,'mobile_phone':work_mobile,'work_location':office_location,'reason_leaving':reason,'acc_number':bank_account_no,'esic_no':esic_no,'bank_field':bank_number,'bank_bic':bank_code
+   
+            elif employee_id:
+                employee_id = self.pool.get('hr.employee').write(cr,uid,employee_id,emp_deatil)
+  
             else:
                 employee_id = employee_id[0]
         return True
