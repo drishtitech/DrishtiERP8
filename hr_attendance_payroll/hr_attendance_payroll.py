@@ -89,7 +89,11 @@ class hr_contract(osv.osv):
         'tds':fields.float('TDS'),
         'voluntary_provident_fund':fields.float('Voluntary Provident Fund (%)'),
         'medical_insurance':fields.float('Medical Insurance'),
+        'cca_allowance':fields.float('CCA Allowance'),
+        'office_wear_allowance':fields.float('Office Wear Allowance'),
+        'medical_allowance':fields.float('Medical Allowance'),
         'over_time_allowence':fields.integer('Over Time',size=124)
+        
         }
      
     _defaults = {

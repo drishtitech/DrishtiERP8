@@ -139,6 +139,9 @@
                 	<field name="driver_salary"/>
                 	<field name="house_rent_allowance_metro_nonmetro"/>
                 	<field name="supplementary_allowance"/>
+                	<field name="cca_allowance"/>
+                	<field name="office_wear_allowance"/>
+                	<field name="medical_allowance"/>
                 	
  
                <group string="Deduction">
