@@ -142,7 +142,7 @@
                 	<field name="cca_allowance"/>
                 	<field name="office_wear_allowance"/>
                 	<field name="medical_allowance"/>
-                	
+                	<field name="conveyance_allowence"/>
  
                <group string="Deduction">
                	
