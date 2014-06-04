@@ -11,7 +11,7 @@ class leaves_calendar(osv.osv):
     _name = "leaves.calendar"
     _description = "Public Holidays"
     _columns = {
-        'holiday_id':fields.many2one('holidays.calendar','Holidays Number', size=124),        
+        #'holiday_id':fields.many2one('holidays.calendar','Holidays Number', size=124),        
         'name': fields.char('Holiday Name', size=124, required=True),
         #'employee_id':fields.many2one('hr.employee','Employee', size=124),
         #'leave': fields.char('Holiday Name', size=124, required=True),
@@ -39,10 +39,10 @@ class holidays_calendar(osv.osv):
     _name = "holidays.calendar"
     _description = "Holidays Calendar"
     _columns = {
-        #'holiday_id': fields.many2one('leaves.calendar','Holidays ID', size=124),
+        'holiday_id': fields.many2one('leaves.calendar','Holidays ID', size=124),
         'name': fields.char('Holidays Calendar Name', size=124, required=True),
         'location':fields.selection([('Mumbai', 'Mumbai'),('Goa','Goa')],'Location'),
-        'holidays_line':fields.one2many('leaves.calendar','holiday_id'," ", size=124),
+        'holidays_line':fields.many2many('leaves.calendar','holiday_calendar_name','holiday_id','calendar_id',"Holidays Number ", size=124),
         #'leave': fields.char('Holiday Name', size=124, required=True),
 #         'degree':fields.char('Degree', size=124),
 #         'institute':fields.char('Institute', size=124),
@@ -232,9 +232,9 @@ class hr_attendance_table_line(osv.osv):
   'goa_drive_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('P','P'),('A','A'),('H','H'),('SL','SL')],'HR Drive Attendance'),
     #'goa_drive_hr_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('P','P'),('A','A'),('SL','SL'),('H','H')],'HR Drive Attendance'),
 
-   'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance'),
-   'login_time':fields.char('Punch In'),
-   'logout_time':fields.char('Punch Out')
+   'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance',readonly=True),
+   'login_time':fields.char('Punch In',readonly=True),
+   'logout_time':fields.char('Punch Out',readonly=True)
    }
        
     def fetch_attendance_info(self,cr,uid,ids,context=None):

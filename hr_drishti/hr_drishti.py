@@ -160,7 +160,7 @@ class hr_employee(osv.osv):
       'emp_middle_name':fields.char("Middle Name"),
       'emp_last_name':fields.char("Last Name"),
       'marriage_date':fields.date("Marriage date"),
-      'no_of_children':fields.integer("Number of children"),
+      'no_of_children':fields.integer("Number of Children"),
       'goa_employee':fields.boolean("Goa Employee"),
       'same_current_address':fields.boolean("Same as above address"),
       'home_street1':fields.char("Street1"),

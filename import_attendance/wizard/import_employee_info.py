@@ -44,8 +44,7 @@ class attendance_import(osv.osv_memory):
                 emp_epf_no=str(emp_epf_no)
             else:
                 emp_epf_no =str(int(emp_epf_no))
-               
-                print'><><><><><><> epf_no',emp_epf_no
+  
             #reason_for_leaving =sheet.row_values(i,0,sheet.ncols)[10]
             dt_of_joining =str(sheet.row_values(i,0,sheet.ncols)[11])
             dt_of_birth =str(sheet.row_values(i,0,sheet.ncols)[12])
@@ -61,7 +60,6 @@ class attendance_import(osv.osv_memory):
             bank_code=sheet.row_values(i,0,sheet.ncols)[100]
             company_name=sheet.row_values(i,0,sheet.ncols)[101]
             address =sheet.row_values(i,0,sheet.ncols)[16]
-
             blood_group =sheet.row_values(i,0,sheet.ncols)[21]
             active =sheet.row_values(i,0,sheet.ncols)[37]
             emp_mail =sheet.row_values(i,0,sheet.ncols)[26]
@@ -86,8 +84,22 @@ class attendance_import(osv.osv_memory):
             nominee_address =sheet.row_values(i,0,sheet.ncols)[78]
             nominee_phone =sheet.row_values(i,0,sheet.ncols)[79]
             nominee_relationship =sheet.row_values(i,0,sheet.ncols)[77]
-            bank_account_no =sheet.row_values(i,0,sheet.ncols)[7] and str(int(sheet.row_values(i,0,sheet.ncols)[7]))
-            esic_no =sheet.row_values(i,0,sheet.ncols)[8]
+            
+            if bank_name=='HDFC Bank':
+                bank_account_no =sheet.row_values(i,0,sheet.ncols)[97] and str(int(sheet.row_values(i,0,sheet.ncols)[97]))
+            else:
+                bank_account_no=sheet.row_values(i,0,sheet.ncols)[7] and str(int(sheet.row_values(i,0,sheet.ncols)[7]))
+                
+            esic_no =sheet.row_values(i,0,sheet.ncols)[8] 
+            if esic_no=='NA':
+                esic_no=str(esic_no)
+            elif esic_no=='':
+                esic_no=str(esic_no)
+            elif esic_no=='YES':
+                esic_no=str(esic_no)
+            else:
+                esic_no =str(int(esic_no))
+  
             driving_licence_no = sheet.row_values(i,0,sheet.ncols)[42] and str(sheet.row_values(i,0,sheet.ncols)[42])
              
             if dt_of_joining:
@@ -101,7 +113,7 @@ class attendance_import(osv.osv_memory):
                 emp_deatil['birthday']=dt_of_birth
             
             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
-            print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!"
+            print employee_id, "EMPLOYEE-ID !!!!!!!!!!!!!!!",emp_code
             print company_name, "COMPANY NAME !!!!!!!!!!"
             
             position = self.pool.get('hr.job').search(cr,uid,[('name','=',emp_designation)])
@@ -316,10 +328,26 @@ class attendance_import(osv.osv_memory):
             print contract_id, "CONTRACT-ID exists............."
             if not contract_id:
                 print "new contract created"
-                new_contract = self.pool.get('hr.contract').create(cr,uid,{'over_time_allowence':over_time,'struct_id': structure_number,'name' : emp_name,'employee_id' : emp_number,'wage': emp_wage, 'nutritional_allowance': nutritional_allowance,  'attendance_incentive': att_inc_allowance, 'working_hours': schedule_number, 'date_start': date_of_joining, 'da_lta_fa': da_lta_fa, 'hra': house_rent_allowance})
-        #    for cl_browse in self.pool.get('hr.contract').browse(cr,uid,contract_id):
-                        #self.pool.get('hr.contract').write(cr,uid,cl_browse.id,{'wage': emp_wage, 'struct_id': structure_number, 'nutritional_allowance': nutritional_allowance,  'attendance_incentive': att_inc_allowance, 'holidays_id': calendar_number})
-                        
+                new_contract = self.pool.get('hr.contract').create(cr,uid,{'over_time_allowence':over_time,
+                                                                           'struct_id': structure_number,
+                                                                            'holidays_id': calendar_number,
+                                                                           'struct_id': structure_number,
+                                                                           'name' : emp_name,
+                                                                           'employee_id' : emp_number,
+                                                                           'wage': emp_wage, 
+                                                                           'nutritional_allowance': nutritional_allowance,  
+                                                                           'attendance_incentive': att_inc_allowance, 
+                                                                           'working_hours': schedule_number, 
+                                                                           'date_start': date_of_joining, 
+                                                                           'da_lta_fa': da_lta_fa, 
+                                                                           'hra': house_rent_allowance})
+        for cl_browse in self.pool.get('hr.contract').browse(cr,uid,contract_id):
+                        self.pool.get('hr.contract').write(cr,uid,cl_browse.id,{'wage': emp_wage, 
+                                                                            'struct_id': structure_number, 
+                                                                            'nutritional_allowance': nutritional_allowance,  
+                                                                            'attendance_incentive': att_inc_allowance, 
+                                                                            'holidays_id': calendar_number})
+                    
                         
         return True
 
