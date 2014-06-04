@@ -11,6 +11,15 @@
               	  </xpath>
             </field>
         </record>
-
+ <record model="ir.ui.view" id="hr_salary_rule_group_view">
+            <field name="name">hr.salary.rule.group</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_rule_filter"/>
+            <field name="model">hr.salary.rule</field>
+            <field name="arch" type="xml">
+                <xpath expr="/search/group" position="inside">
+             	           <filter string="Company" name="company_id" groups="base.group_multi_company" icon="terp-go-home" context="{'group_by':'company_id'}"/>
+              	  </xpath>
+            </field>
+        </record>
     </data>
 </openerp>
