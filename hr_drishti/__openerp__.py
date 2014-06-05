@@ -45,6 +45,7 @@ You can manage:
         
         #'institute_view.xml',
         'hr_drishti_view.xml',
+        'security/hr_security.xml',
         'security/ir.model.access.csv',
     ],
    

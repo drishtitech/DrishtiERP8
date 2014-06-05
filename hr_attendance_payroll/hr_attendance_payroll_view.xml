@@ -149,6 +149,8 @@
                 	<field name="tds"/>
                 	<field name="voluntary_provident_fund"/>
                 	<field name="medical_insurance"/>
+                	<field name="provident_amount"/>
+                	<field name="e.s.i.s"/>
                 </group>
                
                </group>

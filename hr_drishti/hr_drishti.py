@@ -334,7 +334,7 @@ ir_attachment()
 
 
 
-class qualification_details1(osv.osv):
+class hr_employee_qualification(osv.osv):
     _name = "hr.employee.qualification"
     _description = "Educational Qualifications"
     _columns = {
@@ -353,7 +353,7 @@ class qualification_details1(osv.osv):
 
         }
 
-qualification_details1()
+hr_employee_qualification()
 
 
 class family_details(osv.osv):

@@ -1,13 +1,13 @@
-"id"	"name"	"model_id:id"	"group_id:id"	"perm_read"	"perm_write"	"perm_create"	"perm_unlink"
-"access_annual_assessment"	"annual.assessment"	"model_annual_assessment"	"base.group_hr_user"	1	1	1	1
-"access_language_details"	"language.details"	"model_language_details"	"base.group_hr_user"	1	1	1	1
-"access_family_details"	"family.details"	"model_family_details"	"base.group_hr_user"	1	1	1	1
-"access_hr_employee_qualification"	"hr.employee.qualification"	"model_hr_employee_qualification"	"base.group_hr_user"	1	1	1	1
-"access_achievement_details"	"achievement.details"	"model_achievement_details"	"base.group_hr_user"	1	1	1	1
-"access_beach_lifeguard"	"beach.lifeguard"	"model_beach_lifeguard"	"base.group_hr_user"	1	1	1	1
-"access_offence_details"	"offence.details"	"model_offence_details"	"base.group_hr_user"	1	1	1	1
-"access_jetski_details"	"jetski.details"	"model_jetski_details"	"base.group_hr_user"	1	1	1	1
-"access_job_history"	"hr.employee.job.history"	"model_hr_employee_job_history"		1	1	1	1
-"access_identification_detail"	"hr.employee.identification.detail"	"model_hr_employee_identification_detail"		1	1	1	1
-"access_academic_degree"	"hr.employee.academic.degree"	"modelhr_employee_academic_degree"		1	1	1	1
-"access_academic_degree_division"	"hr.employee.academic.degree.division"	"model_hr_employee_academic_degree_division"		1	1	1	1
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_academic_degree_division","hr.employee.academic.degree.division","model_hr_employee_academic_degree_division",,1,1,1,1
+"access_annual_assessment_officer","annual.assessment","model_annual_assessment",,1,1,1,1
+"access_language_details_officer","language.details","model_language_details",,1,1,1,1
+"access_family_details_officer","family.details","model_family_details",,1,1,1,1
+"access_hr_employee_qualification_officer","hr.employee.qualification","model_hr_employee_qualification",,1,1,1,1
+"access_achievement_details_officer","achievement.details","model_achievement_details",,1,1,1,1
+"access_beach_lifeguard_officer","beach.lifeguard","model_beach_lifeguard",,1,1,1,1
+"access_offence_details_officer","offence.details","model_offence_details",,1,1,1,1
+"access_jetski_details_officer","jetski.details","model_jetski_details",,1,1,1,1
+"access_job_history_officer","hr.employee.job.history","model_hr_employee_job_history",,1,1,1,1
+"access_identification_detail_officer","hr.employee.identification.detail","model_hr_employee_identification_detail",,1,1,1,1
+"access_academic_degree_officer","hr.employee.academic.degree","model_hr_employee_academic_degree",,1,1,1,1

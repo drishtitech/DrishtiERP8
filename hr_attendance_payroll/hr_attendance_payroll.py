@@ -93,7 +93,9 @@ class hr_contract(osv.osv):
         'office_wear_allowance':fields.float('Office Wear Allowance'),
         'medical_allowance':fields.float('Medical Allowance'),
         'over_time_allowence':fields.integer('Over Time',size=124),
-        'conveyance_allowence':fields.float('Conveyance Allowance')
+        'conveyance_allowence':fields.float('Conveyance Allowance'),
+        'provident_amount':fields.float('Provident Amount'),
+        'e.s.i.s':fields.float('E.S.I.S')
         }
      
     _defaults = {
