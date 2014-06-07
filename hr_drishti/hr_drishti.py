@@ -30,7 +30,46 @@ from openerp import tools
 import time
 
 
+class mail_compose_message(osv.osv):
+    _inherit = "mail.compose.message"
+    
+    def send_mail1(self, cr, uid, ids, context=None):
+        """ Process the wizard content and proceed with sending the related
+            email(s), rendering any template patterns on the fly if needed. """
+        if context is None:
+            context = {}
 
+        # clean the context (hint: mass mailing sets some default values that
+        # could be wrongly interpreted by mail_mail)
+        context.pop('default_email_to', None)
+        context.pop('default_partner_ids', None)
+
+        for wizard in self.browse(cr, uid, ids, context=context):
+            print "wizard.composition_mode ",wizard.composition_mode 
+            mass_mode = wizard.composition_mode in ('mass_mail', 'mass_post')
+            active_model_pool = self.pool[wizard.model if wizard.model else 'mail.thread']
+            if not hasattr(active_model_pool, 'message_post'):
+                context['thread_model'] = wizard.model
+                active_model_pool = self.pool['mail.thread']
+
+            # wizard works in batch mode: [res_id] or active_ids or active_domain
+            if mass_mode and wizard.use_active_domain and wizard.model:
+                res_ids = self.pool[wizard.model].search(cr, uid, eval(wizard.active_domain), context=context)
+            elif mass_mode and wizard.model and context.get('active_ids'):
+                res_ids = context['active_ids']
+            else:
+                res_ids = [wizard.res_id]
+
+            sliced_res_ids = [res_ids[i:i + self._batch_size] for i in range(0, len(res_ids), self._batch_size)]
+            for res_ids in sliced_res_ids:
+                all_mail_values = self.get_mail_values(cr, uid, wizard, res_ids, context=context)
+                for res_id, mail_values in all_mail_values.iteritems():
+                    
+                        mail_id = self.pool['mail.mail'].create(cr, uid, mail_values, context=context)
+                        self.pool['mail.mail'].send(cr,uid,[mail_id])
+
+        return {'type': 'ir.actions.act_window_close'}
+    
 class hr_holidays(osv.osv):
     _name = "hr.holidays"
     _description = "HR Holidays"
@@ -44,6 +83,8 @@ class hr_holidays(osv.osv):
                  'leave_allocation_date': fields.datetime.now,
                  
                  }
+    
+    
     
     def action_email_send(self, cr, uid, ids, context=None):
      
@@ -64,15 +105,15 @@ class hr_holidays(osv.osv):
             
             if context['type'] == 'confirm':
                 email_id = cur_obj.employee_id.parent_id and cur_obj.employee_id.parent_id.user_id and cur_obj.employee_id.parent_id.user_id.partner_id.id or False
-                partner_ids = [(6,0,[email_id,hr_email_id])]
+                partner_ids = [(6,0,[email_id])]
                 author_id = cur_obj.employee_id.user_id.partner_id.id,
             else:
                 email_id = cur_obj.employee_id.user_id and cur_obj.employee_id.user_id.partner_id.id
-                partner_ids = [(6,0,[email_id,hr_email_id])]
+                partner_ids = [(6,0,[email_id])]
                 author_id = cur_obj.employee_id.parent_id.user_id.partner_id.id
             ctx['default_email_cc'] =cur_obj.employee_id.company_id.partner_id.email
-            message_id = self.pool.get('mail.compose.message').create(cr,uid,{'author_id' : author_id,'partner_ids': partner_ids },context=ctx)
-            self.pool.get('mail.compose.message').send_mail(cr,uid,[message_id],ctx)
+            message_id = self.pool.get('mail.compose.message').create(cr,uid,{'author_id' : author_id,'partner_ids': partner_ids ,'composition_mode': 'mass_mail'},context=ctx)
+            self.pool.get('mail.compose.message').send_mail1(cr,uid,[message_id],ctx)
        
    
     def holidays_validate(self, cr, uid, ids, context=None):

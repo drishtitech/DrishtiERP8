@@ -19,7 +19,7 @@
             <field name="arch" type="xml">
             <field name="name" position="replace">
             <field name="serial_no"/>
-           <field name="name"/>
+           <field name="name" required="1"/>
            <field name="leave_allocation_date"/>
            
            
