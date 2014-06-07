@@ -39,7 +39,7 @@ You can manage:
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     #'images': ['images/hr_department.jpeg', 'images/hr_employee.jpeg','images/hr_job_position.jpeg'],
-    'depends': ['base','crm'],
+    'depends': ['base','crm','hr','hr_holidays'],
     'init_xml': [],
     'update_xml': [
         

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
+<data>
+<record id="group_employee_manager" model="res.groups">
+        <field name="name">Maintenance </field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+   </record>
+</data>
 <data noupdate="1">
 
     <record id="hr_emp_comp_rule" model="ir.rule">

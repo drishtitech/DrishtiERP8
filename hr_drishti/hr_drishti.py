@@ -37,8 +37,69 @@ class hr_holidays(osv.osv):
     _inherit = "hr.holidays"
     _columns = {
 	    'serial_no': fields.char('Serial No.', size=124),
-        'leave_allocation_date':fields.date('Leave Allocation date',required=True),
+        'leave_allocation_date':fields.date('Request date',required=True),
 		}
+    
+    _defaults = {
+                 'leave_allocation_date': fields.datetime.now,
+                 
+                 }
+    
+    def action_email_send(self, cr, uid, ids, context=None):
+     
+        ctx = {}
+        print "context['template_name']",context
+        cur_obj = self.browse(cr,uid,ids[0])
+        template_id = self.pool.get('email.template').search(cr,uid, [('name','=',context['template_name'])])
+        if template_id:
+            ctx.update({
+                'default_model': 'hr.holidays',
+                'default_res_id': ids[0],
+                'default_use_template': bool(template_id[0]),
+                'default_template_id': template_id[0],
+                'default_composition_mode': 'comment',
+              
+            })
+            hr_email_id = cur_obj.employee_id.company_id and cur_obj.employee_id.company_id.partner_id.id or False
+            
+            if context['type'] == 'confirm':
+                email_id = cur_obj.employee_id.parent_id and cur_obj.employee_id.parent_id.user_id and cur_obj.employee_id.parent_id.user_id.partner_id.id or False
+                partner_ids = [(6,0,[email_id,hr_email_id])]
+                author_id = cur_obj.employee_id.user_id.partner_id.id,
+            else:
+                email_id = cur_obj.employee_id.user_id and cur_obj.employee_id.user_id.partner_id.id
+                partner_ids = [(6,0,[email_id,hr_email_id])]
+                author_id = cur_obj.employee_id.parent_id.user_id.partner_id.id
+            ctx['default_email_cc'] =cur_obj.employee_id.company_id.partner_id.email
+            message_id = self.pool.get('mail.compose.message').create(cr,uid,{'author_id' : author_id,'partner_ids': partner_ids },context=ctx)
+            self.pool.get('mail.compose.message').send_mail(cr,uid,[message_id],ctx)
+       
+   
+    def holidays_validate(self, cr, uid, ids, context=None):
+        holiday_brw = self.browse(cr, uid, ids)[0]
+       
+        if holiday_brw.employee_id.user_id.id == uid:
+            raise osv.except_osv(_('Warning!'),_("Employee cannot approve their own leaves"))
+        res = super(hr_holidays, self).holidays_validate(cr, uid, ids,context)
+        if not context:
+            context = {}
+        context['template_name'] = 'Leave Approve'
+        context['type'] = 'approve'
+        self.action_email_send(cr,uid,ids,context)
+        return res
+       
+    def holidays_confirm(self, cr, uid, ids, context=None):
+        res = super(hr_holidays, self).holidays_confirm(cr, uid, ids,context)
+        if not context:
+            context = {}
+        context['template_name'] = 'Leave Request'
+        context['type'] = 'confirm'
+        self.action_email_send(cr,uid,ids,context)
+       
+        return res
+
+    
+    
     
 hr_holidays()
 
