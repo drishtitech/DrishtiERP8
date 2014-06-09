@@ -95,7 +95,9 @@ class hr_contract(osv.osv):
         'over_time_allowence':fields.integer('Over Time',size=124),
         'conveyance_allowence':fields.float('Conveyance Allowance'),
         'provident_amount':fields.float('Provident Amount'),
-        'e.s.i.s':fields.float('E.S.I.S')
+        'e.s.i.s':fields.float('E.S.I.S'),
+        
+         'company_id': fields.related('employee_id', 'company_id', string='Company',store=True,type='many2one',relation="res.company",readonly=True),
         }
      
     _defaults = {

@@ -21,5 +21,6 @@
 
 #import institute
 import hr_drishti
+import partner
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
