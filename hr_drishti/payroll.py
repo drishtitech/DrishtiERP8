@@ -52,8 +52,10 @@ class hr_payslip(osv.osv):
         @param contract_ids: list of contract id
         @return: returns a list of dict containing the input that should be applied for the given contract between date_from and date_to
         """
-        print "testing"
-        print "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+        loan_obj = self.pool.get('hr.employee.loan')
+        loan_line_obj = self.pool.get('hr.employee.loan')
+        dedtn_obj = self.pool.get('employee.deduction')
+        dedtn_line_obj = self.pool.get('employee.deduction.line')
         def was_on_leave(employee_id, datetime_day, context=None):
             res = False
             day = datetime_day.strftime("%Y-%m-%d")
@@ -62,20 +64,38 @@ class hr_payslip(osv.osv):
                 res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[0].holiday_status_id.name
             return res
         res = []
-        print "here"
+        print "here",contract_ids
         for contract in self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context):
-            loan_id = self.pool.get('hr.employee.loan').search(cr, uid,[('employee_id','=',contract.employee_id.id),('state','=','progress')])
+            print "test"
+            contract_dict = {
+                             'emi_amount': 0.0,
+                             'mobile_deduction' : 0.0,
+                             'emi_amount' : 0.0,
+                             'tds_deduction' : 0.0,
+                             }
+            loan_id = loan_obj.search(cr, uid,[('employee_id','=',contract.employee_id.id),('state','=','progress')])
+            
             if loan_id:
-                line_id = self.pool.get('hr.employee.loan.line').search(cr, uid,[('emi_date','>=',date_from),('emi_date','<=',date_to),('loan_id','=',loan_id[0])])
+                line_id = loan_line_obj.search(cr, uid,[('emi_date','>=',date_from),('emi_date','<=',date_to),('loan_id','=',loan_id[0])])
                 if line_id :
-                    loan_line_obj = self.pool.get('hr.employee.loan.line').browse(cr, uid,line_id[0])
-                    self.pool.get('hr.contract').write(cr,uid,contract.id,{'emi_amount':loan_line_obj.emi_amount})
-                    print "loan_line_obj.emi_amount",loan_line_obj.emi_amount
-                else:
-                    self.pool.get('hr.contract').write(cr,uid,contract.id,{'emi_amount': 0.0})
-                   
-            if not contract.working_hours:
-                continue
+                    loan_line_obj = loan_line_obj.browse(cr, uid,line_id[0])
+                    contract_dict['emi_amount'] = loan_line_obj.emi_amount
+                    
+            deduction_id = dedtn_obj.search(cr, uid,[('deduction_from_date','>=',date_from),('deduction_to_date','<=',date_to)])       
+            if deduction_id:
+                dedtn_line_id = dedtn_line_obj.search(cr, uid, [('deduction_id','=',deduction_id[0]),('employee_id','=',contract.employee_id.id)])
+                if  dedtn_line_id:
+                    dedtn_line_obj = dedtn_line_obj.browse(cr, uid, dedtn_line_id[0])
+                    contract_dict['mobile_deduction'] =  dedtn_line_obj.mobile_deduction
+                    contract_dict['emi_amount'] =  dedtn_line_obj.loan_deduction
+                    contract_dict['tds_deduction'] =  dedtn_line_obj.tds_deduction
+                                 
+                         
+              
+            self.pool.get('hr.contract').write(cr,uid,contract.id,contract_dict)    
+                    
+#             if not contract.working_hours:
+#                 continue
             P = {
                     'name': _("Normal Working Days paid at 100%"),
                          'sequence': 1,
@@ -225,10 +245,10 @@ class hr_payslip(osv.osv):
                          }
            
             emp_attend_id = self.pool.get('hr.attendance.table').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date_from','=',date_from),('date_to','=',date_to)])
-            
+            work_days  = []
+            print "emp_attend_id",emp_attend_id
             if emp_attend_id:
                 att_obj = self.pool.get('hr.attendance.table').browse(cr, uid,emp_attend_id[0])
-                work_days  = []
                 work_days.append( {
                          'name': _("Days in the Month"),
                          'sequence': 100,
@@ -245,7 +265,6 @@ class hr_payslip(osv.osv):
                                          'number_of_hours': 0.0,
                                          'contract_id': contract.id,
                              })  
-                
                 work_days.append( {
                              'name': _("Goa-Days on the Ground"),
                              'sequence': 2,
@@ -266,14 +285,15 @@ class hr_payslip(osv.osv):
                                              
                                      )
                    
-                return work_days 
-            if contract.employee_id.leave_allocation_type == 'goa':
+                l = work_days
+            if not emp_attend_id and contract.employee_id.leave_allocation_type == 'goa':
                
                 l = [salarydays,att_records['MONTHDAYS'], att_records['P'], att_records['worked'], att_records['A'], att_records['PL'], att_records['WO'], att_records['UL'], att_records['H'], att_records['HH'],]            
-            else:
+            elif not emp_attend_id:
                
                 l = [salarydays,att_records['MONTHDAYS'], att_records['P'], att_records['worked'], att_records['A'], att_records['PL'], att_records['WO'], att_records['UL'], att_records['H'], att_records['HH'],] 
                 
                 #l = [salarydays,att_records['MONTHDAYS'], att_records['P'],  att_records['A'], att_records['PL'],  att_records['UL'],]  
+        print "work_days",l
         return l         
     

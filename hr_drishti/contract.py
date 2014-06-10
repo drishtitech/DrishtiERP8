@@ -16,7 +16,7 @@ class hr_contract(osv.osv):
         'da_lta_fa' : fields.integer('DA/LTA/FA', size=124),
         'special_allowance' : fields.integer('Special Allowance', size=124),
         'hra' : fields.integer('House Rent Allowance', size=124),
-        'emi_amount': fields.integer('Loan EMI', size=124),
+       
         'bonus_amount': fields.float('Bonus Amount', size=124),
         'current_date':fields.date('Current date'),
         'driver_salary':fields.boolean('Driver Salary'),
@@ -32,8 +32,12 @@ class hr_contract(osv.osv):
         'conveyance_allowence':fields.float('Conveyance Allowance'),
         'provident_amount':fields.float('Provident Amount'),
         'e.s.i.s':fields.float('E.S.I.S'),
-        
          'company_id': fields.related('employee_id', 'company_id', string='Company',store=True,type='many2one',relation="res.company",readonly=True),
+         
+         'emi_amount': fields.float('Loan EMI',),
+         'mobile_deduction': fields.float('Mobile Deduction'),
+         'tds_deduction': fields.float('TDS Deduction'),
+         
         }
      
     _defaults = {

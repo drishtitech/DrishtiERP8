@@ -51,8 +51,35 @@ class attendance_import(osv.osv_memory):
     
     
     def import_deduction_goa(self,cr,uid,ids,context=None):
-        
-        
+        dedution_obj = self.pool.get('employee.deduction')
+        deduction_line_obj = self.pool.get('employee.deduction.line')
+        employee_obj = self.pool.get('hr.employee')
+        cur_obj = self.browse(cr,uid,ids)[0]
+        file_data=cur_obj.file
+        val=base64.decodestring(file_data)
+        fp = StringIO.StringIO()
+        fp.write(val)    
+        wb = xlrd.open_workbook(file_contents=fp.getvalue())
+        date=cur_obj.date
+        sheet=wb.sheet_by_index(0)
+        year = int(date[:4])
+        month = int(date[5:7])   
+        total_days= monthrange(year, month)[1]
+        date_from = datetime.date(year,month, 1)
+        date_to = datetime.date(year, month, total_days)
+        deuction_id = dedution_obj.create(cr, uid,{'deduction_from_date' : date_from, 'deduction_to_date' : date_to })
+        for i in range(1,sheet.nrows):
+            emp_code =sheet.cell_value(i,1)
+            employee_id = employee_obj.search(cr,uid,[('identification_id1','=',emp_code)])
+            if employee_id:
+                deduction_line_dic = {
+                                       'deduction_id': deuction_id,
+                                       'employee_id': employee_id[0],
+                                       'mobile_deduction':sheet.cell_value(i,3),
+                                       'loan_deduction':sheet.cell_value(i,4),
+                                       'tds_deduction' : sheet.cell_value(i,5)
+                                      }
+                deduction_line_obj.create(cr, uid, deduction_line_dic)
         return True
     
     def import_attendance(self,cr, uid, ids, context=None):

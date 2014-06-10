@@ -182,7 +182,26 @@
             </field>
         </record>
         
-        
+         <record id="hr_contract_view_tree_inherit" model="ir.ui.view">
+            <field name="name">hr.contract.view.tree.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_tree"/>
+            <field name="arch" type="xml">
+            <tree string="Contracts">
+            <field name="company_id"/>
+            </tree>
+            </field>
+            </record>
+  <record id="hr_contract_view_search_inherit" model="ir.ui.view">
+            <field name="name">hr.contract.view.search.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_search"/>
+            <field name="arch" type="xml">
+            <xpath expr="/search/group[@string='Group By...']" position="inside">
+           	<filter string="Comapny" icon="terp-personal" domain="[]" context="{'group_by':'company_id'}"/>
+            </xpath>
+            </field>
+  </record>
         
         
         <record id="view_employee_deduction_line_tree" model="ir.ui.view">
@@ -242,7 +261,7 @@
                     <field name="deduction_to_date"/>
                    
                 </group>
-                <group col="2" colspan="2" string="Allowance Details" >
+                <group col="2" colspan="2" string="Deduction Details" >
                     <field name="deduction_line_id" widget="one2many" colspan="4" nolabel="1"/>
                 </group>
                  </form>
