@@ -28,7 +28,7 @@
     'author': 'Amit Gupta',
     'website': 'http://drishtitech.com',
     'depends': ['base','hr','hr_drishti'],
-    'data': ['wizard/import_attendance_view.xml', 'hr_working_schedule_demo.xml'],
+    'data': [],
     'demo': [],
     'test':[],
     'installable': True,

@@ -27,6 +27,7 @@ import attendance
 import contract
 import payroll
 import holiday
+import wizard
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

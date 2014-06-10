@@ -504,29 +504,32 @@ class absent_info(osv.osv):
 absent_info()
 
 
-class employee_allowance(osv.osv):
+class employee_deduction(osv.osv):
     
-    _name ="employee.allowance"
+    _name ="employee.deduction"
     
     _columns = {
                
-               'allowance_to_date':fields.date("Date To",required=True),
-               'allowance_from_date':fields.date("Date From",required=True),
-               'overtime_allowance_id':fields.one2many('employee.allowance.line','overtime_id','Employee allowance')
+               'deduction_to_date':fields.date("To Date",required=True),
+               'deduction_from_date':fields.date("From Date",required=True),
+               'deduction_line_id':fields.one2many('employee.deduction.line','deduction_id','Employee Deduction Line')
         
                }
     
     
-class employee_allowance_line(osv.osv):
+class employee_deducton_line(osv.osv):
     
-    _name ="employee.allowance.line"
+    _name ="employee.deduction.line"
     
     _columns = {
-               'overtime_id':fields.many2one('employee.allowance','Employee Allowance'),
+               'deduction_id':fields.many2one('employee.deduction','Employee Deduction'),
                'employee_id':fields.many2one('hr.employee', 'Employee',required=True),
-               'overtime':fields.integer('Overtime',size=124),
-               'mobile_advance':fields.integer('Advance',size=124),
-               'arrears':fields.integer('Arrears',size=124)
+               'mobile_deduction':fields.integer('Mobile Deduction',size=124),
+               'loan_deduction':fields.integer('Loan Deduction',size=124),
+               'tds_deduction' : fields.integer('TDS Deduction',size=124)
                }
+    
+
+
     
   

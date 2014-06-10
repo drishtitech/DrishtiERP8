@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<openerp>
+	<data>
+		<record id="hr_attendance_import" model="ir.ui.view">
+            <field name="name">attendance_import_wizard_form</field>
+            <field name="model">attendance.import</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Import Attendance" version="7.0">
+                    <sheet>
+                        <group>
+                        	<group>
+                        		<field name='file' widget='binary'/>
+                                        <field name='location'/> 
+                                        <field name='date'/>
+                        	</group>
+                        	<group>
+                        		<field name='file_name'/>
+                                    <!--    <field name='year'/> -->
+                        	</group>
+                        </group>               
+                        <div class="oe_title">
+                        <button name="import_attendance" string="Import Attendance" type="object" class="oe_highlight"/>
+                        <button name="import_deduction_goa" string="Import Goa Employee Deduction" type="object" class="oe_highlight"/>
+                        <button name="import_leave" string="Import Leave" type="object" class="oe_highlight"/>
+                        <button name="import_employees" string="Import Employees Details" type="object" class="oe_highlight"/>
+                        <button name="import_payment_info" string="Import Payment Information on Contract" type="object" class="oe_highlight"/>
+                        <button name="import_attendance_mumbai" string="Import Attendance(Mumbai)" type="object" class="oe_highlight"/>
+                        
+<!--                        or-->
+<!--                    	<button string="Cancel" class="oe_link" special="cancel"/>-->
+                        </div>      
+                    </sheet>
+                </form>
+            </field>
+        </record>        
+         
+          <record id="action_attendance_import_wizard" model="ir.actions.act_window">
+            <field name="name">Import Attendance</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">attendance.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="hr_attendance_import"/>
+            <field name="target">new</field>
+            <field name="multi">True</field>
+        </record>  
+
+<menuitem action="action_attendance_import_wizard" id="menu_attendance_import_wizard" sequence="20"  parent="hr_drishti.menu_hr_attendance" />
+		
+	</data>
+</openerp>

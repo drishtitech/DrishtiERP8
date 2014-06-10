@@ -185,45 +185,45 @@
         
         
         
-        <record id="view_employee_allowance_line_tree" model="ir.ui.view">
-            <field name="name">employee allowance line Tree</field>
-            <field name="model">employee.allowance.line</field>
+        <record id="view_employee_deduction_line_tree" model="ir.ui.view">
+            <field name="name">employee Deduction line Tree</field>
+            <field name="model">employee.deduction.line</field>
             <field name="arch" type="xml">
-                <tree string="Employee Allowance" version="7.0" editable="Top">
-                	<field name="overtime_id" invisible="1"/>
+                <tree string="Employee Deduction" version="7.0" editable="Top">
+                	<field name="deduction_id" invisible="1"/>
                 	<field name= "employee_id"/>
-                	<field name= "overtime"/>
-                	<field name= "mobile_advance"/>
-                	<field name= "arrears"/>
+                	<field name= "mobile_deduction"/>
+                	<field name= "loan_deduction"/>
+                	<field name= "tds_deduction"/>
                 </tree>
             </field>
         </record>
         
         
-         <record id="view_employee_allowance_line_form" model="ir.ui.view">
-            <field name="name">employee allowance line form</field>
-            <field name="model">employee.allowance.line</field>
+         <record id="view_employee_deduction_line_form" model="ir.ui.view">
+            <field name="name">employee deduction line form</field>
+            <field name="model">employee.deduction.line</field>
             <field name="arch" type="xml">
-                <form string="Employee Allowance" version="7.0">
+                <form string="Employee Deduction" version="7.0">
                 <group>
-                	<field name="overtime_id" invisible="1"/>
+                	<field name="deduction_id" invisible="1"/>
                 	<field name= "employee_id"/>
-                	<field name= "overtime"/>
-                	<field name= "mobile_advance"/>
-                	<field name= "arrears"/>
+                	<field name= "mobile_deduction"/>
+                	<field name= "loan_deduction"/>
+                	<field name= "tds_deduction"/>
                 </group>	
                 </form>
             </field>
         </record>
         
         
-        <record id="view_employee_allowance_tree" model="ir.ui.view">
-            <field name="name">employee allowance Tree</field>
-            <field name="model">employee.allowance</field>
+        <record id="view_employee_deduction_tree" model="ir.ui.view">
+            <field name="name">employee deduction Tree</field>
+            <field name="model">employee.deduction</field>
             <field name="arch" type="xml">
-                <tree string="Employee Allowance" version="7.0">
-                	<field name= "allowance_from_date"/>
-                	<field name="allowance_to_date"/>
+                <tree string="Employee Deduction" version="7.0">
+                	<field name="deduction_from_date"/>
+                	<field name="deduction_to_date"/>
                 	
                   
                 </tree>
@@ -232,29 +232,29 @@
         
         
         
-         <record id="view_employee_allowance_form" model="ir.ui.view">
-            <field name="name">employee allowance form</field>
-            <field name="model">employee.allowance</field>
+         <record id="view_employee_deduction_form" model="ir.ui.view">
+            <field name="name">employee deduction form</field>
+            <field name="model">employee.deduction</field>
             <field name="arch" type="xml">
-                <form string="Employee Allowance" version="7.0">
+                <form string="Employee Deduction" version="7.0">
                 <group col="4">
-                	 <field name="allowance_from_date"/>
-                    <field name="allowance_to_date"/>
+                	 <field name="deduction_from_date"/>
+                    <field name="deduction_to_date"/>
                    
                 </group>
                 <group col="2" colspan="2" string="Allowance Details" >
-                    <field name="overtime_allowance_id" widget="one2many" colspan="4" nolabel="1"/>
+                    <field name="deduction_line_id" widget="one2many" colspan="4" nolabel="1"/>
                 </group>
                  </form>
                 </field>
                </record>
         
         
-        <record id="action_view_employee_allowance_form" model="ir.actions.act_window">
-            <field name="name">Employee Allowance Details</field>
-            <field name="res_model">employee.allowance</field>
+        <record id="action_view_employee_deduction_form" model="ir.actions.act_window">
+            <field name="name">Employee Deduction Details</field>
+            <field name="res_model">employee.deduction</field>
             <field name="view_type">form</field>
-            <field name="view_id" ref="view_employee_allowance_form"/>
+            <field name="view_id" ref="view_employee_deduction_form"/>
         </record>
         
         
@@ -295,7 +295,7 @@
         
          <menuitem
             id="menu_employee_allowance_view"
-            action="action_view_employee_allowance_form"
+            action="action_view_employee_deduction_form"
             parent="menu_hr_attendance"
             sequence="6"
         />

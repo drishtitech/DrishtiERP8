@@ -50,6 +50,8 @@ You can manage:
         'attendance_view.xml',
         'hr_attendance_payroll_view.xml',
         'product_view.xml',
+        'wizard/import_attendance_view.xml', 
+        'hr_working_schedule_demo.xml'
        # 'attendance_sequence.xml',
         
     ],
