@@ -23,14 +23,14 @@
     'name': 'HR - Attendance to Payroll',
     'author': 'Drishti Tech',
     'version': '0.1',
-    'depends': ['base','hr_payroll','hr_holidays'],
+    'depends': ['base','hr_payroll','hr_holidays','hr_drishti'],
     'category' : 'Tools',
     'summary': 'This is a test module',
     'description': """
 Link attendance and leaves to Payroll
     """,
-    'data': ['hr_attendance_payroll_view.xml','attendance_sequence.xml',
-             'security/ir.model.access.csv'],
+    'data': [
+             ],
     'images': [],
     'demo': [],
     'installable': True,

@@ -22,5 +22,11 @@
 #import institute
 import hr_drishti
 import partner
+import employee
+import attendance
+import contract
+import payroll
+import holiday
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

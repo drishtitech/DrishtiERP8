@@ -45,7 +45,7 @@
             <field name="multi">True</field>
         </record>  
 
-<menuitem action="action_attendance_import_wizard" id="menu_attendance_import_wizard" sequence="20"  parent="hr_attendance_payroll.menu_hr_attendance" />
+<menuitem action="action_attendance_import_wizard" id="menu_attendance_import_wizard" sequence="20"  parent="hr_drishti.menu_hr_attendance" />
 		
 	</data>
 </openerp>

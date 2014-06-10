@@ -39,7 +39,7 @@ You can manage:
     'author': 'OpenERP SA',
     'website': 'http://www.openerp.com',
     #'images': ['images/hr_department.jpeg', 'images/hr_employee.jpeg','images/hr_job_position.jpeg'],
-    'depends': ['base','crm','hr','hr_holidays'],
+    'depends': ['base','crm','hr','hr_holidays','hr_payroll',],
     'init_xml': [],
     'update_xml': [
         
@@ -47,6 +47,11 @@ You can manage:
         'hr_drishti_view.xml',
         'security/hr_security.xml',
         'security/ir.model.access.csv',
+        'attendance_view.xml',
+        'hr_attendance_payroll_view.xml',
+        'product_view.xml',
+       # 'attendance_sequence.xml',
+        
     ],
    
     

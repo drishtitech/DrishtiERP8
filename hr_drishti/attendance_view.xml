@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<openerp>
+   	<data>
+   	<record id="view_hr_payroll_attendance_tree" model="ir.ui.view">
+            <field name="name">hr.payroll.attendance.tree</field>
+            <field name="model">hr.attendance.table.line</field>
+            <field name="arch" type="xml">
+                <tree string="Attendance Record for the Day" version="7.0" editable="bottom">          
+                        <!--field name="name"/-->
+                        <field name="employee_id" invisible="1"/>
+                        <field name="date"/>
+                        <!--field name="attendance"/-->
+                        
+                        <field name="login_time"/>
+                        <field name="logout_time"/>
+                        <field name="biometric_attendance"/>
+                        <field name="goa_drive_attendance"/>
+                        <field name="absent_info"/>   
+                        <field name="final_result"/>
+                </tree>
+            </field>
+        </record>
+	
+	
+	<record id="view_hr_payroll_attendance_form" model="ir.ui.view">
+            <field name="name">hr.payroll.attendance.form</field>
+            <field name="model">hr.attendance.table.line</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Record for the Day" version="7.0">
+                	<header>
+                       <button string="Compute Sheet" name="fetch_attendance_info" type="object" icon="gtk-apply"/>
+                    </header>
+                	
+                    <group col="2"  colspan="2">
+                        <field name="name" invisible="1"/>  
+                        <field name="date"/>
+                        <field name="attendance"/>
+                        <field name="absent_info"/>
+                        <field name="final_result"/>
+                        <field name="employee_id" invisible="1"/>
+                   </group>
+                    
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_hr_attendance_table_tree" model="ir.ui.view">
+            <field name="name">hr.attendance.table.tree</field>
+            <field name="model">hr.attendance.table</field>
+            <field name="arch" type="xml">
+                <tree string="Attendance Table" version="7.0">
+                	
+                	
+                    
+                        <field name="name"/>
+                        <field name="employee_id"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="month_days"/>
+                        <field name="salary_days"/>
+                        <field name="attendance_days"/>
+                        <field name="holiday_attendance_days"/>
+                        
+                       
+           		                        
+                    
+                </tree>
+            </field>
+        </record>
+        
+        
+        <record id="view_hr_attendance_table_form" model="ir.ui.view">
+            <field name="name">hr.attendance.table.form</field>
+            <field name="model">hr.attendance.table</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Table" version="7.0">
+<!--                 	<header> -->
+<!--                        <button string="ReCompute" name="recompute_attendance" type="object" icon="gtk-apply"/> -->
+<!--                     </header> -->
+                	
+                    <group col="4">
+                    	<field name="employee_id"/>
+                        <field name="name"/>       
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="month_days"/>
+                        <field name="salary_days"/>
+                        <field name="attendance_days"/>
+                        <field name="holiday_attendance_days"/>
+                        
+                    </group>
+           		    <group col="2" colspan="2" string="Attendance Line"  >
+					
+					       <field name="attendance_line" widget="one2many" colspan="4" nolabel="1"/>
+				    </group>
+                    
+                    
+                </form>
+            </field>
+        </record>
+        
+        <record id="action_view_hr_attendance_table_form" model="ir.actions.act_window">
+            <field name="name">Monthly Attendance Slips</field>
+            <field name="res_model">hr.attendance.table</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_hr_attendance_table_form"/>
+        </record>
+	
+	
+	<record id="action_view_hr_payroll_attendance_form" model="ir.actions.act_window">
+            <field name="name">Daily Attendance Slips</field>
+            <field name="res_model">hr.attendance.table.line</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_hr_payroll_attendance_form"/>
+        </record>
+        
+     <menuitem id="menu_hr_attendance" name="Attendances" parent="hr.menu_hr_root" sequence="10"/>
+	
+	    <menuitem
+            id="menu_hr_payroll_attendance_view123"
+            action="action_view_hr_attendance_table_form"
+            parent="menu_hr_attendance"
+            sequence="2"
+        />
+	    
+        <menuitem
+            id="menu_hr_payroll_attendance_view"
+            action="action_view_hr_payroll_attendance_form"
+            parent="menu_hr_attendance"
+            sequence="3"
+        />    
+       
+</data>
+</openerp>       

@@ -27,6 +27,7 @@ import xlrd
 import calendar
 from calendar import monthrange
 import datetime
+from time import strftime
 
 class attendance_import(osv.osv_memory):
     _name='attendance.import'
@@ -248,14 +249,9 @@ class attendance_import(osv.osv_memory):
         val=base64.decodestring(file_data)
         fp = StringIO.StringIO()
         fp.write(val)    
-        
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
-        
-   #* for i in range(0,6):
-
         final_result = ''
         date=cur_obj.date
-        #for i in range(0):  
         sheet=wb.sheet_by_index(0)
         date_dict = {}
     # Bio Metric Attendance
@@ -263,13 +259,11 @@ class attendance_import(osv.osv_memory):
    
         print'>>>>>>>>>>',date
         
-        from time import strftime
+        
 #         month = int(date[1:2])
 #         year = int(date[6:10])
         year = int(date[:4])
-             
-        month = int(date[5:7])
-             
+        month = int(date[5:7])   
         dob_date = int(date[8:10])
         print'>>>>>>>>>>>>>>month,year',year,month
         total_days= monthrange(year, month)[1]
@@ -286,13 +280,23 @@ class attendance_import(osv.osv_memory):
             print'<<<<<<<<<<<<<<<<<<<<<<',emp_code
             if employee_id:
                 employee_id = employee_id[0]
+                employee_dic = {
+                                'employee_id' : employee_id,
+                                'month_days'  : total_days,
+                                'salary_days' : sheet.cell_value(i,total_days+16),
+                                'attendance_days' : sheet.cell_value(i,total_days+5),
+                                'holiday_attendance_days':0, #sheet.cell_value(i,total_days+5)
+                                'date_from' : date_from,
+                                'date_to' : date_to
+                                }
+                
                 attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])
                 if not attendance_id:
-                    attendance_id = attendance_obj.create(cr,uid,{'employee_id': employee_id,'date_from' : date_from,'date_to' : date_to})
+                    attendance_id = attendance_obj.create(cr,uid,employee_dic)
                 else:
                     attendance_id = attendance_id[0]
                 d = 1
-                for j in sheet.row_values(i,3,monthrange(year, month)[1]+3):
+                for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
                     j=j.upper()
                     print'<<<<<<<<<<<<<<',j
                     
@@ -326,7 +330,7 @@ class attendance_import(osv.osv_memory):
                      
                     d +=1
         #i+=1
-            return True   
+        return True   
 
 
     

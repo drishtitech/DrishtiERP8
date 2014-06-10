@@ -12,3 +12,7 @@ access_job_history_officer,hr.employee.job.history,model_hr_employee_job_history
 access_identification_detail_officer,hr.employee.identification.detail,model_hr_employee_identification_detail,,1,1,1,1
 access_academic_degree_officer,hr.employee.academic.degree,model_hr_employee_academic_degree,,1,1,1,1
 access_calender_leaves_all,resource.calendar.leaves,resource.model_resource_calendar_leaves,,1,1,1,1
+"access_hr_attendance_table_line","hr.attendance.table.line","model_hr_attendance_table_line","base.group_hr_user",1,1,1,1
+"access_hr_attendance_table","hr.attendance.table","model_hr_attendance_table","base.group_hr_user",1,1,1,1
+"access_leaves_calendar","leaves.calendar","model_leaves_calendar","base.group_hr_user",1,1,1,1
+"access_holidays_calendar","holidays.calendar","model_holidays_calendar","base.group_hr_user",1,1,1,1
