@@ -276,78 +276,96 @@ class attendance_import(osv.osv_memory):
         
         for i in range(1,sheet.nrows):
             emp_code =sheet.row_values(i,0,sheet.ncols)[1]
-            emp_wage =sheet.row_values(i,0,sheet.ncols)[2]
-            salary_structure =sheet.row_values(i,0,sheet.ncols)[3]
+            
+            emp_wage =sheet.row_values(i,0,sheet.ncols)[2] 
             nutritional_allowance =sheet.row_values(i,0,sheet.ncols)[4]
+            over_time =sheet.row_values(i,0,sheet.ncols)[5]
             att_inc_allowance =sheet.row_values(i,0,sheet.ncols)[6]
-            holidays_calendar =sheet.row_values(i,0,sheet.ncols)[7]
-            working_schedule =sheet.row_values(i,0,sheet.ncols)[8]
-            contract_start_date =sheet.row_values(i,0,sheet.ncols)[9]
             da_lta_fa =sheet.row_values(i,0,sheet.ncols)[10]
             house_rent_allowance =sheet.row_values(i,0,sheet.ncols)[11]
-            over_time =sheet.row_values(i,0,sheet.ncols)[5]
-            
-            
-            date_of_joining = datetime.datetime.strptime(contract_start_date, "%d/%m/%Y")
-            print date_of_joining, "CONTRACT START DATE"
-            
-            print emp_code,emp_wage,salary_structure,nutritional_allowance,att_inc_allowance,holidays_calendar,date_of_joining,da_lta_fa,house_rent_allowance, "ooooooooooooooooooooooooooooooooooooo"
-            
-        
-            #emp_code = 'SLSG-' + str(emp_code)
-            print emp_code, "EMPLOYEE CODE"
-            
+            uniform_allowance = sheet.row_values(i,0,sheet.ncols)[12]
             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
-            print employee_id, "EMPLOYEE-ID ARRAY !!!!!!!!!!!!!!!"
-            for el in self.pool.get('hr.employee').browse(cr,uid,employee_id):
-                emp_number=el.id
-                emp_name=el.name
-                print emp_number,emp_name,"EMPLOYEE-ID............"
-                
-            structure_id = self.pool.get('hr.payroll.structure').search(cr,uid,[('name','=',salary_structure)])
-            print structure_id, "SALARY STRUCTURE ARRAY !!!!!!!!!!!!!!!"
-            for sl in self.pool.get('hr.payroll.structure').browse(cr,uid,structure_id):
-                structure_number=sl.id
-                print structure_number,"SALARY STRUCTURE-ID............"
-            if not structure_id:
-                structure_number=self.pool.get('hr.payroll.structure').create(cr,uid,{'name': salary_structure})
-                
-            calendar_id = self.pool.get('holidays.calendar').search(cr,uid,[('name','=',holidays_calendar)])
-            print calendar_id, "HOLIDAYS CALENDAR ARRAY !!!!!!!!!!!!!!!"
-            for tl in self.pool.get('holidays.calendar').browse(cr,uid,calendar_id):
-                calendar_number=tl.id
-                print calendar_number,"HOLIDAYS CALENDAR-ID............"
-                
-            schedule_id = self.pool.get('resource.calendar').search(cr,uid,[('name','=',working_schedule)])
-            print schedule_id, "WORKING SCHEDULE ARRAY !!!!!!!!!!!!!!!"
-            for wl in self.pool.get('resource.calendar').browse(cr,uid,schedule_id):
-                schedule_number=wl.id
-                print schedule_number,"WORKING SCHEDULE ID............"    
-                
-            contract_id = self.pool.get('hr.contract').search(cr,uid,[('name','=',emp_name)]) #'struct_id': structure_number, 'holidays_id': calendar_number,
-            print contract_id, "CONTRACT-ID exists............."
-            if not contract_id:
-                print "new contract created"
-                new_contract = self.pool.get('hr.contract').create(cr,uid,{'over_time_allowence':over_time,
-                                                                           'struct_id': structure_number,
-                                                                            'holidays_id': calendar_number,
-                                                                           'struct_id': structure_number,
-                                                                           'name' : emp_name,
-                                                                           'employee_id' : emp_number,
+            if employee_id:
+                print "employee_id",employee_id
+                contract_id = self.pool.get('hr.contract').search(cr,uid,[('employee_id','=',employee_id[0])])
+                if contract_id:
+                    self.pool.get('hr.contract').write(cr,uid,contract_id[0],{
+                                                                          'over_time_allowence':over_time,
+                                                                           
                                                                            'wage': emp_wage, 
                                                                            'nutritional_allowance': nutritional_allowance,  
                                                                            'attendance_incentive': att_inc_allowance, 
-                                                                           'working_hours': schedule_number, 
-                                                                           'date_start': date_of_joining, 
+                                                                          'office_wear_allowance' :uniform_allowance,
                                                                            'da_lta_fa': da_lta_fa, 
-                                                                           'hra': house_rent_allowance})
-        for cl_browse in self.pool.get('hr.contract').browse(cr,uid,contract_id):
-                        self.pool.get('hr.contract').write(cr,uid,cl_browse.id,{'wage': emp_wage, 
-                                                                            'struct_id': structure_number, 
-                                                                            'nutritional_allowance': nutritional_allowance,  
-                                                                            'attendance_incentive': att_inc_allowance, 
-                                                                            'holidays_id': calendar_number})
+                                                                           'hra': house_rent_allowance,
+                                                                           'journal_id' :44})
                     
-                        
+                    
+            
+#             holidays_calendar =sheet.row_values(i,0,sheet.ncols)[7]
+#             working_schedule =sheet.row_values(i,0,sheet.ncols)[8]
+#             contract_start_date =sheet.row_values(i,0,sheet.ncols)[9]
+#             salary_structure =sheet.row_values(i,0,sheet.ncols)[3]
+#             date_of_joining = datetime.datetime.strptime(contract_start_date, "%d/%m/%Y")
+#             print date_of_joining, "CONTRACT START DATE"
+#             
+#             print emp_code,emp_wage,salary_structure,nutritional_allowance,att_inc_allowance,holidays_calendar,date_of_joining,da_lta_fa,house_rent_allowance, "ooooooooooooooooooooooooooooooooooooo"
+#             
+#         
+#             #emp_code = 'SLSG-' + str(emp_code)
+#             print emp_code, "EMPLOYEE CODE"
+#             
+#             employee_id = self.pool.get('hr.employee').search(cr,uid,[('identification_id1','=',emp_code)])
+#             print employee_id, "EMPLOYEE-ID ARRAY !!!!!!!!!!!!!!!"
+#             for el in self.pool.get('hr.employee').browse(cr,uid,employee_id):
+#                 emp_number=el.id
+#                 emp_name=el.name
+#                 print emp_number,emp_name,"EMPLOYEE-ID............"
+#                 
+#             structure_id = self.pool.get('hr.payroll.structure').search(cr,uid,[('name','=',salary_structure)])
+#             print structure_id, "SALARY STRUCTURE ARRAY !!!!!!!!!!!!!!!"
+#             for sl in self.pool.get('hr.payroll.structure').browse(cr,uid,structure_id):
+#                 structure_number=sl.id
+#                 print structure_number,"SALARY STRUCTURE-ID............"
+#             if not structure_id:
+#                 structure_number=self.pool.get('hr.payroll.structure').create(cr,uid,{'name': salary_structure})
+#                 
+#             calendar_id = self.pool.get('holidays.calendar').search(cr,uid,[('name','=',holidays_calendar)])
+#             print calendar_id, "HOLIDAYS CALENDAR ARRAY !!!!!!!!!!!!!!!"
+#             for tl in self.pool.get('holidays.calendar').browse(cr,uid,calendar_id):
+#                 calendar_number=tl.id
+#                 print calendar_number,"HOLIDAYS CALENDAR-ID............"
+#                 
+#             schedule_id = self.pool.get('resource.calendar').search(cr,uid,[('name','=',working_schedule)])
+#             print schedule_id, "WORKING SCHEDULE ARRAY !!!!!!!!!!!!!!!"
+#             for wl in self.pool.get('resource.calendar').browse(cr,uid,schedule_id):
+#                 schedule_number=wl.id
+#                 print schedule_number,"WORKING SCHEDULE ID............"    
+#                 
+#             contract_id = self.pool.get('hr.contract').search(cr,uid,[('name','=',emp_name)]) #'struct_id': structure_number, 'holidays_id': calendar_number,
+#             print contract_id, "CONTRACT-ID exists............."
+#             if not contract_id:
+#                 print "new contract created"
+#                 new_contract = self.pool.get('hr.contract').create(cr,uid,{'over_time_allowence':over_time,
+#                                                                            'struct_id': structure_number,
+#                                                                             'holidays_id': calendar_number,
+#                                                                            'struct_id': structure_number,
+#                                                                            'name' : emp_name,
+#                                                                            'employee_id' : emp_number,
+#                                                                            'wage': emp_wage, 
+#                                                                            'nutritional_allowance': nutritional_allowance,  
+#                                                                            'attendance_incentive': att_inc_allowance, 
+#                                                                            'working_hours': schedule_number, 
+#                                                                            'date_start': date_of_joining, 
+#                                                                            'da_lta_fa': da_lta_fa, 
+#                                                                            'hra': house_rent_allowance})
+#         for cl_browse in self.pool.get('hr.contract').browse(cr,uid,contract_id):
+#                         self.pool.get('hr.contract').write(cr,uid,cl_browse.id,{'wage': emp_wage, 
+#                                                                             'struct_id': structure_number, 
+#                                                                             'nutritional_allowance': nutritional_allowance,  
+#                                                                             'attendance_incentive': att_inc_allowance, 
+#                                                                             'holidays_id': calendar_number})
+#                     
+#                         
         return True
 

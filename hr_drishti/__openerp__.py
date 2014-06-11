@@ -51,7 +51,8 @@ You can manage:
         'hr_attendance_payroll_view.xml',
         'product_view.xml',
         'wizard/import_attendance_view.xml', 
-        'hr_working_schedule_demo.xml'
+        'hr_working_schedule_demo.xml',
+        'employee_month_payroll_view.xml'
        # 'attendance_sequence.xml',
         
     ],
