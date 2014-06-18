@@ -93,6 +93,18 @@ hr_attendance_table()
 class hr_attendance_table_line(osv.osv):
     _name = 'hr.attendance.table.line'
     _description = 'Attendance Table'
+    
+    _final_attendance = [('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')]
+    _drive_attendance = [('P','P'),('M','M'),('O','O'),('T','T'),
+                         ('L','L'),('SL','SL'),('C','C'),('U','U'),
+                         ('SU','SU'),('W','W'),('A','A'),('H','H'),('R','R')]
+    def _price_field_get(self, cr, uid, context=None):
+        mf = self.pool.get('ir.model.fields')
+        ids = mf.search(cr, uid, [('model','in', (('product.product'),('product.template'))), ('ttype','=','float')], context=context)
+        res = []
+        for field in mf.browse(cr, uid, ids, context=context):
+            res.append((field.name, field.field_description))
+        return res
     _columns = {
     'attendance_table':fields.many2one('hr.attendance.table','Attendance'),
     'name' : fields.char('Name'),
@@ -100,8 +112,8 @@ class hr_attendance_table_line(osv.osv):
     'date': fields.date('Attendance Date',required=True),
     'attendance': fields.boolean('Absent/Present'),
     'absent_info': fields.char('Holiday Information', size=124),
-    'final_result': fields.selection([('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')],'Result'),
-  'goa_drive_attendance':fields.selection([('C','C'),('U','U'),('L','L'),('W','W'),('T','T'),('O','O'),('M','M'),('P','P'),('A','A'),('H','H'),('SL','SL'),('C/O','C/O'),('CO','C/O')],'HR Drive Attendance'),
+    'final_result': fields.selection(_final_attendance,'Result'),
+  'goa_drive_attendance':fields.selection(_drive_attendance,'HR Drive Attendance'),
    'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance',readonly=True),
    'login_time':fields.char('Punch In',readonly=True),
    'logout_time':fields.char('Punch Out',readonly=True)

@@ -141,16 +141,19 @@ class attendance_import(osv.osv_memory):
                 for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
                     j=j.upper()
                     print'<<<<<<<<<<<<<<',j
-                    
+                    att_list = ['T','O','M','P', 'L','C', 'U','SU','SL','W','A','H','']
+                    if j not in att_list:
+                        raise osv.except_osv(_('Warning!'), _('Please define Attendance from "%s but Employee Code %s Contain %s",') % (att_list, emp_code, j))
                     if j =='T' or j=='O' or j=='M' or j=='P':
                         final_result='P'
                     elif j=='L' or j=='C' :
                         final_result='PL'
                     elif j=='U':
                         final_result='UL'
-                    elif j=='SL':
-                        if 'SL'>= 3:
-                            final_result='UL'
+                    elif j=='SU':
+                        final_result='UL'
+                    elif j =='SL':
+                        final_result='PL'     
                     elif j=='W':
                         final_result='WO'
                     elif j=='A' or j=='':

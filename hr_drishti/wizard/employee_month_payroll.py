@@ -70,62 +70,63 @@ class employee_payroll_report(osv.osv_memory):
               
             payslip_ids = payslip_obj.search(cr ,uid, domain)
             #print "payslip_ids", payslip_ids
-            payslip_line_ids = payslip_line_obj.search(cr,uid,[('slip_id','in',payslip_ids)])
-            cr.execute('SELECT DISTINCT(salary_rule_id) FROM hr_payslip_line WHERE slip_id in %s',(tuple(payslip_ids),))
-            salary_rule_ids = map(lambda x: x[0], cr.fetchall())
-            
-            rule_list = salary_rule_obj.read(cr, uid, salary_rule_ids,['name','code','sequence'])
-            newlist = sorted(rule_list, key=lambda k: k['sequence']) 
-            print "rule_list",rule_list
-            k= 3 
-            dic = {}
-            style = XFStyle()
-            fnt = Font()
-            fnt.colour_index = 0x36
-            fnt.bold = True
-            style.font = fnt
-            worksheet.write(3,0,'S.No.',style)
-            worksheet.write(3,1,'Employee Name',style)
-            worksheet.write(3,2,'SLSG No.',style)
-            
-            for l in newlist:
-                print "list",l
-                dic[l['id']] = k
+            if payslip_ids:
+                payslip_line_ids = payslip_line_obj.search(cr,uid,[('slip_id','in',payslip_ids)])
+                cr.execute('SELECT DISTINCT(salary_rule_id) FROM hr_payslip_line WHERE slip_id in %s',(tuple(payslip_ids),))
+                salary_rule_ids = map(lambda x: x[0], cr.fetchall())
                 
-                worksheet.write(3,k,l['name'],style)
-                k +=1
-#             worksheet.write(3,7,'This Week',style)
-#             worksheet.write(4,2,previous_users)
-#             worksheet.write(4,7,current_user)
-            j =4
-            p=0
-            seq =1
-            print "dic",dic
-            dic1 = {}
-            for key in dic.keys():
-                dic1[key] = 0
+                rule_list = salary_rule_obj.read(cr, uid, salary_rule_ids,['name','code','sequence'])
+                newlist = sorted(rule_list, key=lambda k: k['sequence']) 
+                print "rule_list",rule_list
+                k= 3 
+                dic = {}
+                style = XFStyle()
+                fnt = Font()
+                fnt.colour_index = 0x36
+                fnt.bold = True
+                style.font = fnt
+                worksheet.write(3,0,'S.No.',style)
+                worksheet.write(3,1,'Employee Name',style)
+                worksheet.write(3,2,'SLSG No.',style)
                 
-            for emp_id in employee_ids:
-                payslip_id = payslip_obj.search(cr ,uid, [('employee_id','=',emp_id),('id','in' ,payslip_ids)])
-                if payslip_id:
-                    emp_obj = employee_obj.browse(cr,uid,emp_id)
-                    worksheet.write(j,p,seq)
-                    worksheet.write(j,p+1,emp_obj.name)
-                    worksheet.write(j,p+2,emp_obj.identification_id1)
+                for l in newlist:
+                    print "list",l
+                    dic[l['id']] = k
                     
-                    payslip_brw = payslip_obj.browse(cr, uid,payslip_id)[0]
-                    for line in payslip_brw.line_ids:
-                            dic1[line.salary_rule_id.id] += line.total
-                            if line.salary_rule_id.name in ['Gross','Net', 'CTC']:
-                                worksheet.write(j,dic[line.salary_rule_id.id],line.total,style)
-                            else:
-                                worksheet.write(j,dic[line.salary_rule_id.id],line.total)
-                    j +=1
-                    seq +=1 
-            worksheet.write(j,0,'Total')
-            for key in dic.keys():
-                worksheet.write(j,dic[key],dic1[key],style)
-               
+                    worksheet.write(3,k,l['name'],style)
+                    k +=1
+    #             worksheet.write(3,7,'This Week',style)
+    #             worksheet.write(4,2,previous_users)
+    #             worksheet.write(4,7,current_user)
+                j =4
+                p=0
+                seq =1
+                print "dic",dic
+                dic1 = {}
+                for key in dic.keys():
+                    dic1[key] = 0
+                    
+                for emp_id in employee_ids:
+                    payslip_id = payslip_obj.search(cr ,uid, [('employee_id','=',emp_id),('id','in' ,payslip_ids)])
+                    if payslip_id:
+                        emp_obj = employee_obj.browse(cr,uid,emp_id)
+                        worksheet.write(j,p,seq)
+                        worksheet.write(j,p+1,emp_obj.name)
+                        worksheet.write(j,p+2,emp_obj.identification_id1)
+                        
+                        payslip_brw = payslip_obj.browse(cr, uid,payslip_id)[0]
+                        for line in payslip_brw.line_ids:
+                                dic1[line.salary_rule_id.id] += line.total
+                                if line.salary_rule_id.name in ['Gross','Net', 'CTC']:
+                                    worksheet.write(j,dic[line.salary_rule_id.id],line.total,style)
+                                else:
+                                    worksheet.write(j,dic[line.salary_rule_id.id],line.total)
+                        j +=1
+                        seq +=1 
+                worksheet.write(j,0,'Total')
+                for key in dic.keys():
+                    worksheet.write(j,dic[key],dic1[key],style)
+                   
             #print "set",set(list1)
             fp = cStringIO.StringIO()
             wb.save(fp)

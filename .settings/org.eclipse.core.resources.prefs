@@ -1,6 +1,9 @@
 eclipse.preferences.version=1
+encoding//auto_backup/backup_scheduler.py=utf-8
+encoding//currency_rate_update/company.py=utf-8
 encoding//drishti_hr/__openerp__.py=utf-8
 encoding//drishti_loan/__openerp__.py=utf-8
+encoding//drishti_location/purchase_requisition.py=utf-8
 encoding//hr_attendance_payroll/__openerp__.py=utf-8
 encoding//hr_drishti/__init__.py=utf-8
 encoding//hr_drishti/__openerp__.py=utf-8
