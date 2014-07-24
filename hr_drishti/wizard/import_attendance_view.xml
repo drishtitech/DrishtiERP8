@@ -26,7 +26,7 @@
                         <button name="import_employees" string="Import Employees Details" type="object" class="oe_highlight"/>
                         <button name="import_payment_info" string="Import Payment Information on Contract" type="object" class="oe_highlight"/>
                         <button name="import_attendance_mumbai" string="Import Attendance(Mumbai)" type="object" class="oe_highlight"/>
-                        
+                        <button name="update_empoyees" string="Update Employees Details" type="object" class="oe_highlight"/>
 <!--                        or-->
 <!--                    	<button string="Cancel" class="oe_link" special="cancel"/>-->
                         </div>      

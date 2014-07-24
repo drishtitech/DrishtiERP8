@@ -7,13 +7,61 @@ import xlrd
 import string
 import calendar
 from calendar import monthrange
-from datetime import datetime
+
 import datetime
 
 
 
 class attendance_import(osv.osv_memory):
     _inherit='attendance.import'
+    
+    def update_empoyees(self, cr,uid ,ids, context=None):
+        cur_obj = self.browse(cr,uid,ids)[0]
+        file_data=cur_obj.file
+        val=base64.decodestring(file_data)
+        fp = StringIO.StringIO()
+        fp.write(val)     
+        wb = xlrd.open_workbook(file_contents=fp.getvalue())
+        sheet=wb.sheet_by_index(0)
+        job_history_obj = self.pool.get('hr.employee.job.history')
+        employee_obj = self.pool.get('hr.employee')
+       # 39614.0
+        for i in range(1,sheet.nrows):
+            old_emp_code = sheet.cell_value(i, 6)
+            emp_id = employee_obj.search(cr ,uid, [('identification_id1','=', old_emp_code)])
+            if emp_id :
+                print 'Employee Code',old_emp_code
+                old_doj = sheet.cell_value(i, 7)
+                employer_name = 'Drishti Special Response Services Pvt Ltd Goa'
+                designation = sheet.cell_value(i, 2)
+                joining_date = '07/01/2014'
+                relieving_date = '06/30/2014'
+                emp_code =  sheet.cell_value(i, 3) 
+                
+                job_history_dict = {
+                            'employee_id': emp_id[0],
+                            'name': employer_name,
+                            'employee_code' : old_emp_code,
+                            'designation':designation,
+                            'joining_date': datetime.date(1900, 1, 1) + datetime.timedelta(int(old_doj)-2),
+                            'relieving_date': relieving_date,
+                           # 'total_exp':,
+                            'change_reason': 'Lifeguarding Contract given to Drishti Lifeguarding Pvt Ltd'
+                            }
+                
+                job_history_obj.create(cr ,uid, job_history_dict)
+                
+                emp_dict = {
+                            'identification_id1' :  emp_code,
+                            'joining_date' : joining_date,
+                            'company_id' : 17,
+                            }
+                employee_obj.write(cr ,uid, emp_id[0], emp_dict)
+            else:
+                print "Emp Code not available", old_emp_code   
+                
+        
+        return True
     
     def import_employees(self,cr,uid,ids,context=None):
         

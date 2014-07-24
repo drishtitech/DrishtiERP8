@@ -15,6 +15,8 @@ import datetime
 class attendance_import(osv.osv_memory):
     _inherit='attendance.import'
     
+    
+    
     def import_employees(self,cr,uid,ids,context=None):
         
         
@@ -26,7 +28,6 @@ class attendance_import(osv.osv_memory):
         fp.write(val)     
         wb = xlrd.open_workbook(file_contents=fp.getvalue())
         sheet=wb.sheet_by_index(0)
-        
         
         
         for i in range(1,sheet.nrows):

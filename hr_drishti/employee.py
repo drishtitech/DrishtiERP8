@@ -443,10 +443,12 @@ class hr_employee_job_history(osv.osv):
     _columns = {
                 
                 'employee_id':fields.many2one('hr.employee','Previous job History',required=True),
-                'name':fields.char("Previouse Employee Name",required=True),
-                'designation':fields.char("Designation",required=True),
+                'name':fields.char("Previous Employer Name",required=True),
+                'employee_code' : fields.char('Previous Employee Code'),
+                'designation':fields.char("Designation"),
                 'joining_date':fields.date("Date of Joining",required=True),
-                'total_exp':fields.integer("Total Experience(In Months)",required=True),
+                'relieving_date':fields.date("Date of Relieving"),
+                'total_exp':fields.integer("Total Experience(In Months)"),
                 'change_reason':fields.char("Reason For change",required=True)
                 
                 }

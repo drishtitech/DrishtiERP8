@@ -768,8 +768,10 @@
             <tree string="Previous job History">
 				<field name="employee_id" invisible="1"/>
 				<field name="name"/>
+				<field name="employee_code"/>
 				<field name="designation"/> 
 				<field name="joining_date"/>
+				<field name="relieving_date"/>
 				<field name="total_exp"/>
 				<field name="change_reason"/>
 			      
