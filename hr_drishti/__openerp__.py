@@ -49,7 +49,7 @@ You can manage:
         'security/ir.model.access.csv',
         'attendance_view.xml',
         'hr_attendance_payroll_view.xml',
-        'product_view.xml',
+       # 'product_view.xml',
         'wizard/import_attendance_view.xml', 
         'hr_working_schedule_demo.xml',
         'employee_month_payroll_view.xml'
