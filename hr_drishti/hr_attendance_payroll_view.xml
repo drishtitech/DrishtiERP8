@@ -38,7 +38,10 @@
                  </xpath>
                 <xpath expr="//field[@name='wage']" position="after">
                     <field name="holidays_id"/>
+                    
                     <field name="nutritional_allowance"/>
+                    <field name="grade_pay"/>
+                    <field name="hr_comp"/>
                     <field name="attendance_incentive"/>
                     <field name="da_lta_fa"/>
                     <field name="special_allowance"/>

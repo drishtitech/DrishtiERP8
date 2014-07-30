@@ -10,6 +10,10 @@ class hr_contract(osv.osv):
     _inherit = "hr.contract"
     _description = 'Employee Contract'
     _columns = {
+        'wage' : fields.float('Basic/Category Pay', required=True),
+        'grade_pay': fields.float('Grade Pay'),
+        'hr_comp' : fields.float('HR Compensatory'),
+              
         'holidays_id' : fields.many2one('holidays.calendar','Holidays Calendar', size=124),
         'nutritional_allowance' : fields.integer('Nutritional Allowance', size=124),
         'attendance_incentive' : fields.integer('A.I. All', size=124),
@@ -37,6 +41,7 @@ class hr_contract(osv.osv):
          'emi_amount': fields.float('Loan EMI',),
          'mobile_deduction': fields.float('Mobile Deduction'),
          'tds_deduction': fields.float('TDS Deduction'),
+        
          
         }
      

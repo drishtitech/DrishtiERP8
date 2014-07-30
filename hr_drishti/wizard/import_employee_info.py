@@ -15,6 +15,70 @@ import datetime
 class attendance_import(osv.osv_memory):
     _inherit='attendance.import'
     
+    # Create new employee contract for all those employee who move from DSRS Goa to Drishti LifeSaving Pvt. Ltd.
+    def create_contracts(self, cr, uid, ids, context=None):
+        cur_obj = self.browse(cr,uid,ids)[0]
+        file_data=cur_obj.file
+        val=base64.decodestring(file_data)
+        fp = StringIO.StringIO()
+        fp.write(val)     
+        wb = xlrd.open_workbook(file_contents=fp.getvalue())
+        sheet=wb.sheet_by_index(0)
+        
+        emp_obj = self.pool.get('hr.employee')
+        contract_obj = self.pool.get('hr.contract')
+        type_id = False
+        for i in range(9,sheet.nrows):
+            emp_code = sheet.cell_value(i, 3)
+        
+        
+            emp_ids = emp_obj.search(cr ,uid, [('company_id','=', 17),('identification_id1','=',emp_code)])
+            contract_ids = contract_obj.search(cr ,uid, [('employee_id','in',emp_ids)])
+            if contract_ids:
+                contract_id = contract_ids[0]
+                print "contract_id",contract_id
+                contract_obj.write(cr, uid,contract_id , {'date_end' : '06/30/2014'})
+                contract_brw = contract_obj.browse(cr ,uid, contract_id)
+                contract_obj.create(cr, uid, 
+                                {
+                                 'date_start' : '07/01/2014',
+                                 'company_id': 17,
+                                 'journal_id' : False,
+                                 'date_end' : False,
+                                 'employee_id' : contract_brw.employee_id.id,
+                                 'type_id': contract_brw.type_id.id,
+                                 'name': contract_brw.name,
+                                 'wage': sheet.cell_value(i, 20),
+                                 'conveyance_allowence' :sheet.cell_value(i, 22),
+                                 'grade_pay':sheet.cell_value(i, 21),
+                                 'hr_comp' : sheet.cell_value(i, 23),
+                                 'struct_id' : 2121,
+                                 
+                                # 'struct_id' : False,
+                                 }) 
+                type_id = contract_brw.type_id.id
+                
+            else:
+                 emp_brw = emp_obj.browse(cr, uid ,emp_ids[0])
+                 contract_obj.create(cr, uid, 
+                                {
+                                 'date_start' : '07/01/2014',
+                                 'company_id': 17,
+                                 'journal_id' : False,
+                                 'date_end' : False,
+                                 'employee_id' : emp_ids[0],
+                                 'type_id': type_id,
+                                 'name': emp_brw.name,
+                                 'wage': sheet.cell_value(i, 20),
+                                 'conveyance_allowence' :sheet.cell_value(i, 22),
+                                 'grade_pay':sheet.cell_value(i, 21),
+                                 'hr_comp' : sheet.cell_value(i, 23),
+                                 'struct_id' : 2121,
+                                 
+                                # 'struct_id' : False,
+                                 })       
+        return True
+    
     def update_empoyees(self, cr,uid ,ids, context=None):
         cur_obj = self.browse(cr,uid,ids)[0]
         file_data=cur_obj.file
