@@ -97,7 +97,7 @@ class hr_attendance_table_line(osv.osv):
     _final_attendance = [('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')]
     _drive_attendance = [('P','P'),('M','M'),('O','O'),('T','T'),
                          ('L','L'),('SL','SL'),('C','C'),('U','U'),
-                         ('SU','SU'),('W','W'),('A','A'),('H','H'),('R','R')]
+                         ('SU','SU'),('W','W'),('A','A'),('H','H'),('R','R'),('RH','RH')]
     def _price_field_get(self, cr, uid, context=None):
         mf = self.pool.get('ir.model.fields')
         ids = mf.search(cr, uid, [('model','in', (('product.product'),('product.template'))), ('ttype','=','float')], context=context)

@@ -64,9 +64,9 @@ class hr_payslip(osv.osv):
                 res = self.pool.get('hr.holidays').browse(cr, uid, holiday_ids, context=context)[0].holiday_status_id.name
             return res
         res = []
-        print "here",contract_ids
+      #  print "here",contract_ids
         for contract in self.pool.get('hr.contract').browse(cr, uid, contract_ids, context=context):
-            print "test"
+            print "test",contract.employee_id.identification_id1
             contract_dict = {
                              'emi_amount': 0.0,
                              'mobile_deduction' : 0.0,
@@ -83,6 +83,7 @@ class hr_payslip(osv.osv):
                     
             deduction_id = dedtn_obj.search(cr, uid,[('deduction_from_date','>=',date_from),('deduction_to_date','<=',date_to)])       
             if deduction_id:
+                print "deduction_id",deduction_id,contract.employee_id.id
                 dedtn_line_id = dedtn_line_obj.search(cr, uid, [('deduction_id','=',deduction_id[0]),('employee_id','=',contract.employee_id.id)])
                 if  dedtn_line_id:
                     dedtn_line_obj = dedtn_line_obj.browse(cr, uid, dedtn_line_id[0])
@@ -177,17 +178,17 @@ class hr_payslip(osv.osv):
                               }
             day_from = datetime.datetime.strptime(date_from,"%Y-%m-%d")
             day_to = datetime.datetime.strptime(date_to,"%Y-%m-%d")
-            print day_from, day_to, "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
+            #print day_from, day_to, "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
             nb_of_days = (day_to - day_from).days + 1
            
             attendance_line = self.pool.get('hr.attendance.table.line').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date','>=',date_from),('date','<=',date_to)])
-            print "attendance_line========",attendance_line,len(attendance_line)
+            #print "attendance_line========",attendance_line,len(attendance_line)
             leaves = {}
            
             for day in range(0, nb_of_days):
                 if not contract.employee_id.attendance: 
                     att_id = self.pool.get('hr.attendance.table.line').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date','=',day_from +timedelta(days=day))])
-                    print att_id, "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+                    #print att_id, "ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
                     for att_obj in self.pool.get('hr.attendance.table.line').browse(cr,uid, att_id):
                        
                         if att_obj.final_result in att_records:
@@ -246,7 +247,7 @@ class hr_payslip(osv.osv):
            
             emp_attend_id = self.pool.get('hr.attendance.table').search(cr, uid, [('employee_id','=',contract.employee_id.id),('date_from','=',date_from),('date_to','=',date_to)])
             work_days  = []
-            print "emp_attend_id",emp_attend_id
+            #print "emp_attend_id",emp_attend_id
             if emp_attend_id:
                 att_obj = self.pool.get('hr.attendance.table').browse(cr, uid,emp_attend_id[0])
                 work_days.append( {
@@ -294,6 +295,6 @@ class hr_payslip(osv.osv):
                 l = [salarydays,att_records['MONTHDAYS'], att_records['P'], att_records['worked'], att_records['A'], att_records['PL'], att_records['WO'], att_records['UL'], att_records['H'], att_records['HH'],] 
                 
                 #l = [salarydays,att_records['MONTHDAYS'], att_records['P'],  att_records['A'], att_records['PL'],  att_records['UL'],]  
-        print "work_days",l
+       # print "work_days",l
         return l         
     

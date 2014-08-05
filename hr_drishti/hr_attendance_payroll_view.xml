@@ -42,6 +42,7 @@
                     <field name="nutritional_allowance"/>
                     <field name="grade_pay"/>
                     <field name="hr_comp"/>
+                    <field name="gross_salary"/>
                     <field name="attendance_incentive"/>
                     <field name="da_lta_fa"/>
                     <field name="special_allowance"/>

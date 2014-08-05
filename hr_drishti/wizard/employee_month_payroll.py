@@ -87,7 +87,7 @@ class employee_payroll_report(osv.osv_memory):
                 style.font = fnt
                 worksheet.write(3,0,'S.No.',style)
                 worksheet.write(3,1,'Employee Name',style)
-                worksheet.write(3,2,'SLSG No.',style)
+                worksheet.write(3,2,'Employee Code',style)
                 
                 for l in newlist:
                     print "list",l

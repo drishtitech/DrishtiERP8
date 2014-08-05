@@ -58,7 +58,7 @@ class attendance_import(osv.osv_memory):
                                  }) 
                 type_id = contract_brw.type_id.id
                 
-            else:
+            elif emp_ids:
                  emp_brw = emp_obj.browse(cr, uid ,emp_ids[0])
                  contract_obj.create(cr, uid, 
                                 {

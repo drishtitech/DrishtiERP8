@@ -9,6 +9,16 @@ import time
 class hr_contract(osv.osv):
     _inherit = "hr.contract"
     _description = 'Employee Contract'
+    
+    def _gross_salary(self,cr,uid,ids, name, arg, context=None):
+        res = {}
+        
+        for contract in self.browse(cr, uid, ids, context=context):
+            
+            
+                res[contract.id] = contract.wage +contract.conveyance_allowence +contract.grade_pay + contract.hr_comp
+        return res
+    
     _columns = {
         'wage' : fields.float('Basic/Category Pay', required=True),
         'grade_pay': fields.float('Grade Pay'),
@@ -41,7 +51,13 @@ class hr_contract(osv.osv):
          'emi_amount': fields.float('Loan EMI',),
          'mobile_deduction': fields.float('Mobile Deduction'),
          'tds_deduction': fields.float('TDS Deduction'),
-        
+        'gross_salary' : fields.function(
+                                            _gross_salary,
+                                            method=True,
+                                            type='float',
+                                            string="Gross Salary",
+                                           
+                                        ),
          
         }
      

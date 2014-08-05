@@ -86,6 +86,8 @@ class attendance_import(osv.osv_memory):
         attendance_obj = self.pool.get('hr.attendance.table')
         attendance_line_obj = self.pool.get('hr.attendance.table.line')
         employee_obj = self.pool.get('hr.employee')
+        holiday_obj = self.pool.get('hr.holiday')
+        holiday_status_obj = self.pool.get('hr.holiday.status')
         cur_obj = self.browse(cr,uid,ids)[0]
         file_data=cur_obj.file
         val=base64.decodestring(file_data)
@@ -98,12 +100,22 @@ class attendance_import(osv.osv_memory):
         date_dict = {}
     # Bio Metric Attendance
    
-   
-        print'>>>>>>>>>>',date
-        
-        
+        """Code    Name
+            P    PRESENT
+            W    WEEKLY OFF
+            L    PAID LEAVE
+            A    ABSENT
+            C    COMPANSATORY OFF
+            SL    Sick Leave
+            U    UNPAID LEAVE
+            H    HOLIDAY
+            WW    Worked on Weekly off
+            WH    Worked on public holiday
+            RH    Restricted holiday """
+
 #         month = int(date[1:2])
 #         year = int(date[6:10])
+
         year = int(date[:4])
         month = int(date[5:7])   
         dob_date = int(date[8:10])
@@ -138,10 +150,11 @@ class attendance_import(osv.osv_memory):
                 else:
                     attendance_id = attendance_id[0]
                 d = 1
+                #status_id = holiday_status_obj.search(cr, uid,[('name','=','Compensatory Days')])
                 for j in sheet.row_values(i,5,monthrange(year, month)[1]+5):
                     j=j.upper()
                     print'<<<<<<<<<<<<<<',j
-                    att_list = ['T','O','M','P', 'L','C', 'U','SU','SL','W','A','H','']
+                    att_list = ['T','O','M','P', 'L','C', 'U','SU','SL','W','A','H','RH','']
                     if j not in att_list:
                         raise osv.except_osv(_('Warning!'), _('Please define Attendance from "%s but Employee Code %s Contain %s",') % (att_list, emp_code, j))
                     if j =='T' or j=='O' or j=='M' or j=='P':
@@ -158,8 +171,27 @@ class attendance_import(osv.osv_memory):
                         final_result='WO'
                     elif j=='A' or j=='':
                         final_result='A'
-                    elif j=='H':
-                        final_result='H' 
+                    elif j=='H' or j == 'RH':
+                        final_result='H'
+                    
+                    
+#                     elif j=='WW' and status_id:
+#                         final_result='P'
+#                         holiday_id = holiday_obj.search(cr, uid,[('employee_id','=',employee_id),('leave_allocation_date','=',date_dict[d])])
+#                         if not holiday_id:
+#                             holiday_id = holiday_obj.create(cr, uid, {'name' : 'test','holiday_type' : 'employee',
+#                                                       'leave_allocation_date' : date_dict[d],
+#                                                       'holiday_status_id' : status_id[0],
+#                                                       'employee_id' : employee_id,
+#                                                       'number_of_days_temp' : 1})
+#                     if j == 'C':
+#                         holiday_obj.create(cr, uid, {'name' : 'test','holiday_type' : 'employee',
+#                                                       'leave_allocation_date' : date_dict[d],
+#                                                       'holiday_status_id' : status_id[0],
+#                                                       'employee_id' : employee_id,
+#                                                       'date_from' : False,
+#                                                       'date_to' : False})
+#                         
                    
                                        
                     att_line_id =attendance_line_obj.search(cr, uid, [('date', '=', date_dict[d]),
