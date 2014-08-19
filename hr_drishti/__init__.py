@@ -20,6 +20,7 @@
 ##############################################################################
 
 #import institute
+import hr_leaves_request
 import hr_drishti
 import partner
 import employee
@@ -28,6 +29,12 @@ import contract
 import payroll
 import holiday
 import wizard
+import bank_debit_letter
+import report
+import skill_matrics
+import employee_increment
+
+import amount_to_text_in
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

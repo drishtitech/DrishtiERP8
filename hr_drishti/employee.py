@@ -230,7 +230,7 @@ class hr_employee(osv.osv):
         result = {}
         if bank_field:
             bank = self.pool.get('res.bank').browse(cr, uid, bank_field, context=context)
-            result['bank_field'] = bank.name
+            result['bank_field'] = bank.id
             result['bank_bic'] = bank.bic
             result['branch_name'] = bank.branch_name
             
@@ -526,9 +526,11 @@ class employee_deducton_line(osv.osv):
     _columns = {
                'deduction_id':fields.many2one('employee.deduction','Employee Deduction'),
                'employee_id':fields.many2one('hr.employee', 'Employee',required=True),
-               'mobile_deduction':fields.integer('Mobile Deduction',size=124),
-               'loan_deduction':fields.integer('Loan Deduction',size=124),
-               'tds_deduction' : fields.integer('TDS Deduction',size=124)
+               'mobile_deduction':fields.integer('Mobile Deduction'),
+               'loan_deduction':fields.integer('Loan Deduction'),
+               'tds_deduction' : fields.integer('TDS Deduction'),
+               'arrers' : fields.integer('Arrers'),
+               
                }
     
 

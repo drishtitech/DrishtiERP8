@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	<record id="employee_bank_debit_details_tree" model="ir.ui.view">
+	<field name="name">employee_bank_debit_details.tree</field>
+	<field name="model">employee.bank.debit.details</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	<tree string="Accounts Details">
+		<field name="name"/>
+		<field name="date_from"/>
+		<field name="date_to"/>
+		<field name="date"/>
+	</tree>
+	
+	</field>	
+	</record>
+	<record id="employee_bank_debit_details_form" model="ir.ui.view">
+	<field name="name">employee.bank.debit.details.form</field>
+	<field name="model">employee.bank.debit.details</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	<form string="Accounts Details" version="7.0">
+		<header>
+			<button name="compute_sheet" string="Compute" type="object" class="oe_highlight"/>
+			<!--button name="" type="object" class="oe_highlight"/-->
+		</header>
+                <sheet>
+                  <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    
+                        <label for="date_from" string="Period"/>
+                         <div>
+                               <field name="date_from" class="oe_inline"/> - <field name="date_to" class="oe_inline"/>
+                         </div>
+                         <group>
+                         <field name="date" />
+                         </group>
+                         <group col="4">
+                    
+                        <field name="company" on_change="onchange_company(company, bank_id)"/>
+                        <field name="bank_id" on_change="onchange_company(company, bank_id)"/>
+                        <field name="company_account_no"/>
+                   
+					
+					</group>
+                    <separator string="Employee Account details"/>
+                    <field name="debit_account_ids" nolabel="1" >
+                    <tree editable="bottom">
+                    	<field name='debit_id' invisible="1"/>
+						<field name="serial_no"/>
+						<field name= "employee_id" />
+						<field name="amount"/>
+						<field name="account_no"/>
+					</tree>
+                    </field>
+                      <group>
+                     <group>
+					 </group>
+					 <group>
+					 	<field name="total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+					 </group>
+					 </group>
+                </sheet>
+	</form>
+	</field>
+	</record>
+	<record id="employee_bank_debit_details_line_tree" model="ir.ui.view">
+	<field name="name">employee.bank.debit.details.tree</field>
+	<field name="model">employee.bank.debit.details.line</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	<tree string="Accounts Details Line" editable="bottom">
+			<field name='debit_id' invisible="1"/>
+			<field name="serial_no"/>
+	
+			<field name= "employee_id"/>
+			<field name="amount" sum="Total"/>
+			<field name="account_no"/>
+			
+			
+		</tree>
+		</field>
+		</record>
+			
+	
+	
+	<record id="employee_bank_debit_details_line_form" model="ir.ui.view">
+	<field name="name">employee.bank.debit.details.line.form</field>
+	<field name="model">employee.bank.debit.details.line</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	<form string="Accounts Details Line">
+			<field name='debit_id' invisible="1"/>
+			<field name="serial_no"/>
+			<field name= "employee_id"/>
+			<field name="amount" sum="Total"/>
+			<field name="account_no"/>
+	</form>
+	</field>
+	</record>
+	<record id="action_bank_debit_details" model="ir.actions.act_window">
+	<field name="name">Bank Salary Letter</field>
+	<field name="res_model">employee.bank.debit.details</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+	<field name="view_id" ref="employee_bank_debit_details_tree"/>
+	</record>
+	<menuitem id="menu_employee_bank_debit_details" parent="hr.menu_hr_root" name="Salary Report" sequence="30"/>
+	 <menuitem
+            id="menu_employee_bank_debit_details_line"
+            action="action_bank_debit_details"
+            parent="menu_employee_bank_debit_details"
+            sequence="2"
+        />
+	
+
+            
+	</data>
+</openerp>

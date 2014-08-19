@@ -7,6 +7,7 @@ encoding//drishti_location/purchase_requisition.py=utf-8
 encoding//hr_attendance_payroll/__openerp__.py=utf-8
 encoding//hr_drishti/__init__.py=utf-8
 encoding//hr_drishti/__openerp__.py=utf-8
+encoding//hr_drishti/amount_to_text_in.py=utf-8
 encoding//hr_drishti/hr_drishti.py=utf-8
 encoding//hr_drishti/wizard/import_attendance.py=utf-8
 encoding//import_attendance/__init__.py=utf-8

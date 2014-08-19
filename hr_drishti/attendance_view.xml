@@ -85,6 +85,7 @@
                         <field name="date_to"/>
                         <field name="month_days"/>
                         <field name="salary_days"/>
+                        <field name="overtime"/>
                         <field name="attendance_days"/>
                         <field name="holiday_attendance_days"/>
                         

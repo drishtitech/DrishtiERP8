@@ -72,6 +72,7 @@ class hr_payslip(osv.osv):
                              'mobile_deduction' : 0.0,
                              'emi_amount' : 0.0,
                              'tds_deduction' : 0.0,
+                             'arrers' :0.0,
                              }
             loan_id = loan_obj.search(cr, uid,[('employee_id','=',contract.employee_id.id),('state','=','progress')])
             
@@ -90,7 +91,7 @@ class hr_payslip(osv.osv):
                     contract_dict['mobile_deduction'] =  dedtn_line_obj.mobile_deduction
                     contract_dict['emi_amount'] =  dedtn_line_obj.loan_deduction
                     contract_dict['tds_deduction'] =  dedtn_line_obj.tds_deduction
-                                 
+                    contract_dict['arrers'] =  dedtn_line_obj.arrers             
                          
               
             self.pool.get('hr.contract').write(cr,uid,contract.id,contract_dict)    
@@ -263,7 +264,7 @@ class hr_payslip(osv.osv):
                                          'sequence': 100,
                                          'code': 'SALARYDAYS',
                                          'number_of_days': att_obj.salary_days,
-                                         'number_of_hours': 0.0,
+                                         'number_of_hours': att_obj.overtime,
                                          'contract_id': contract.id,
                              })  
                 work_days.append( {

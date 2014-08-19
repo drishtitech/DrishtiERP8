@@ -218,6 +218,7 @@
                 	<field name= "mobile_deduction"/>
                 	<field name= "loan_deduction"/>
                 	<field name= "tds_deduction"/>
+                	<field name= "arrers"/>
                 </tree>
             </field>
         </record>
@@ -234,6 +235,7 @@
                 	<field name= "mobile_deduction"/>
                 	<field name= "loan_deduction"/>
                 	<field name= "tds_deduction"/>
+                	<field name= "arrers"/>
                 </group>	
                 </form>
             </field>

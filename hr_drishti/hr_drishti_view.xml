@@ -1,818 +1,855 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
+	<data>
 
-        
 
-        <!--
-        ==========
-        Employee
-        ==========
-        -->
-	
 
-        <record id="edit_holiday_new456" model="ir.ui.view">
-            <field name="name">edit.holiday.new.inherit</field>
-            <field name="model">hr.holidays</field>
-            <field name="type">form</field>
-	    <field name="inherit_id" ref="hr_holidays.edit_holiday_new"/>
-            <field name="arch" type="xml">
-            <field name="name" position="replace">
-            <field name="serial_no"/>
-           <field name="name" required="1"/>
-           <field name="leave_allocation_date"/>
-           
-           
-            </field>
-           </field>
-        </record>
-        
-        <record id="view_employee_tree987" model="ir.ui.view">
-            <field name="name">view.employee.tree.inherit</field>
-            <field name="model">hr.employee</field>
-            <field name="type">tree</field>
-	    <field name="inherit_id" ref="hr.view_employee_tree"/>
-            <field name="arch" type="xml">
-            <field name="name" position="after">
-            <field name="identification_id1"/>
-            <field name="category_ids" invisible="1"/>
-           
-            </field>
-           </field>
-        </record>
-        
-        
-        <record id="view_employee_form456" model="ir.ui.view">
-            <field name="name">view.employee.form.inherit</field>
-            <field name="model">hr.employee</field>
-            <field name="type">form</field>
-	    <field name="inherit_id" ref="hr.view_employee_form"/>
-            <field name="arch" type="xml">
-           
-                   
-           <xpath expr="/form/sheet/div[@class='oe_title']" position="attributes">
-                    <attribute name="invisible">True</attribute>
-           </xpath>
-           
-           <xpath expr="/form/sheet/notebook" position="before">
-           <div class="oe_title">
-           		<h2>
-           			<div class="address_format">
-                     <field name="emp_first_name" placeholder="First Name" style="width: 30%%"  nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
-                     <field name="emp_middle_name" placeholder="Middle Name" style="width: 30%%" nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
-                     <field name="emp_last_name" placeholder="Last Name" style="width: 30%%"  nolabel="1" on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)"/>
-                      
-                 </div>
-                 </h2>
-           				
-                            <label for="name" class="oe_edit_only"/>
-                            
-                            <h2>
-                                <field name="name"/>
-                            </h2>
-                            
-                            <!--label for="emp_first_name"/>
-                           <h2>
-                                
-                                <field name="emp_first_name" placeholder="First Name"/>
-                            </h2>
-                            <label for="emp_middle_name"/>
-                            
-                             <h2>
-                                
-                                <field name="emp_middle_name" placeholder="Middle Name"/>
-                            </h2>
-                            <label for="emp_last_name"/>
-                            
-                             <h2>
-                                
-                                <field name="emp_last_name" placeholder="Last Name"/>
-                            </h2-->
-                            <label for="identification_id1"/>
-                            <h2>
-                                
-                                <field name="identification_id1"/>
-                            </h2>
-                            <!--label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/>
-                            <field name="category_ids" widget="many2many_tags" placeholder="e.g. Part Time" groups="base.group_hr_user"/-->
-                            <label for="category" class="oe_edit_only"/>
-                            <field name="category" widget="selection"/>
-                        </div>
-           </xpath>
-                      
-            <xpath expr="/form/sheet/notebook/page[@string='Public Information']" position="attributes">
-                    <attribute name="invisible">True</attribute>
-           </xpath>
-           
-           <xpath expr="/form/sheet/notebook/page[@string='Public Information']" position="replace"> 
-            <page string="Work Information">
-            <group>
-                  <group string="Contact Information">
-                      <field name="address_id" on_change="onchange_address_id(address_id)" context="{'show_address': 1}" options='{"always_reload": True, "highlight_first_line": True}'/>
-                      <field name="work_email" widget="email"/>
-                      <field name="work_phone"/>
-                      <field name="mobile_phone"/>
-                      <field name="work_location"/>
-                      
-                  </group>
-                  <group string="Position">
-                       <field name="department_id" on_change="onchange_department_id(department_id)"/>
-                       <!--field name="job_id" options='{"no_open": True}' domain="[('state','!=','old')]" context="{'form_view_ref': 'hr.view_hr_job_employee_form'}" position="replace"/-->
-                       <field name="parent_id"/>
-                       <field name="coach_id"/>
-                  </group>
-                 <group>
-                       <field name="company_id" groups="base.group_multi_company" on_change="onchange_company(company_id)"/>
-                       <field name="user_id" on_change="onchange_user(user_id)" string="Related User"/>
-                 </group>
-              </group>
-               <field name="notes" placeholder="Other Information ..." colspan="4"/>
-            
-            </page>
-            </xpath>
-            
-              <xpath expr="/form/sheet/notebook/page[@string='HR Settings']" position="inside">
-              <group>
-              	<field name='lifeguard'/>
-              	 <field name="attendance" />
-              </group>
-                    
-           </xpath>
-                
-           
-                  
-           <xpath expr="/form/sheet/notebook/page[@string='Personal Information']" position="attributes">
-                    <attribute name="invisible">True</attribute>
-           </xpath>
-                
-            <xpath expr="/form/sheet/notebook" position="inside"> 
-            <page string="Personal Information" groups="base.group_hr_user">
-                 <group>
-                 <group string="Personal Particulars">
-                 <field name="blood_group"/>
-           		 <field name="identification_marks"/>
-           		
-           		 </group>
-           		
-           		 </group>
-           		 <group>
-           		 <group string="Status">
-                 <field name="gender"/>
-                 <field name="marital"/>
-                 <field name="marriage_date"  attrs="{'required':[('marital', '=', 'Married')],'invisible':[('marital', '=', 'Unmarried')]}"/>
-                 <field name="no_of_children" attrs="{'invisible':[('marital', '=', 'Unmarried')]}"/>
-                 </group>
-                 <group string="Birth Details">
-                 	<field name="birthday"/>
-                 	<field name="place_of_birth"/>
-                </group>
-           		</group>
-           		 
-           		 <group>
-           		 <group string="Contact Details">
-           		 <field name="emergency_contact"/>
-           		 <field name="telephone_no1"/>
-           		 <field name="mobile_no1"/>
-           		 <field name="email_id"/>
-           		 <field name="mobile_no" string="Alternative Mobile No"/>
-           		 <field name ="alternative_email"/>
-           		 </group>
-          		 <group string="Physical Particulars">
-					
-					<field name="height"/>
-					<field name="weight"/>
-					<field name="complexion"/>
-				</group>
-				</group>
-			 <group col ="2" colspan="2" string="Current Address" >
-			 
-		          	<field name="current_street1" placeholder="Street1..."   nolabel="1"/>
-                 	<field name="current_street2" placeholder="Street2..."  nolabel="1"/>
-                 
-                 <div class="address_format">
-                     <field name="current_city" placeholder="City" style="width: 20%%"  nolabel="1"/>
-                     <field name="current_district_id" placeholder="District" style="width: 20%%"  nolabel="1" on_change="onchange_current_district(current_district_id)"/>
-                     <field name="current_state_id" class="oe_no_button" placeholder="State" style="width: 20%%" options='{"no_open": True}' nolabel="1" on_change ="onchange_current_state(current_state_id)"/>
-                     <field name="current_pincode" placeholder="ZIP" style="width: 20%%"  nolabel="1"/>
-                     <field name ="current_landmark" placeholder="Landmark" style="width: 20%%"  nolabel="1"/>
-                     
-                      
-                 </div>
-           		 <field name="current_country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}'  nolabel="1"/>
-           	</group>
-           		
-			
-           		 
-           	<group col="2" colspan="2" string="Permanent Address">
-           		<field name="goa_employee"/>
-           		 <field name="same_current_address" on_change="onchange_same_current_address(same_current_address,current_street1,current_street2,current_city,current_state_id,current_landmark,current_pincode,current_country_id,current_district_id)"/>
-           		 <field name="house_no" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="ward" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="home_street1" attrs="{'invisible': [('goa_employee','=',True)]}"/>
-                 <field name="home_street2" attrs="{'invisible': [('goa_employee','=',True)]}"/>
-                 <field name="home_landmark" attrs="{'invisible': [('goa_employee','=',True)]}"/>
-           		 <field name="home_village"/>
-           		 <field name="municipality" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <!--field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/-->
-           		 <field name="constituency" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="taluka" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="home_district_id" on_change ="onchange_home_district(home_district_id)"/>
-           		 <field name="home_state_id" on_change ="onchange_home_state(home_state_id)"/>/>
-           		 <field name="post_office" attrs="{'invisible': [('goa_employee','!=',True)]}"/>
-           		 <field name="home_pin_code"/>
-           		 <field name="home_country_id" />
-           		 <field name="other"/>
-				</group>
-			
-				<group string="Citizenship &amp; Other Info">
-					<field name="nationality"/>
-               
-                
-                </group>
-				 <group string="Identification Proof Details">
-           		 
-           		 <field name="employee_identification_proof_detail" colspan="4" nolabel="1"/>
-           		 </group>
-           		 
-           		<group col="2" colspan="2" string="Language Proficiency">
-					
-					<field name="language_line" widget="one2many" colspan="4"/>
-				</group> 
-           		 
-				<group col="2" colspan="2" string="Family Particulars">
-					
-					<field name="father_name"/>
-					<field name="family_line" widget="one2many" string="Family Particulars" nolabel="1" colspan="4"/>
-				</group>
-				<group col="2" colspan="2" string="Nominee Details">
-           		 <field name="nominee"/>
-           		 <field name="relationship"/>
-           		 <field name="address"/>
-           		 <field name="telephone_no"/>
-           		 
-           		 </group>
-				
-				
-				</page>
-			       </xpath>
-				
+		<!-- ========== Employee ========== -->
+
+
+		<record id="edit_holiday_new456" model="ir.ui.view">
+			<field name="name">edit.holiday.new.inherit</field>
+			<field name="model">hr.holidays</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr_holidays.edit_holiday_new" />
+			<field name="arch" type="xml">
+				<field name="name" position="replace">
+					<field name="serial_no" />
+					<field name="name" required="1" />
+					<field name="leave_allocation_date" />
+
+
+				</field>
+			</field>
+		</record>
+
+		<record id="view_employee_tree987" model="ir.ui.view">
+			<field name="name">view.employee.tree.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="type">tree</field>
+			<field name="inherit_id" ref="hr.view_employee_tree" />
+			<field name="arch" type="xml">
+				<field name="name" position="after">
+					<field name="identification_id1" string="Employement ID" />
+					<field name="category_ids" invisible="1" />
+
+				</field>
+			</field>
+		</record>
+
+		<record id="hr_kanban_view_employees_inherit" model="ir.ui.view">
+			<field name="name">HR - Employess Kanban Inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="type">kanban</field>
+			<field name="inherit_id" ref="hr.hr_kanban_view_employees" />
+			<field name="arch" type="xml">
+				<field name="job_id" position="before">
+					<li t-if="record.identification_id1.raw_value">
+						<field name="identification_id1" />
+					</li>
+				</field>
+			</field>
+		</record>
+
+
+		<record id="view_employee_form456" model="ir.ui.view">
+			<field name="name">view.employee.form.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="hr.view_employee_form" />
+			<field name="arch" type="xml">
+
+
+				<xpath expr="/form/sheet/div[@class='oe_title']" position="attributes">
+					<attribute name="invisible">True</attribute>
+				</xpath>
+
+				<xpath expr="/form/sheet/notebook" position="before">
+					<div class="oe_title">
+						<h2>
+							<div class="address_format">
+								<field name="emp_first_name" placeholder="First Name"
+									style="width: 30%%" nolabel="1"
+									on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)" />
+								<field name="emp_middle_name" placeholder="Middle Name"
+									style="width: 30%%" nolabel="1"
+									on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)" />
+								<field name="emp_last_name" placeholder="Last Name" style="width: 30%%"
+									nolabel="1"
+									on_change="onchange_name(emp_first_name,emp_middle_name,emp_last_name)" />
+
+							</div>
+						</h2>
+
+						<label for="name" class="oe_edit_only" />
+
+						<h2>
+							<field name="name" />
+						</h2>
+
+						<!--label for="emp_first_name"/> <h2> <field name="emp_first_name" 
+							placeholder="First Name"/> </h2> <label for="emp_middle_name"/> <h2> <field 
+							name="emp_middle_name" placeholder="Middle Name"/> </h2> <label for="emp_last_name"/> 
+							<h2> <field name="emp_last_name" placeholder="Last Name"/> </h2 -->
+						<label for="identification_id1" string="Employement ID" />
+						<h2>
+
+							<field name="identification_id1" />
+						</h2>
+						<!--label for="category_ids" class="oe_edit_only" groups="base.group_hr_user"/> 
+							<field name="category_ids" widget="many2many_tags" placeholder="e.g. Part 
+							Time" groups="base.group_hr_user"/ -->
+						<!-- <label for="category" class="oe_edit_only"/> -->
+						<!-- <field name="category" widget="selection"/> -->
+					</div>
+				</xpath>
+
+
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']"
+					position="attributes">
+					<attribute name="invisible">True</attribute>
+				</xpath>
+
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']"
+					position="replace">
+					<page string="Work Information">
+						<group>
+							<group string="Contact Information">
+								<field name="address_id" on_change="onchange_address_id(address_id)"
+									context="{'show_address': 1}" options='{"always_reload": True, "highlight_first_line": True}' />
+								<field name="work_email" widget="email" />
+								<field name="work_phone" />
+								<field name="mobile_phone" />
+								<field name="work_location" />
+
+							</group>
+							<group string="Position">
+								<field name="department_id" on_change="onchange_department_id(department_id)" />
+								<!--field name="job_id" options='{"no_open": True}' domain="[('state','!=','old')]" 
+									context="{'form_view_ref': 'hr.view_hr_job_employee_form'}" position="replace"/ -->
+								<field name="parent_id" />
+								<field name="coach_id" />
+								<field name="category" widget="selection" />
+							</group>
+							<group>
+								<field name="company_id" groups="base.group_multi_company"
+									on_change="onchange_company(company_id)" />
+								<field name="user_id" on_change="onchange_user(user_id)"
+									string="Related User" />
+							</group>
+						</group>
+						<field name="notes" placeholder="Other Information ..."
+							colspan="4" />
+
+					</page>
+				</xpath>
+
+
+				<field name="active" position="after">
+					<field name='lifeguard' />
+					<field name="attendance" />
+				</field>
+
+
+
+				<xpath expr="/form/sheet/notebook/page[@string='Personal Information']"
+					position="attributes">
+					<attribute name="invisible">True</attribute>
+				</xpath>
+
 				<xpath expr="/form/sheet/notebook" position="inside">
-				<page string="Job Details">
-				<group>
-				<group>
-				<!--field name="identification_id" string="SLSG No."/-->
-				<field name="job_id" string="Job Title"/>
-				</group>
-				<group>
-				<field name="app_letter"/>
-           		<field name="doj"/>
-           		<field name="emoluments"/>
-           		</group>
-           		</group>
-           		<group>
-           		<group> 
-           		<field name="esic_no"/>
-           		<field name="pf_no"/>
-           		</group>
-           		<group>
-           		<field name="employment_exchange_no"/>
-           		<field name="distance"/>
-           		</group>
-           		</group>
-				
-				</page>
-				
-            	<page string="Qualification Details">
-     			<group col="2" colspan="2" string="Professional Qualifications">
-					
-					<field name="professional_qualification_line" widget="one2many" string="Professional Qualifications" nolabel="1" colspan="4"/>
-				</group>
-            	
-           		 <group col="2" colspan="2" string="Educational Qualifications">
-					
-					<field name="educational_qualification_line" widget="one2many" string="Educational Qualifications" nolabel="1" colspan="4"/>
-				</group>
-				<group col="2" colspan="2" string="Other Qualifications">
-					
-					<field name="other_qualification_line" widget="one2many" string="Other Qualifications" nolabel="1" colspan="4"/>
-				</group>
-            	</page>
-            	
-            	<page string="Bank Particulars">
-   	           		
-   	           		 <group col="4">
-                        
-                        <field name="acc_number" placeholder="Account Number"/>
-                       <!-- <field name="company_id" groups="base.group_multi_company" on_change="onchange_company_id(company_id)"
-                            invisible="context.get('company_hide', True)" widget="selection"/> -->
-                        <field name="footer" invisible="context.get('footer_hide', True)"/>
-                    </group>
-                    <group>
-                        
-                        <group name="bank" string="Information About the Bank">
-                            <!--field name="bank" on_change="onchange_bank_id(bank)"/-->
-			                <field name="bank_field" on_change ="onchange_bank_id(bank_field)"/>
-			                <field name="branch_name"/>
-                            <!--field name="bank_name" attrs="{'required': [('company_id','&lt;&gt;',False)]}"/-->
-                            <field name="bank_bic" placeholder="e.g. GEBABEBB" />
-                        </group>
-                            
-                        </group>              
-   	           		 
-            	</page>
-            	
-            	<page string="Lifeguards Training Section" attrs="{'invisible':[('lifeguard', '=', False)]}">
-                
-       		    <group col="2" colspan="2" string="Beach Lifeguard Details">
-					
-					<field name="beach_line" widget="one2many" string="Beach Lifeguard Details" nolabel="1" colspan="4"/>
-				</group>
-				<group col="2" colspan="2" string="Jetski (Surf Rescue) Operator">
-					
-					<field name="jetski_line" widget="one2many" string="Jetski (Surf Rescue) Operator" nolabel="1" colspan="4"/>
-				</group>
-            	
-            	
-            	</page>
-            	
-            	<page string="Performance History">
-            	<group col="2" colspan="2" string="Annual Assessment">
-            	<field name="annual_line" widget="one2many" string="Annual Assessment" nolabel="1" colspan="4"/>
-            	</group>
-            	<group col="2" colspan="2" string="Achievements/Certificates">
-            	<field name="achievement_line" widget="one2many" string="Achievements/Certificates" nolabel="1" colspan="4"/>
-            	</group>
-            	<group col="2" colspan="2" string="Offence Details">
-            	<field name="offence_line" widget="one2many" string="Offence Details" nolabel="1" colspan="4"/>
-            	</group>
-            	</page>
-                <page string="Attachments">
-                <group>
-                <field name="attachment_line" widget="one2many" string="Attachments" nolabel="1" colspan="4"/>
-                </group>
-                </page>           	
-            	
-				<page string="Previous Job History">
-				<group col="2" colspan="2" string="Previous Job History">
-				<field name="previous_job_history" nolabel="1"/>
-				</group>
-				
-				</page>
-                </xpath>
-           		
-           
-            </field>
-          
-        </record>
-        
-        <record id="view_offence_tree456" model="ir.ui.view">
-            <field name="name">offence.details.tree</field>
-            <field name="model">offence.details</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Offence Details">
-			<field name="offence_id" invisible="1"/>
-			<field name="date"/>
-			<field name="offence_description"/> 
-			<field name="punishment"/>        
-                </tree>
-            </field>
-        </record>
+					<page string="Personal Information" groups="base.group_hr_user">
+						<group>
+							<group string="Personal Particulars">
+								<field name="blood_group" />
+								<field name="identification_marks" />
 
-	<record id="view_offence_form456" model="ir.ui.view">
-            <field name="name">offence.details.form</field>
-            <field name="model">offence.details</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Offence Details">
-			<field name="offence_id" invisible="1"/>
-			<field name="date"/>
-			<field name="offence_description"/> 
-			<field name="punishment"/>        
-                </form>
-            </field>
-        </record>
-        
-        <record id="view_achievement_tree456" model="ir.ui.view">
-            <field name="name">achievement.details.tree</field>
-            <field name="model">achievement.details</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Achievements/Certificates">
-			<field name="achievement_id" invisible="1"/>
-			<field name="date"/>
-			<field name="incident_reference"/> 
-			<field name="remarks"/>        
-                </tree>
-            </field>
-        </record>
+							</group>
 
-	<record id="view_achievement_form456" model="ir.ui.view">
-            <field name="name">achievement.details.form</field>
-            <field name="model">achievement.details</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Achievements/Certificates">
-			<field name="achievement_id" invisible="1"/>
-			<field name="date"/>
-			<field name="incident_reference"/> 
-			<field name="remarks"/>        
-                </form>
-            </field>
-        </record>        
-        
-        <record id="view_annual_tree456" model="ir.ui.view">
-            <field name="name">annual.assessment.tree</field>
-            <field name="model">annual.assessment</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Annual Assessment">
-			<field name="annual_id" invisible="1"/>
-			<field name="efficiency"/>
-			<field name="date"/> 
-			<field name="by_whom"/>        
-                </tree>
-            </field>
-        </record>
+						</group>
+						<group>
+							<group string="Status">
+								<field name="gender" />
+								<field name="marital" />
+								<field name="marriage_date"
+									attrs="{'required':[('marital', '=', 'Married')],'invisible':[('marital', '=', 'Unmarried')]}" />
+								<field name="no_of_children"
+									attrs="{'invisible':[('marital', '=', 'Unmarried')]}" />
+							</group>
+							<group string="Birth Details">
+								<field name="birthday" />
+								<field name="place_of_birth" />
+							</group>
+						</group>
 
-	<record id="view_annual_form456" model="ir.ui.view">
-            <field name="name">annual.assessment.form</field>
-            <field name="model">annual.assessment</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Annual Assessment">
-			<field name="annual_id" invisible="1"/>
-			<field name="efficiency"/>
-			<field name="date"/> 
-			<field name="by_whom"/>        
-                </form>
-            </field>
-        </record>        
-        <record id="view_qualification_tree456" model="ir.ui.view">
-            <field name="name">hr.employee.qualification.tree</field>
-            <field name="model">hr.employee.qualification</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Educational Qualifications">
-			<field name="employee_id1" invisible="1"/>
-			<field name="degree"/>
-			<field name="specialization"/>
-			<field name="institute"/> 
-			<field name="board"/>
-			<field name="marks"/>
-			<field name="year"/>
-			<!--field name="masters"/-->        
-                </tree>
-            </field>
-        </record>
-	
-         
-	<record id="view_qualification_form456" model="ir.ui.view">
-            <field name="name">hr.employee.qualification.form</field>
-            <field name="model">hr.employee.qualification</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-            <form string="Educational Qualifications">
-            <group col="2" colspan ="2">
-				<field name="employee_id1" invisible="1"/>
-				<field name="degree"/>
-				<field name="specialization"/>
-				<field name="institute"/> 
-				<field name="board"/>
-				<field name="marks"/>
-				<field name="year"/>
-				<field name="edu_gap"/>
-				<field name="gap_reason"  attrs="{'invisible': [('edu_gap','!=',True)]}"/>
-			</group>
-             </form>
-            </field>
-        </record>   
-        <record id="view_qualification_tree1456" model="ir.ui.view">
-            <field name="name">hr.employee.qualification.tree</field>
-            <field name="model">hr.employee.qualification</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Professional Qualifications">
-			<field name="employee_id2" invisible="1"/>
-			<field name="degree"/>
-			<field name="specialization"/>
-			<field name="institute"/> 
-			<field name="board"/>
-			<field name="marks"/>
-			<field name="year"/>
-			<!--field name="masters"/-->        
-                </tree>
-            </field>
-        </record>
+						<group>
+							<group string="Contact Details">
+								<field name="emergency_contact" />
+								<field name="telephone_no1" />
+								<field name="mobile_no1" />
+								<field name="email_id" />
+								<field name="mobile_no" string="Alternative Mobile No" />
+								<field name="alternative_email" />
+							</group>
+							<group string="Physical Particulars">
 
-	<record id="view_qualification_form1456" model="ir.ui.view">
-            <field name="name">hr.employee.qualification.form</field>
-            <field name="model">hr.employee.qualification</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Professional Qualifications">
-			<field name="employee_id2" invisible="1"/>
-			<field name="degree"/>
-			<field name="specialization"/>
-			<field name="institute"/> 
-			<field name="board"/>
-			<field name="marks"/>
-			<field name="year"/>
-                </form>
-            </field>
-        </record>
-        
-        <record id="view_qualification_tree2456" model="ir.ui.view">
-            <field name="name">hr.employee.qualification.tree</field>
-            <field name="model">hr.employee.qualification</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Other Qualifications">
-			<field name="employee_id3" invisible="1"/>
-			<field name="degree"/>
-			<field name="specialization"/>
-			<field name="institute"/> 
-			<field name="board"/>
-			<field name="marks"/>
-			<field name="year"/>
-			<!--field name="masters"/-->        
-                </tree>
-            </field>
-        </record>
+								<field name="height" />
+								<field name="weight" />
+								<field name="complexion" />
+							</group>
+						</group>
+						<group col="2" colspan="2" string="Current Address">
 
-	<record id="view_qualification_form2456" model="ir.ui.view">
-            <field name="name">hr.employee.qualification.form</field>
-            <field name="model">hr.employee.qualification</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-            <form string="Other Qualifications">
-	           	<group>
-				<field name="employee_id3" invisible="1"/>
-				<field name="degree"/>
-				<field name="specialization"/>
-				<field name="institute"/> 
-				<field name="board"/>
-				<field name="marks"/>
-				<field name="year"/>
-				</group>
-	           </form>
-            </field>
-        </record>
-        <record id="view_family_tree456" model="ir.ui.view">
-            <field name="name">family.details.tree</field>
-            <field name="model">family.details</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-            <tree string="Family Particulars">
-				<field name="family_id" invisible="1"/>
-				<field name="name"/>
-				<field name="relation"/> 
-				<field name="date_of_birth"/>
-				<field name="age"/>
-				<field name="occupation"/>
-			<!--field name="masters"/-->        
-                </tree>
-            </field>
-        </record>
+							<field name="current_street1" placeholder="Street1..."
+								nolabel="1" />
+							<field name="current_street2" placeholder="Street2..."
+								nolabel="1" />
 
-	<record id="view_family_form456" model="ir.ui.view">
-            <field name="name">family.details.form</field>
-            <field name="model">family.details</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Family Particulars">
-			<field name="family_id" invisible="1"/>
-			<field name="name"/>
-			<field name="relation"/> 
-			<field name="date_of_birth"/>
-			<field name="age"/>
-			<field name="occupation"/>
+							<div class="address_format">
+								<field name="current_city" placeholder="City" style="width: 20%%"
+									nolabel="1" />
+								<field name="current_district_id" placeholder="District"
+									style="width: 20%%" nolabel="1"
+									on_change="onchange_current_district(current_district_id)" />
+								<field name="current_state_id" class="oe_no_button"
+									placeholder="State" style="width: 20%%" options='{"no_open": True}'
+									nolabel="1" on_change="onchange_current_state(current_state_id)" />
+								<field name="current_pincode" placeholder="ZIP" style="width: 20%%"
+									nolabel="1" />
+								<field name="current_landmark" placeholder="Landmark"
+									style="width: 20%%" nolabel="1" />
 
-                </form>
-            </field>
-        </record>
-        
-        <record id="view_language_tree456" model="ir.ui.view">
-            <field name="name">language.details.tree</field>
-            <field name="model">language.details</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Language Details" editable="top">
-			<field name="language_id" invisible="1"/>
-			<field name="name"/>
-			<field name="proficiency"/> 
-			<field name="read"/>
-			<field name="write"/>
-			<field name="speak"/>
-			<!--field name="masters"/-->        
-                </tree>
-            </field>
-        </record>
 
-	<record id="view_language_form456" model="ir.ui.view">
-            <field name="name">language.details.form</field>
-            <field name="model">language.details</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Language Details">
-			<field name="language_id" invisible="1"/>
-			<field name="name"/>
-			<field name="proficiency"/> 
-			<field name="read"/>
-			<field name="write"/>
-			<field name="speak"/>                
+							</div>
+							<field name="current_country_id" placeholder="Country"
+								class="oe_no_button" options='{"no_open": True}' nolabel="1" />
+						</group>
+
+
+
+						<group col="2" colspan="2" string="Permanent Address">
+							<field name="goa_employee" />
+							<field name="same_current_address"
+								on_change="onchange_same_current_address(same_current_address,current_street1,current_street2,current_city,current_state_id,current_landmark,current_pincode,current_country_id,current_district_id)" />
+							<field name="house_no" attrs="{'invisible': [('goa_employee','!=',True)]}" />
+							<field name="ward" attrs="{'invisible': [('goa_employee','!=',True)]}" />
+							<field name="home_street1" attrs="{'invisible': [('goa_employee','=',True)]}" />
+							<field name="home_street2" attrs="{'invisible': [('goa_employee','=',True)]}" />
+							<field name="home_landmark" attrs="{'invisible': [('goa_employee','=',True)]}" />
+							<field name="home_village" />
+							<field name="municipality" attrs="{'invisible': [('goa_employee','!=',True)]}" />
+							<!--field name="district" attrs="{'invisible': [('goa_employee','!=',True)]}"/ -->
+							<field name="constituency" attrs="{'invisible': [('goa_employee','!=',True)]}" />
+							<field name="taluka" attrs="{'invisible': [('goa_employee','!=',True)]}" />
+							<field name="home_district_id" on_change="onchange_home_district(home_district_id)" />
+							<field name="home_state_id" on_change="onchange_home_state(home_state_id)" />
+							/>
+							<field name="post_office" attrs="{'invisible': [('goa_employee','!=',True)]}" />
+							<field name="home_pin_code" />
+							<field name="home_country_id" />
+							<field name="other" />
+						</group>
+
+						<group string="Citizenship &amp; Other Info">
+							<field name="nationality" />
+
+
+						</group>
+						<group string="Identification Proof Details">
+
+							<field name="employee_identification_proof_detail" colspan="4"
+								nolabel="1" />
+						</group>
+
+						<group col="2" colspan="2" string="Language Proficiency">
+
+							<field name="language_line" widget="one2many" colspan="4" />
+						</group>
+
+						<group col="2" colspan="2" string="Family Particulars">
+
+							<field name="father_name" />
+							<field name="family_line" widget="one2many" string="Family Particulars"
+								nolabel="1" colspan="4" />
+						</group>
+						<group col="2" colspan="2" string="Nominee Details">
+							<field name="nominee" />
+							<field name="relationship" />
+							<field name="address" />
+							<field name="telephone_no" />
+
+						</group>
+
+
+					</page>
+				</xpath>
+
+				<xpath expr="/form/sheet/notebook" position="inside">
+					<page string="Job Details">
+						<group>
+							<group>
+								<!--field name="identification_id" string="SLSG No."/ -->
+								<field name="job_id" string="Job Title" />
+							</group>
+							<group>
+								<field name="app_letter" />
+								<!-- <field name="doj"/> -->
+								<field name="emoluments" />
+							</group>
+						</group>
+						<group>
+							<group>
+								<field name="esic_no" />
+								<field name="pf_no" />
+							</group>
+							<group>
+								<field name="employment_exchange_no" />
+								<field name="distance" />
+							</group>
+						</group>
+
+					</page>
+
+					<page string="Qualification Details">
+						<group col="2" colspan="2" string="Professional Qualifications">
+
+							<field name="professional_qualification_line" widget="one2many"
+								string="Professional Qualifications" nolabel="1" colspan="4" />
+						</group>
+
+						<group col="2" colspan="2" string="Educational Qualifications">
+
+							<field name="educational_qualification_line" widget="one2many"
+								string="Educational Qualifications" nolabel="1" colspan="4" />
+						</group>
+						<group col="2" colspan="2" string="Other Qualifications">
+
+							<field name="other_qualification_line" widget="one2many"
+								string="Other Qualifications" nolabel="1" colspan="4" />
+						</group>
+					</page>
+
+					<page string="Bank Particulars">
+
+						<group col="4">
+
+							<field name="acc_number" placeholder="Account Number" />
+							<!-- <field name="company_id" groups="base.group_multi_company" on_change="onchange_company_id(company_id)" 
+								invisible="context.get('company_hide', True)" widget="selection"/> -->
+							<field name="footer" invisible="context.get('footer_hide', True)" />
+						</group>
+						<group>
+
+							<group name="bank" string="Information About the Bank">
+								<!--field name="bank" on_change="onchange_bank_id(bank)"/ -->
+								<field name="bank_field" on_change="onchange_bank_id(bank_field)" />
+								<field name="branch_name" />
+								<!--field name="bank_name" attrs="{'required': [('company_id','&lt;&gt;',False)]}"/ -->
+								<field name="bank_bic" placeholder="e.g. GEBABEBB" />
+							</group>
+
+						</group>
+
+					</page>
+
+					<page string="Lifeguards Training Section" attrs="{'invisible':[('lifeguard', '=', False)]}">
+
+						<group col="2" colspan="2" string="Beach Lifeguard Details">
+
+							<field name="beach_line" widget="one2many" string="Beach Lifeguard Details"
+								nolabel="1" colspan="4" />
+						</group>
+						<group col="2" colspan="2" string="Jetski (Surf Rescue) Operator">
+
+							<field name="jetski_line" widget="one2many"
+								string="Jetski (Surf Rescue) Operator" nolabel="1" colspan="4" />
+						</group>
+
+
+					</page>
+
+					<page string="Performance History">
+						<group col="2" colspan="2" string="Annual Assessment">
+							<field name="annual_line" widget="one2many" string="Annual Assessment"
+								nolabel="1" colspan="4" />
+						</group>
+						<group col="2" colspan="2" string="Achievements/Certificates">
+							<field name="achievement_line" widget="one2many"
+								string="Achievements/Certificates" nolabel="1" colspan="4" />
+						</group>
+						<group col="2" colspan="2" string="Offence Details">
+							<field name="offence_line" widget="one2many" string="Offence Details"
+								nolabel="1" colspan="4" />
+						</group>
+					</page>
+					<page string="Attachments">
+						<group>
+							<field name="attachment_line" widget="one2many" string="Attachments"
+								nolabel="1" colspan="4" />
+						</group>
+					</page>
+
+					<page string="Previous Job History">
+						<group col="2" colspan="2" string="Previous Job History">
+							<field name="previous_job_history" nolabel="1" />
+						</group>
+
+					</page>
+				</xpath>
+
+
+			</field>
+
+		</record>
+
+		<record id="view_offence_tree456" model="ir.ui.view">
+			<field name="name">offence.details.tree</field>
+			<field name="model">offence.details</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Offence Details">
+					<field name="offence_id" invisible="1" />
+					<field name="date" />
+					<field name="offence_description" />
+					<field name="punishment" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_offence_form456" model="ir.ui.view">
+			<field name="name">offence.details.form</field>
+			<field name="model">offence.details</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Offence Details">
+					<field name="offence_id" invisible="1" />
+					<field name="date" />
+					<field name="offence_description" />
+					<field name="punishment" />
 				</form>
-            </field>
-        </record>
-        
-        <record id="view_beach_tree456" model="ir.ui.view">
-            <field name="name">beach.lifeguard.tree</field>
-            <field name="model">beach.lifeguard</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Beach Lifeguard">
-			<field name="beach_id" invisible="1"/>
-			<field name="sl_no"/>
-			<field name="slsg_no"/> 
-			<field name="name"/>
-			<field name="swim"/>
-			<field name="rsr"/>
-			<field name="uw"/>
-			<field name="bt"/>
-			<field name="jump"/>
-			<field name="rescue_tube"/>
-			<field name="rescue_board"/>
-			<field name="spine_board"/>
-			<field name="cpr"/>
-			<field name="fa"/>
-			<field name="aed"/>
-			<field name="o2"/>
-			<field name="cert_date"/>
-			<field name="result"/>
-			        
-                </tree>
-            </field>
-        </record>
+			</field>
+		</record>
 
-	<record id="view_beach_form456" model="ir.ui.view">
-            <field name="name">beach.lifeguard.form</field>
-            <field name="model">beach.lifeguard</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Beach Lifeguard">
-			<field name="beach_id" invisible="1"/>
-			<field name="sl_no"/>
-			<field name="slsg_no"/> 
-			<field name="name"/>
-			<field name="swim"/>
-			<field name="rsr"/>
-			<field name="uw"/>
-			<field name="bt"/>
-			<field name="jump"/>
-			<field name="rescue_tube"/>
-			<field name="rescue_board"/>
-			<field name="spine_board"/>
-			<field name="cpr"/>
-			<field name="fa"/>
-			<field name="aed"/>
-			<field name="o2"/>
-			<field name="cert_date"/>
-			<field name="result"/>
+		<record id="view_achievement_tree456" model="ir.ui.view">
+			<field name="name">achievement.details.tree</field>
+			<field name="model">achievement.details</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Achievements/Certificates">
+					<field name="achievement_id" invisible="1" />
+					<field name="date" />
+					<field name="incident_reference" />
+					<field name="remarks" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_achievement_form456" model="ir.ui.view">
+			<field name="name">achievement.details.form</field>
+			<field name="model">achievement.details</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Achievements/Certificates">
+					<field name="achievement_id" invisible="1" />
+					<field name="date" />
+					<field name="incident_reference" />
+					<field name="remarks" />
 				</form>
-            </field>
-        </record>
-        
-        <record id="view_jetski_tree456" model="ir.ui.view">
-            <field name="name">jetski.details.tree</field>
-            <field name="model">jetski.details</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Jetski (Surf Rescue) Operator">
-			<field name="jetski_id" invisible="1"/>
-			<field name="sr_no"/>
-			<field name="slsg_code"/> 
-			<field name="name"/>
-			<field name="date_of_test"/>
-			<field name="ops_checks"/>
-			<field name="confined_space_manevur"/>
-			<field name="cap_size_drill"/>
-			<field name="engine_cut_off_drill"/>
-			<field name="patient_recovery"/>
-			<field name="parallel_drill"/>
-			<field name="ins_outs"/>
-			<field name="result"/>
-						        
-                </tree>
-            </field>
-        </record>
+			</field>
+		</record>
 
-	<record id="view_jetski_form456" model="ir.ui.view">
-            <field name="name">jetski.details.form</field>
-            <field name="model">jetski.details</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Jetski (Surf Rescue) Operator">
-			<field name="jetski_id" invisible="1"/>
-			<field name="sr_no"/>
-			<field name="slsg_code"/> 
-			<field name="name"/>
-			<field name="date_of_test"/>
-			<field name="ops_checks"/>
-			<field name="confined_space_manevur"/>
-			<field name="cap_size_drill"/>
-			<field name="engine_cut_off_drill"/>
-			<field name="patient_recovery"/>
-			<field name="parallel_drill"/>
-			<field name="ins_outs"/>
-			<field name="result"/>
+		<record id="view_annual_tree456" model="ir.ui.view">
+			<field name="name">annual.assessment.tree</field>
+			<field name="model">annual.assessment</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Annual Assessment">
+					<field name="annual_id" invisible="1" />
+					<field name="efficiency" />
+					<field name="date" />
+					<field name="by_whom" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_annual_form456" model="ir.ui.view">
+			<field name="name">annual.assessment.form</field>
+			<field name="model">annual.assessment</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Annual Assessment">
+					<field name="annual_id" invisible="1" />
+					<field name="efficiency" />
+					<field name="date" />
+					<field name="by_whom" />
 				</form>
-            </field>
-        </record>
- <record id="view_Identification Proof Detail_tree" model="ir.ui.view">
-            <field name="name">hr.employee.identification.detail.tree</field>
-            <field name="model">hr.employee.identification.detail</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-            <tree string="Identification Proof Detail" editable="bottom">
-				<field name="employee_id" invisible="1"/>
-				<field name="name"/>
-				<field name="number"/> 
-				<field name="attachment"/>
-				<field name="document_purpose"/>
-			      
-                </tree>
-            </field>
-        </record>
+			</field>
+		</record>
+		<record id="view_qualification_tree456" model="ir.ui.view">
+			<field name="name">hr.employee.qualification.tree</field>
+			<field name="model">hr.employee.qualification</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Educational Qualifications">
+					<field name="employee_id1" invisible="1" />
+					<field name="degree" />
+					<field name="specialization" />
+					<field name="institute" />
+					<field name="board" />
+					<field name="marks" />
+					<field name="year" />
+					<!--field name="masters"/ -->
+				</tree>
+			</field>
+		</record>
 
-	<record id="view_Identification Proof Detail_form" model="ir.ui.view">
-            <field name="name">hr.employee.identification.detail.form</field>
-            <field name="model">hr.employee.identification.detail</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-            <form string="Identification Proof Detail">
-				<field name="name"/>
-				<field name="number"/> 
-				<field name="attachment"/>
-				<field name="document_purpose"/>
-			
-			</form>
-            </field>
-        </record>
-        
-  
-  <record id="view_employee_job_history_tree" model="ir.ui.view">
-            <field name="name">hr.employee.job.history.tree</field>
-            <field name="model">hr.employee.job.history</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-            <tree string="Previous job History">
-				<field name="employee_id" invisible="1"/>
-				<field name="name"/>
-				<field name="employee_code"/>
-				<field name="designation"/> 
-				<field name="joining_date"/>
-				<field name="relieving_date"/>
-				<field name="total_exp"/>
-				<field name="change_reason"/>
-			      
-                </tree>
-            </field>
-        </record>
 
-	<record id="view_employee_job_history_tree_form" model="ir.ui.view">
-            <field name="name">hr.employee.job.history.form</field>
-            <field name="model">hr.employee.job.history</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-            <form string="Previous job History">
-				<field name="name"/>
-				<field name="designation"/> 
-				<field name="joining_date"/>
-				<field name="total_exp"/>
-				<field name="change_reason"/>
-			
-			</form>
-            </field>
-        </record>
-   <record id="view_branch_details_form" model="ir.ui.view">
-            <field name="name">res.bank.form</field>
-            <field name="model">res.bank</field>
-            <field name="type">form</field>
-	    <field name="inherit_id" ref="base.view_res_bank_form"/>
-            <field name="arch" type="xml">
-           
-                   
-           <xpath expr="/form/sheet/group" position="inside">
-           	<field name ="branch_name"/>
-                    
-           </xpath>
-           
-           
-            </field>
-          
-        </record>
-   
-  
-  
-    </data>
+		<record id="view_qualification_form456" model="ir.ui.view">
+			<field name="name">hr.employee.qualification.form</field>
+			<field name="model">hr.employee.qualification</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Educational Qualifications">
+					<group col="2" colspan="2">
+						<field name="employee_id1" invisible="1" />
+						<field name="degree" />
+						<field name="specialization" />
+						<field name="institute" />
+						<field name="board" />
+						<field name="marks" />
+						<field name="year" />
+						<field name="edu_gap" />
+						<field name="gap_reason" attrs="{'invisible': [('edu_gap','!=',True)]}" />
+					</group>
+				</form>
+			</field>
+		</record>
+		<record id="view_qualification_tree1456" model="ir.ui.view">
+			<field name="name">hr.employee.qualification.tree</field>
+			<field name="model">hr.employee.qualification</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Professional Qualifications">
+					<field name="employee_id2" invisible="1" />
+					<field name="degree" />
+					<field name="specialization" />
+					<field name="institute" />
+					<field name="board" />
+					<field name="marks" />
+					<field name="year" />
+					<!--field name="masters"/ -->
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_qualification_form1456" model="ir.ui.view">
+			<field name="name">hr.employee.qualification.form</field>
+			<field name="model">hr.employee.qualification</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Professional Qualifications">
+					<field name="employee_id2" invisible="1" />
+					<field name="degree" />
+					<field name="specialization" />
+					<field name="institute" />
+					<field name="board" />
+					<field name="marks" />
+					<field name="year" />
+				</form>
+			</field>
+		</record>
+
+		<record id="view_qualification_tree2456" model="ir.ui.view">
+			<field name="name">hr.employee.qualification.tree</field>
+			<field name="model">hr.employee.qualification</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Other Qualifications">
+					<field name="employee_id3" invisible="1" />
+					<field name="degree" />
+					<field name="specialization" />
+					<field name="institute" />
+					<field name="board" />
+					<field name="marks" />
+					<field name="year" />
+					<!--field name="masters"/ -->
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_qualification_form2456" model="ir.ui.view">
+			<field name="name">hr.employee.qualification.form</field>
+			<field name="model">hr.employee.qualification</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Other Qualifications">
+					<group>
+						<field name="employee_id3" invisible="1" />
+						<field name="degree" />
+						<field name="specialization" />
+						<field name="institute" />
+						<field name="board" />
+						<field name="marks" />
+						<field name="year" />
+					</group>
+				</form>
+			</field>
+		</record>
+		<record id="view_family_tree456" model="ir.ui.view">
+			<field name="name">family.details.tree</field>
+			<field name="model">family.details</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Family Particulars">
+					<field name="family_id" invisible="1" />
+					<field name="name" />
+					<field name="relation" />
+					<field name="date_of_birth" />
+					<field name="age" />
+					<field name="occupation" />
+					<!--field name="masters"/ -->
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_family_form456" model="ir.ui.view">
+			<field name="name">family.details.form</field>
+			<field name="model">family.details</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Family Particulars">
+					<field name="family_id" invisible="1" />
+					<field name="name" />
+					<field name="relation" />
+					<field name="date_of_birth" />
+					<field name="age" />
+					<field name="occupation" />
+
+				</form>
+			</field>
+		</record>
+
+		<record id="view_language_tree456" model="ir.ui.view">
+			<field name="name">language.details.tree</field>
+			<field name="model">language.details</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Language Details" editable="top">
+					<field name="language_id" invisible="1" />
+					<field name="name" />
+					<field name="proficiency" />
+					<field name="read" />
+					<field name="write" />
+					<field name="speak" />
+					<!--field name="masters"/ -->
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_language_form456" model="ir.ui.view">
+			<field name="name">language.details.form</field>
+			<field name="model">language.details</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Language Details">
+					<field name="language_id" invisible="1" />
+					<field name="name" />
+					<field name="proficiency" />
+					<field name="read" />
+					<field name="write" />
+					<field name="speak" />
+				</form>
+			</field>
+		</record>
+
+		<record id="view_beach_tree456" model="ir.ui.view">
+			<field name="name">beach.lifeguard.tree</field>
+			<field name="model">beach.lifeguard</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Beach Lifeguard">
+					<field name="beach_id" invisible="1" />
+					<field name="sl_no" />
+					<field name="slsg_no" />
+					<field name="name" />
+					<field name="swim" />
+					<field name="rsr" />
+					<field name="uw" />
+					<field name="bt" />
+					<field name="jump" />
+					<field name="rescue_tube" />
+					<field name="rescue_board" />
+					<field name="spine_board" />
+					<field name="cpr" />
+					<field name="fa" />
+					<field name="aed" />
+					<field name="o2" />
+					<field name="cert_date" />
+					<field name="result" />
+
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_beach_form456" model="ir.ui.view">
+			<field name="name">beach.lifeguard.form</field>
+			<field name="model">beach.lifeguard</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Beach Lifeguard">
+					<field name="beach_id" invisible="1" />
+					<field name="sl_no" />
+					<field name="slsg_no" />
+					<field name="name" />
+					<field name="swim" />
+					<field name="rsr" />
+					<field name="uw" />
+					<field name="bt" />
+					<field name="jump" />
+					<field name="rescue_tube" />
+					<field name="rescue_board" />
+					<field name="spine_board" />
+					<field name="cpr" />
+					<field name="fa" />
+					<field name="aed" />
+					<field name="o2" />
+					<field name="cert_date" />
+					<field name="result" />
+				</form>
+			</field>
+		</record>
+
+		<record id="view_jetski_tree456" model="ir.ui.view">
+			<field name="name">jetski.details.tree</field>
+			<field name="model">jetski.details</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Jetski (Surf Rescue) Operator">
+					<field name="jetski_id" invisible="1" />
+					<field name="sr_no" />
+					<field name="slsg_code" />
+					<field name="name" />
+					<field name="date_of_test" />
+					<field name="ops_checks" />
+					<field name="confined_space_manevur" />
+					<field name="cap_size_drill" />
+					<field name="engine_cut_off_drill" />
+					<field name="patient_recovery" />
+					<field name="parallel_drill" />
+					<field name="ins_outs" />
+					<field name="result" />
+
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_jetski_form456" model="ir.ui.view">
+			<field name="name">jetski.details.form</field>
+			<field name="model">jetski.details</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Jetski (Surf Rescue) Operator">
+					<field name="jetski_id" invisible="1" />
+					<field name="sr_no" />
+					<field name="slsg_code" />
+					<field name="name" />
+					<field name="date_of_test" />
+					<field name="ops_checks" />
+					<field name="confined_space_manevur" />
+					<field name="cap_size_drill" />
+					<field name="engine_cut_off_drill" />
+					<field name="patient_recovery" />
+					<field name="parallel_drill" />
+					<field name="ins_outs" />
+					<field name="result" />
+				</form>
+			</field>
+		</record>
+		<record id="view_Identification Proof Detail_tree" model="ir.ui.view">
+			<field name="name">hr.employee.identification.detail.tree</field>
+			<field name="model">hr.employee.identification.detail</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Identification Proof Detail" editable="bottom">
+					<field name="employee_id" invisible="1" />
+					<field name="name" />
+					<field name="number" />
+					<field name="attachment" />
+					<field name="document_purpose" />
+
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_Identification Proof Detail_form" model="ir.ui.view">
+			<field name="name">hr.employee.identification.detail.form</field>
+			<field name="model">hr.employee.identification.detail</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Identification Proof Detail">
+					<field name="name" />
+					<field name="number" />
+					<field name="attachment" />
+					<field name="document_purpose" />
+
+				</form>
+			</field>
+		</record>
+
+
+		<record id="view_employee_job_history_tree" model="ir.ui.view">
+			<field name="name">hr.employee.job.history.tree</field>
+			<field name="model">hr.employee.job.history</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Previous job History">
+					<field name="employee_id" invisible="1" />
+					<field name="name" />
+					<field name="employee_code" />
+					<field name="designation" />
+					<field name="joining_date" />
+					<field name="relieving_date" />
+					<field name="total_exp" />
+					<field name="change_reason" />
+
+				</tree>
+			</field>
+		</record>
+
+		<record id="view_employee_job_history_tree_form" model="ir.ui.view">
+			<field name="name">hr.employee.job.history.form</field>
+			<field name="model">hr.employee.job.history</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Previous job History">
+					<field name="name" />
+					<field name="designation" />
+					<field name="joining_date" />
+					<field name="total_exp" />
+					<field name="change_reason" />
+
+				</form>
+			</field>
+		</record>
+		<record id="view_branch_details_form" model="ir.ui.view">
+			<field name="name">res.bank.form</field>
+			<field name="model">res.bank</field>
+			<field name="type">form</field>
+			<field name="inherit_id" ref="base.view_res_bank_form" />
+			<field name="arch" type="xml">
+
+
+				<xpath expr="/form/sheet/group" position="inside">
+					<field name="branch_name" />
+
+				</xpath>
+
+
+			</field>
+
+		</record>
+
+
+
+	</data>
 </openerp>

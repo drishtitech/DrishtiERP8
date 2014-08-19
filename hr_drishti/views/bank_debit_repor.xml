@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="drishti_bank_debit_letter1">
+            <t t-call="report.html_container">
+              <t t-foreach="docs" t-as="o">
+                 <div class="page">
+                 	<div class="text-left">
+                 			<td class="text-left"></td><br/>
+                 			<span t-field="o.date"/><br/><br/>
+                            
+                            <td class="text-left">The Branch Manager</td><br/>
+                            <td class="text-left">HDFC Bank Ltd</td><br/>
+                            <td class="text-left">Tulsiani Chambers</td><br/>
+                            <td class="text-left">Nariman Point</td><br/>
+                            <td class="text-left">Mumbai 400 021</td><br/>
+                            <br/><br/><br/>
+                            
+                <div class="text-left">
+                <td>Ref: Current account No</td><td class="text-left"></td>
+                <span t-field="o.company_account_no"/><br/><br/>
+                <td>Sub: Transfer Salary to Employees Account</td><br/><br/>
+                <td>This is to request you to transfer salary from our Current account No</td>
+                <td><span class="right" t-field="o.company_account_no"></span></td><td> to our employee accounts as below :</td>
+				<div class="center">
+                            <!--table class="table table-bordered" stype="border: 2px solid black;"-->
+                            <!--table class="table table-bordered text-center"-->
+                        <!--table cellspacing="1" border="1" cellpadding="4"-->
+                        <table style="border: 1px solid black;">
+                        <tr style="border: 1px solid black;">
+	                            <td width="10%" style="border: 1px solid black;background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><strong>Sr.Name</strong></td>
+	                         	<td width="30%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><strong>Name</strong></td>
+	                         	<td width="20%" style="border: 1px solid black;border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><strong>Amount</strong></td>
+	                         	<td width="30%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><strong>Account No</strong></td>
+                         </tr>
+                         <tr style="border: 1px solid black;" t-foreach="o.debit_account_ids" t-as="l">
+                         <td width="10%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><span t-field="l.serial_no"></span></td>
+                         <td width="30%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><span t-field="l.employee_id"></span></td>
+                         <td width="20%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><span t-field="l.amount"></span></td>
+                         <td width="30%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><span t-field="l.account_no"></span></td>
+                         </tr>
+                         <tr>
+                         <td width="10%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"></td>
+                         <td width="30%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><strong><div class="text-right"> Total:</div></strong></td>
+                         <td width="20%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"><strong><span t-field="o.total"/></strong></td>
+                         <td width="30%" style="border: 1px solid black; border-radius: 90px 90px 0 0; -moz-border-radius: 90px 90px 0 0; -webkit-border-radius: 90px 90px 0 0; background:lightgrey; text-align: -webkit-center; padding-top: 10px;"></td>
+                         </tr>
+                         </table>
+                         </div>
+                         <br/><br/><br/>
+                         <td class="text-left">Kindly transfer the same in above salary account and debit our above current account.</td><br/><br/>
+                            <td class="text-left">Thanking you,</td><br/><br/>
+                            <td class="text-left">Yours truly</td><br/>
+                         	<td class="text-left"><strong><td>For </td><td><span class="right" t-field="o.company"/></td></strong></td><br/><br/><br/><br/><br/>
+                            <td class="text-left"><strong>Authorised Signatory</strong></td><br/><br/>
+                  </div> 
+              </div>
+              </div>
+           </t>
+           </t>
+          
+         
+      </template>
+ </data>
+</openerp>

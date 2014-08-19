@@ -51,6 +51,7 @@ class hr_contract(osv.osv):
          'emi_amount': fields.float('Loan EMI',),
          'mobile_deduction': fields.float('Mobile Deduction'),
          'tds_deduction': fields.float('TDS Deduction'),
+         'arrers': fields.float('Arrers'),
         'gross_salary' : fields.function(
                                             _gross_salary,
                                             method=True,

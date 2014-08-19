@@ -77,7 +77,8 @@ class attendance_import(osv.osv_memory):
                                        'employee_id': employee_id[0],
                                        'mobile_deduction':sheet.cell_value(i,3),
                                        'loan_deduction':sheet.cell_value(i,4),
-                                       'tds_deduction' : sheet.cell_value(i,5)
+                                       'tds_deduction' : sheet.cell_value(i,5),
+                                       'arrers' : sheet.cell_value(i,6),
                                       }
                 deduction_line_obj.create(cr, uid, deduction_line_dic)
         return True
@@ -141,7 +142,8 @@ class attendance_import(osv.osv_memory):
                                 'attendance_days' : sheet.cell_value(i,total_days+5),
                                 'holiday_attendance_days':0, #sheet.cell_value(i,total_days+5)
                                 'date_from' : date_from,
-                                'date_to' : date_to
+                                'date_to' : date_to,
+                                'overtime':sheet.cell_value(i,total_days+17),
                                 }
                 
                 attendance_id = attendance_obj.search(cr, uid,[('employee_id','=',employee_id),('date_from','=',date_from),('date_to','=',date_to)])

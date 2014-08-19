@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<report id="drishti_bank_debit_report" string="Bank Debit letter"
+			model="employee.bank.debit.details" report_type="qweb-pdf"
+			file="hr_drishti.drishti_bank_debit_letter1" name="hr_drishti.drishti_bank_debit_letter1" />
+		
+		<report id="drishti_goa_payslip_report" string="Goa Employee Payslip"
+			model="hr.payslip" report_type="qweb-pdf"
+			file="hr_drishti.report_employee_goa_payslip" name="hr_drishti.report_employee_goa_payslip" />	
+			
+	</data>
+</openerp>

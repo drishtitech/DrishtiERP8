@@ -1,6 +1,6 @@
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
-
+from calendar import monthrange
 import datetime
 from datetime import date
 from datetime import timedelta
@@ -9,25 +9,55 @@ import time
 
 
 class hr_attendance_table(osv.osv):
-    _name='hr.attendance.table'
+    _name = 'hr.attendance.table'
     _description = 'Attendance Table'
     _columns = {
-        'date_from':fields.date('Date From',required=True),
-        'date_to':fields.date('Date To',required=True),
+        'date_from':fields.date('Date From', required=True),
+        'date_to':fields.date('Date To', required=True),
         'name':fields.char('Attendance Slip', size=124),
-        'employee_id':fields.many2one('hr.employee', 'Employee', required=True), 
+        'employee_id':fields.many2one('hr.employee', 'Employee', required=True),
         'month_days' :fields.float('Month Days',),
         'salary_days' : fields.float('Salary Days'),
+        'overtime' : fields.float('Overtime'),
         'attendance_days' : fields.float('Attendance Days'),
         'holiday_attendance_days' : fields.float('Holiday attendance Days'),
-        'attendance_line':fields.one2many('hr.attendance.table.line','attendance_table','Attendance Lines', size=124),       
+        'attendance_line':fields.one2many('hr.attendance.table.line', 'attendance_table', 'Attendance Lines', size=124),
 }
-    _defaults={
-         'name': lambda obj, cr, uid, context: '/',   
+    _defaults = {
+         'name': lambda obj, cr, uid, context: '/',
                }
     
+    def attendance_cron(self, cr, uid, vals, context=None):
+        empObj = self.pool.get('hr.employee')
+        empIds = empObj.search(cr, uid, [])
+        currentMonth = datetime.datetime.now().month
+        currentYear = datetime.datetime.now().year
+        totalDays = monthrange(currentYear, currentMonth)[1]
+        dateDict = {}
+        for i in range(1, totalDays + 1):
+            dateDict[i] = datetime.date(currentYear, currentMonth, i)
+        dateFrom = datetime.date(currentYear, currentMonth, 1)
+        dateTo = datetime.date(currentYear, currentMonth, totalDays)
+            
+        for empId in empIds:
+            employeeDic = {
+                                'employee_id' : empId,
+                                'month_days'  : 0,
+                                'salary_days' : 0,
+                                'attendance_days' : 0,
+                                'holiday_attendance_days':0,  # sheet.cell_value(i,total_days+5)
+                                'date_from' : dateFrom,
+                                'date_to' : dateTo,
+                                'overtime' : 0,
+                                }
+                
+            attendance_id = self.search(cr, uid, [('employee_id', '=', empId), ('date_from', '=', dateFrom), ('date_to', '=', dateTo)])
+            if not attendance_id:
+                self.create(cr, uid, employeeDic)
+        return True        
+         
     def create(self, cr, uid, vals, context=None):
-        if vals.get('name','/')=='/':
+        if vals.get('name', '/') == '/':
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'hr.attendance.table') or '/'
         return super(hr_attendance_table, self).create(cr, uid, vals, context=context)
     
@@ -94,29 +124,29 @@ class hr_attendance_table_line(osv.osv):
     _name = 'hr.attendance.table.line'
     _description = 'Attendance Table'
     
-    _final_attendance = [('P','P'),('A','A'),('PL','PL'),('WO','WO'),('UL','UL'),('H','H')]
-    _drive_attendance = [('P','P'),('M','M'),('O','O'),('T','T'),
-                         ('L','L'),('SL','SL'),('C','C'),('U','U'),
-                         ('SU','SU'),('W','W'),('A','A'),('H','H'),('R','R'),('RH','RH')]
+    _final_attendance = [('P', 'P'), ('A', 'A'), ('PL', 'PL'), ('WO', 'WO'), ('UL', 'UL'), ('H', 'H')]
+    _drive_attendance = [('P', 'P'), ('M', 'M'), ('O', 'O'), ('T', 'T'),
+                         ('L', 'L'), ('SL', 'SL'), ('C', 'C'), ('U', 'U'),
+                         ('SU', 'SU'), ('W', 'W'), ('A', 'A'), ('H', 'H'), ('R', 'R'), ('RH', 'RH')]
     def _price_field_get(self, cr, uid, context=None):
         mf = self.pool.get('ir.model.fields')
-        ids = mf.search(cr, uid, [('model','in', (('product.product'),('product.template'))), ('ttype','=','float')], context=context)
+        ids = mf.search(cr, uid, [('model', 'in', (('product.product'), ('product.template'))), ('ttype', '=', 'float')], context=context)
         res = []
         for field in mf.browse(cr, uid, ids, context=context):
             res.append((field.name, field.field_description))
         return res
     _columns = {
-    'attendance_table':fields.many2one('hr.attendance.table','Attendance'),
+    'attendance_table':fields.many2one('hr.attendance.table', 'Attendance'),
     'name' : fields.char('Name'),
-    'employee_id': fields.related('attendance_table', 'employee_id', string='Employee Id',store=True,type='many2one',relation="hr.employee",readonly=True),
-    'date': fields.date('Attendance Date',required=True),
+    'employee_id': fields.related('attendance_table', 'employee_id', string='Employee Id', store=True, type='many2one', relation="hr.employee", readonly=True),
+    'date': fields.date('Attendance Date', required=True),
     'attendance': fields.boolean('Absent/Present'),
     'absent_info': fields.char('Holiday Information', size=124),
-    'final_result': fields.selection(_final_attendance,'Result'),
-  'goa_drive_attendance':fields.selection(_drive_attendance,'HR Drive Attendance'),
-   'biometric_attendance':fields.selection([('P','P'),('A','A')],'Biometric Attendance',readonly=True),
-   'login_time':fields.char('Punch In',readonly=True),
-   'logout_time':fields.char('Punch Out',readonly=True)
+    'final_result': fields.selection(_final_attendance, 'Result'),
+  'goa_drive_attendance':fields.selection(_drive_attendance, 'HR Drive Attendance'),
+   'biometric_attendance':fields.selection([('P', 'P'), ('A', 'A')], 'Biometric Attendance', readonly=True),
+   'login_time':fields.char('Punch In', readonly=True),
+   'logout_time':fields.char('Punch Out', readonly=True)
    }
        
 #     def fetch_attendance_info(self,cr,uid,ids,context=None):

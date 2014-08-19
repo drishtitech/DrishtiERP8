@@ -52,7 +52,15 @@ You can manage:
        # 'product_view.xml',
         'wizard/import_attendance_view.xml', 
         'hr_working_schedule_demo.xml',
-        'employee_month_payroll_view.xml'
+        'employee_month_payroll_view.xml',
+        'report_bank_debit_view.xml',
+        'views/bank_debit_repor.xml',
+        'views/goa_payslip.xml',
+        'bank_debit_letter.xml',
+        'skill_matrics_view.xml',
+        'employee_increment_view.xml',
+        'hr_employee_view.xml',
+        'hr_payroll_report.xml',
        # 'attendance_sequence.xml',
         
     ],
